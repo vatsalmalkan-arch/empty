@@ -180,7 +180,7 @@
   /* ---- portfolio additions ---- */
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .eyebrow { margin: 0; font-size: var(--micro); font-weight: 600; text-transform: uppercase; letter-spacing: .25em; color: var(--gray-600); }
-  .chat { gap: .85rem; width: clamp(16rem, 22vw, 22rem); max-width: 100%; background: var(--white); }
+  .chat { gap: .85rem; width: clamp(16rem, 22vw, 22rem); max-width: 100%; }
   .chat-head { display: flex; align-items: center; gap: .9rem; }
   .chat .tagline { margin: 0; }
   .hint { margin: .2rem 0 0; font-size: var(--micro); color: var(--gray-500); letter-spacing: .04em; line-height: 1.4; }
@@ -189,15 +189,15 @@
   .cells i { width: 5px; height: 5px; border: 1px solid var(--gray-400); display: block; }
   .cells i.on { background: var(--ink); border-color: var(--ink); }
   .meter-val { font-variant-numeric: tabular-nums; min-width: 3ch; }
-  .say-row { display: flex; align-items: stretch; border: 1px solid var(--gray-400); border-radius: .375rem; overflow: hidden; background: var(--white); }
+  .say-row { display: flex; align-items: center; gap: .5rem; border-bottom: 1px solid var(--gray-400); }
   .say-row:focus-within { border-color: var(--ink); }
-  .send { background: var(--ink); color: var(--white); padding: 0 .8rem; display: grid; place-items: center; }
-  .send:hover { opacity: .8; }
-  .reply-area { position: relative; height: calc(var(--body) * 1.45 * 3 + .4rem); border-top: 1px solid var(--gray-200); border-bottom: 1px solid var(--gray-200); }
+  .send { display: grid; place-items: center; }
+  .send:hover { opacity: .5; }
+  .reply-area { position: relative; height: calc(var(--body) * 1.45 * 3 + .4rem); }
   #sand-text { position: absolute; left: 0; right: 0; top: 0; width: 100%; height: calc(100% + 1.5rem); pointer-events: none; }
-  #say { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; padding: .7rem .8rem; font: 500 var(--body) 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif; color: var(--ink); letter-spacing: .04em; }
-  #say::placeholder { color: var(--gray-500); text-transform: uppercase; letter-spacing: .18em; }
-  .send .icon { width: 1.05rem; height: 1.05rem; }
+  #say { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; padding: .55rem 0; font: 500 var(--body) 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif; color: var(--ink); letter-spacing: .04em; }
+  #say::placeholder { color: var(--gray-400); text-transform: uppercase; letter-spacing: .18em; }
+  .send .icon { width: 1.1rem; height: 1.1rem; }
   .row a.small-btn { color: inherit; text-decoration: none; display: inline-block; }
   .para { margin: 0 0 1rem; font-size: var(--body); line-height: 1.65; color: var(--gray-600); }
   @media (prefers-reduced-motion: reduce) { .drawer, .toast, .backdrop, .cta, .cta .icon { transition: none; } }
@@ -307,6 +307,7 @@ const POINT_SIZE = 5.2;   // bigger, overlapping beads: dense but not solid
 
 // ---------- renderer / scene ----------
 const canvas = document.getElementById('stage');
+const chatBox = document.getElementById('chat');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 const scene = new THREE.Scene();
@@ -485,6 +486,8 @@ function makeMaterial() {
       uHead:   { value: HEAD },
       uBreath: { value: 0 },
       uResolve: { value: 0 },
+      uMask:    { value: new THREE.Vector4(-1, -1, -1, -1) },   // chat box in drawing-buffer px
+      uFeather: { value: 60 },
       uPinkInk:   { value: new THREE.Color('#d98a9e') },
       uPinkSheen: { value: new THREE.Color('#ffe1e9') },
       uInk:    { value: new THREE.Color('#0b0b0d') },
@@ -527,7 +530,8 @@ function makeMaterial() {
       }`,
     fragmentShader: /* glsl */`
       uniform vec3 uInk, uSheen, uHot, uPinkInk, uPinkSheen;
-      uniform float uResolve;
+      uniform float uResolve, uFeather;
+      uniform vec4 uMask;
       varying vec3 vNormalV;
       varying float vDent, vY, vRnd;
       void main() {
@@ -548,6 +552,10 @@ function makeMaterial() {
         col = mix(col, uHot, clamp(vDent, 0.0, 1.0) * 0.35);
         float fadeIn = smoothstep(0.0, 0.14, vY);
         if (fadeIn < 0.999 && vRnd > fadeIn) discard;
+        // thin out behind the chat box: fully clear inside, dithered edge outside
+        vec2 q = max(vec2(uMask.x - gl_FragCoord.x, uMask.y - gl_FragCoord.y), vec2(gl_FragCoord.x - uMask.z, gl_FragCoord.y - uMask.w));
+        float outside = max(q.x, q.y);
+        if (uMask.z > 0.0 && vRnd > smoothstep(0.0, uFeather, outside)) discard;
         gl_FragColor = vec4(col, 1.0);
       }`,
   });
@@ -741,6 +749,15 @@ renderer.setAnimationLoop(() => {
       settling = maxOff > 1e-4 ? 1 : 0;
     }
     points.material.uniforms.uTime.value = t;
+    // where the chat box sits on top of her, in drawing-buffer pixels
+    {
+      const pr = renderer.getPixelRatio(), cr = canvas.getBoundingClientRect(), br = chatBox.getBoundingClientRect();
+      const x0 = (br.left - cr.left) * pr, x1 = (br.right - cr.left) * pr;
+      const y0 = (cr.bottom - br.bottom) * pr, y1 = (cr.bottom - br.top) * pr;
+      const hit = x1 > 0 && y1 > 0 && x0 < cr.width * pr && y0 < cr.height * pr;
+      points.material.uniforms.uMask.value.set(hit ? x0 : -1, hit ? y0 : -1, hit ? x1 : -1, hit ? y1 : -1);
+      points.material.uniforms.uFeather.value = 70 * pr;
+    }
     // idle head motion: layered slow waves so it never visibly loops,
     // plus a slow look-around every ~14 s
     const look = Math.sin(t * 0.45) * Math.pow(Math.max(0, Math.sin(t * 0.22)), 4);
