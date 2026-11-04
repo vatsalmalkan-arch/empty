@@ -4,42 +4,68 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vatsal Malkan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Inter+Tight:wght@400;500&display=swap">
 <style>
+  /* Layout: one full-bleed stage. Pixel headline behind a particle bust, small caption bottom-left. */
   :root {
-    --bg-top: #1a1622;
-    --bg-bottom: #07060a;
-    --text: #cfc7d8;
-    --muted: #6f6680;
+    color-scheme: dark;
+    --bg: #050407;
+    --headline: #c9c4d3;
+    --text: #e9e5f0;
+    --muted: #8a8496;
+    --chip: #1b1922;
+    --font-pixel: "Silkscreen", ui-monospace, "SF Mono", Menlo, monospace;
+    --font-body: "Inter Tight", system-ui, -apple-system, "Segoe UI", sans-serif;
   }
-  html, body {
-    margin: 0;
-    height: 100%;
-    overflow: hidden;
-    background: radial-gradient(ellipse at 50% 35%, var(--bg-top) 0%, var(--bg-bottom) 70%);
-    color: var(--text);
-    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
+  #headline {
+    position: fixed; left: 0; right: 0; top: 9vh; margin: 0;
+    font-family: var(--font-pixel); font-weight: 400;
+    font-size: 10vw; line-height: 1; letter-spacing: -0.02em;
+    color: var(--headline); text-align: center; white-space: nowrap;
+    user-select: none; pointer-events: none;
   }
-  #stage { position: fixed; inset: 0; display: block; }
+  #stage { position: fixed; inset: 0; display: block; width: 100%; height: 100%; touch-action: none; }
+  #caption {
+    position: fixed; left: max(20px, env(safe-area-inset-left, 0px)); bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+    max-width: min(320px, calc(100% - 40px));
+    font-family: var(--font-body); pointer-events: none;
+  }
+  #caption .tags { display: flex; gap: 10px; align-items: center; font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+  #caption .chip { background: var(--chip); color: var(--text); padding: 4px 9px; border-radius: 6px; }
+  #caption p { margin: 0; font-size: 17px; line-height: 1.3; }
+  #caption p + p { color: var(--muted); }
   #loading {
     position: fixed; inset: 0; display: grid; place-items: center;
-    font-size: 12px; letter-spacing: .2em; color: var(--muted);
-    transition: opacity .6s;
+    font: 11px var(--font-pixel); letter-spacing: .2em; color: var(--muted);
+    transition: opacity .6s; pointer-events: none;
   }
   #credit {
-    position: fixed; right: 8px; bottom: 8px; left: auto; max-width: calc(100% - 16px);
-    font-size: 10px; color: var(--muted);
-    background: rgba(7, 6, 10, .7); padding: 3px 6px; border-radius: 4px;
+    position: fixed; right: max(8px, env(safe-area-inset-right, 0px)); bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    font: 10px var(--font-body); color: var(--muted);
   }
   #credit a { color: inherit; }
+  @media (max-width: 600px) {
+    #credit { display: none; }
+    #caption { bottom: auto; top: calc(9vh + 15vw); }
+  }
 </style>
 </head>
 <body>
+<h1 id="headline">HELLO I'M VATSAL</h1>
 <canvas id="stage"></canvas>
-<div id="loading">LOADING…</div>
+<div id="caption">
+  <div class="tags"><span class="chip">AI/ML engineer</span><span>Rajkot, Gujarat</span></div>
+  <p>I build models</p>
+  <p>and the evals that check them.</p>
+</div>
+<div id="loading">LOADING</div>
 <div id="credit">
-  3D model: <a href="https://sketchfab.com/3d-models/futuristic-bootylicious-female-robot-e0bf22fc62064d979e114f947275684b" target="_blank" rel="noopener">"Futuristic female robot"</a>
+  Shape sampled from <a href="https://sketchfab.com/3d-models/futuristic-bootylicious-female-robot-e0bf22fc62064d979e114f947275684b" target="_blank" rel="noopener">"Futuristic female robot"</a>
   by <a href="https://sketchfab.com/HasanXRFX" target="_blank" rel="noopener">Syed Mohammad Hasan</a>,
-  <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> (compressed)
+  <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
 </div>
 
 <script type="importmap">
@@ -52,68 +78,88 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { MeshSurfaceSampler } from 'three/addons/math/MeshSurfaceSampler.js';
+
+// ---------- settings ----------
+const COUNT   = innerWidth < 700 ? 45000 : 90000;  // particles
+const CROP_Y  = 0.95;     // keep everything above this height (model units): chest up
+const RADIUS  = 0.11;     // cursor influence radius
+const PUSH    = 2.2;      // how hard the cursor shoves
+const SPRING  = 11.0;     // pull back to the shape
+const DAMPING = 0.88;     // per frame at 60 fps
 
 // ---------- renderer / scene ----------
 const canvas = document.getElementById('stage');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.0;
-
 const scene = new THREE.Scene();
-const pmrem = new THREE.PMREMGenerator(renderer);
-scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+const camera = new THREE.PerspectiveCamera(30, 1, 0.01, 50);
+const bust = new THREE.Group();
+scene.add(bust);
 
-const camera = new THREE.PerspectiveCamera(28, 1, 0.01, 50);
+let points = null, base = null, off = null, vel = null, bounds = null;
 
-// Studio lighting for chrome: soft key, cool + warm rims.
-scene.add(new THREE.HemisphereLight(0xcfd8ff, 0x1a1020, 0.5));
-const key = new THREE.DirectionalLight(0xffffff, 1.6);  key.position.set(1.5, 2.5, 3);   scene.add(key);
-const rimL = new THREE.DirectionalLight(0x6fe7ff, 2.2); rimL.position.set(-3, 1.5, -2); scene.add(rimL);
-const rimR = new THREE.DirectionalLight(0xff7ad9, 1.6); rimR.position.set(3, 1, -2.5);  scene.add(rimR);
-
-// ---------- load ----------
-const rig = new THREE.Group();   // idle motion goes here
-scene.add(rig);
-let model = null, bounds = null;
-
+// ---------- load + sample ----------
 const loader = new GLTFLoader();
 loader.setMeshoptDecoder(MeshoptDecoder);
 loader.load('assets/robot.glb', (gltf) => {
   gltf.scene.updateMatrixWorld(true);
-  const meshes = [];
-  gltf.scene.traverse((o) => { if (o.isMesh) meshes.push(o); });
+  let mesh = null;
+  gltf.scene.traverse((o) => { if (o.isMesh && !mesh) mesh = o; });
+
+  // Dequantize + bake transforms so we sample in plain model units.
+  const g = mesh.geometry;
   const getters = ['getX', 'getY', 'getZ', 'getW'];
-  meshes.forEach((o) => {
-    // Bake transforms + dequantize so the shader works in plain model units.
-    const g = o.geometry;
-    for (const name of ['position', 'normal', 'tangent']) {
-      const a = g.getAttribute(name);
-      if (!a) continue;
-      const out = new Float32Array(a.count * a.itemSize);
-      for (let i = 0; i < a.count; i++)
-        for (let c = 0; c < a.itemSize; c++) out[i * a.itemSize + c] = a[getters[c]](i);
-      g.setAttribute(name, new THREE.BufferAttribute(out, a.itemSize));
-    }
-    g.applyMatrix4(o.matrixWorld);
-    o.position.set(0, 0, 0); o.rotation.set(0, 0, 0); o.scale.set(1, 1, 1);
-    o.parent.remove(o);
-    model = o;
-  });
+  for (const name of ['position', 'normal']) {
+    const a = g.getAttribute(name);
+    const out = new Float32Array(a.count * a.itemSize);
+    for (let i = 0; i < a.count; i++)
+      for (let c = 0; c < a.itemSize; c++) out[i * a.itemSize + c] = a[getters[c]](i);
+    g.setAttribute(name, new THREE.BufferAttribute(out, a.itemSize));
+  }
+  for (const name of Object.keys(g.attributes)) if (name !== 'position' && name !== 'normal') g.deleteAttribute(name);
+  g.applyMatrix4(mesh.matrixWorld);
+  g.computeBoundingBox();
+  const c = g.boundingBox.getCenter(new THREE.Vector3());
+  g.translate(-c.x, -g.boundingBox.min.y, -c.z);
+  const sampleMesh = new THREE.Mesh(g);
 
-  const m = model.material;
-  m.envMapIntensity = 1.2;
+  // Sample the surface, keep the bust region only.
+  const sampler = new MeshSurfaceSampler(sampleMesh).build();
+  const p = new THREE.Vector3(), n = new THREE.Vector3();
+  const posArr = new Float32Array(COUNT * 3), nrmArr = new Float32Array(COUNT * 3), rnd = new Float32Array(COUNT);
+  let k = 0, guard = 0;
+  while (k < COUNT && guard++ < COUNT * 20) {
+    sampler.sample(p, n);
+    if (p.y < CROP_Y) continue;
+    posArr.set([p.x, p.y, p.z], k * 3);
+    nrmArr.set([n.x, n.y, n.z], k * 3);
+    rnd[k] = Math.random();
+    k++;
+  }
 
-  // Hips sit at y = 0, centred on x/z.
-  model.geometry.computeBoundingBox();
-  bounds = model.geometry.boundingBox.clone();
-  const c = bounds.getCenter(new THREE.Vector3());
-  model.geometry.translate(-c.x, -bounds.min.y, -c.z);
-  model.geometry.computeBoundingBox();
-  bounds = model.geometry.boundingBox.clone();
-  model = buildSkeleton(model);
-  rig.add(model);
+  // Centre the bust: its bottom at y = 0.
+  let minY = Infinity, maxY = -Infinity, maxX = 0;
+  for (let i = 0; i < k; i++) {
+    const y = posArr[i * 3 + 1];
+    minY = Math.min(minY, y); maxY = Math.max(maxY, y); maxX = Math.max(maxX, Math.abs(posArr[i * 3]));
+  }
+  for (let i = 0; i < k; i++) posArr[i * 3 + 1] -= minY;
+  bounds = { h: maxY - minY, w: maxX * 2 };
+
+  base = posArr.slice(0, k * 3);
+  off = new Float32Array(k * 3);
+  vel = new Float32Array(k * 3);
+
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(posArr.slice(0, k * 3), 3).setUsage(THREE.DynamicDrawUsage));
+  geo.setAttribute('normal', new THREE.BufferAttribute(nrmArr.slice(0, k * 3), 3));
+  geo.setAttribute('aRnd', new THREE.BufferAttribute(rnd.slice(0, k), 1));
+  geo.setAttribute('aOff', new THREE.BufferAttribute(new Float32Array(k), 1).setUsage(THREE.DynamicDrawUsage));
+
+  points = new THREE.Points(geo, makeMaterial());
+  points.frustumCulled = false;
+  bust.add(points);
 
   frame();
   document.getElementById('loading').style.opacity = 0;
@@ -122,197 +168,157 @@ loader.load('assets/robot.glb', (gltf) => {
   console.error(err);
 });
 
-// ---------- skeleton (built in code; the model ships without a rig) ----------
-// Joint positions measured from the mesh (hips at y = 0, model height ~1.90,
-// +x is her left as seen from the front camera, +z faces the camera).
-const JOINTS = {
-  hips:  [0, 0.00, -0.03],
-  spine: [0, 0.55, -0.03],
-  chest: [0, 0.95, -0.04],
-  neck:  [0, 1.37, -0.04],
-  head:  [0, 1.49, -0.03],
-  top:   [0, 1.90, -0.03],
-  shoulder: [0.33, 1.28, -0.08],
-  elbow:    [0.40, 0.88, -0.085],
-  wrist:    [0.60, 0.43, -0.05],
-  fingers:  [0.56, 0.00, -0.06],
-};
-const bones = {};
-
-function buildSkeleton(mesh) {
-  const v = (name, side = 1) => {
-    const [x, y, z] = JOINTS[name];
-    return new THREE.Vector3(x * side, y, z);
-  };
-  // Bone list; the index is the skin index.
-  const defs = [
-    ['hips',  null,    v('hips')],
-    ['spine', 'hips',  v('spine')],
-    ['chest', 'spine', v('chest')],
-    ['neck',  'chest', v('neck')],
-    ['head',  'neck',  v('head')],
-  ];
-  for (const [side, s] of [['R', 1], ['L', -1]]) {
-    defs.push(
-      ['upperArm' + side, 'chest',          v('shoulder', s)],
-      ['foreArm' + side,  'upperArm' + side, v('elbow', s)],
-      ['hand' + side,     'foreArm' + side,  v('wrist', s)],
-    );
-  }
-  const list = [], world = {};
-  for (const [name, parent, pos] of defs) {
-    const b = new THREE.Bone();
-    b.name = name;
-    world[name] = pos;
-    if (parent) { b.position.copy(pos).sub(world[parent]); bones[parent].add(b); }
-    else b.position.copy(pos);
-    bones[name] = b;
-    list.push(b);
-  }
-  const idx = Object.fromEntries(list.map((b, i) => [b.name, i]));
-
-  // --- skin weights ---
-  const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
-  const lerpTable = (xs, ys, x) => {
-    if (x <= xs[0]) return ys[0];
-    for (let i = 1; i < xs.length; i++) if (x <= xs[i]) {
-      const t = (x - xs[i - 1]) / (xs[i] - xs[i - 1]);
-      return ys[i - 1] + (ys[i] - ys[i - 1]) * t;
-    }
-    return ys[ys.length - 1];
-  };
-  // Below the shoulders the arms are separate from the body: this is the |x|
-  // that splits arm from torso/thigh at each height (from mesh slices).
-  const gapY = [0.00, 0.15, 0.30, 0.50, 0.70, 0.90, 0.97];
-  const gapX = [0.41, 0.42, 0.43, 0.38, 0.29, 0.26, 0.26];
-
-  const seg = new THREE.Line3(), tmp = new THREE.Vector3(), p = new THREE.Vector3();
-  const armSegs = (s) => [
-    [v('shoulder', s), v('elbow', s)],
-    [v('elbow', s), v('wrist', s)],
-    [v('wrist', s), v('fingers', s)],
-  ];
-  const segsBySide = { R: armSegs(1), L: armSegs(-1) };
-
-  const pos = mesh.geometry.getAttribute('position');
-  const n = pos.count;
-  const skinIndex = new Uint16Array(n * 4), skinWeight = new Float32Array(n * 4);
-
-  for (let i = 0; i < n; i++) {
-    p.fromBufferAttribute(pos, i);
-    const ax = Math.abs(p.x), side = p.x >= 0 ? 'R' : 'L';
-    const w = new Map();
-    const add = (name, val) => { if (val > 1e-4) w.set(idx[name], (w.get(idx[name]) || 0) + val); };
-
-    // How much this vertex belongs to the arm chain vs the torso chain.
-    let arm;
-    if (p.y < 0.97) arm = ax > lerpTable(gapY, gapX, p.y) ? 1 : 0;
-    else arm = smooth(0.24, 0.33, ax) * (1 - smooth(1.30, 1.40, p.y));
-
-    // Torso chain: blend by height.
-    const torso = 1 - arm;
-    if (torso > 0) {
-      const y = p.y;
-      const hipsW  = 1 - smooth(0.45, 0.65, y);
-      const chestIn = smooth(0.85, 1.05, y);
-      const neckIn = smooth(1.33, 1.40, y);
-      const headIn = smooth(1.46, 1.52, y);
-      const parts = {
-        hips: hipsW,
-        spine: (1 - hipsW) * (1 - chestIn),
-        chest: chestIn * (1 - neckIn),
-        neck: neckIn * (1 - headIn),
-        head: headIn,
-      };
-      for (const k in parts) add(k, parts[k] * torso);
-    }
-
-    // Arm chain: inverse distance to each bone segment, so joints blend.
-    if (arm > 0) {
-      const segs = segsBySide[side];
-      const names = ['upperArm', 'foreArm', 'hand'];
-      const raw = segs.map(([a, b]) => {
-        seg.set(a, b);
-        seg.closestPointToPoint(p, true, tmp);
-        return 1 / Math.pow(tmp.distanceTo(p) + 0.02, 6);
-      });
-      const sum = raw.reduce((s, x) => s + x, 0);
-      raw.forEach((r, k) => add(names[k] + side, (r / sum) * arm));
-    }
-
-    // Keep the 4 strongest influences, normalised.
-    const top = [...w.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
-    const total = top.reduce((s, [, x]) => s + x, 0) || 1;
-    top.forEach(([bi, x], k) => { skinIndex[i * 4 + k] = bi; skinWeight[i * 4 + k] = x / total; });
-  }
-  mesh.geometry.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(skinIndex, 4));
-  mesh.geometry.setAttribute('skinWeight', new THREE.Float32BufferAttribute(skinWeight, 4));
-
-  const skinned = new THREE.SkinnedMesh(mesh.geometry, mesh.material);
-  skinned.add(bones.hips);
-  skinned.updateMatrixWorld(true);
-  skinned.bind(new THREE.Skeleton(list));
-  skinned.frustumCulled = false;   // bounds change as she moves
-  window.robotBones = bones;       // handy for tweaking poses from the console
-  return skinned;
+// ---------- particle material ----------
+function makeMaterial() {
+  return new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: true,
+    uniforms: {
+      uTime:  { value: 0 },
+      uSize:  { value: 1 },
+      uHeight: { value: 1 },
+      uLight: { value: new THREE.Color('#efeaff') },
+      uShade: { value: new THREE.Color('#5d5677') },
+      uGlow:  { value: new THREE.Color('#e9f2a8') },
+    },
+    vertexShader: /* glsl */`
+      uniform float uTime, uSize, uHeight;
+      attribute float aRnd, aOff;
+      varying float vLit, vRnd, vY, vOff;
+      void main() {
+        vec3 p = position;
+        // faint shimmer so the cloud never looks frozen
+        p += normal * sin(uTime * 2.0 + aRnd * 40.0) * 0.0025;
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        vec3 nv = normalize(normalMatrix * normal);
+        vec3 L = normalize(vec3(-0.35, 0.55, 0.75));
+        vLit = clamp(dot(nv, L) * 0.75 + 0.35 + pow(1.0 - abs(nv.z), 3.0) * 0.35, 0.0, 1.0);
+        vRnd = aRnd; vY = position.y / uHeight; vOff = aOff;
+        gl_PointSize = uSize * (0.75 + aRnd * 0.6) / -mv.z;
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader: /* glsl */`
+      uniform vec3 uLight, uShade, uGlow;
+      varying float vLit, vRnd, vY, vOff;
+      void main() {
+        vec2 c = gl_PointCoord - 0.5;
+        if (dot(c, c) > 0.25) discard;
+        vec3 col = mix(uShade, uLight, vLit);
+        // warm glow rising from the bottom edge
+        float glow = 1.0 - smoothstep(0.0, 0.35, vY);
+        col = mix(col, uGlow, glow * 0.55);
+        // disturbed grains flash brighter
+        col += vOff * 0.6;
+        float a = smoothstep(0.0, 0.12, vY) * (0.75 + vRnd * 0.25);
+        gl_FragColor = vec4(col, a);
+      }`,
+  });
 }
 
-// ---------- framing: hips at the bottom edge, head in the upper third ----------
+// ---------- framing ----------
 function frame() {
-  const w = innerWidth, hgt = innerHeight;
-  renderer.setSize(w, hgt, false);
-  camera.aspect = w / hgt;
-  if (!bounds) { camera.updateProjectionMatrix(); return; }
-  const H = bounds.max.y;
-  const halfFov = THREE.MathUtils.degToRad(camera.fov / 2);
-  // Fit height (plus headroom) or width, whichever is tighter.
-  const fitH = (H * 1.12) / 2 / Math.tan(halfFov);
-  const fitW = (bounds.max.x - bounds.min.x) * 1.3 / 2 / (Math.tan(halfFov) * camera.aspect);
-  const dist = Math.max(fitH, fitW);
-  // Hips always sit on the bottom edge of the screen (on tall phones the
-  // free space ends up above her, not below).
-  const lookY = dist * Math.tan(halfFov) - H * 0.01;
-  camera.position.set(0, lookY, dist);
-  camera.lookAt(0, lookY, 0);
+  const w = innerWidth, h = innerHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  if (bounds) {
+    const halfFov = THREE.MathUtils.degToRad(camera.fov / 2);
+    const fitH = bounds.h * 1.25 / 2 / Math.tan(halfFov);
+    const fitW = bounds.w * (camera.aspect < 0.8 ? 1.1 : 1.6) / 2 / (Math.tan(halfFov) * camera.aspect);
+    const dist = Math.max(fitH, fitW);
+    const lookY = dist * Math.tan(halfFov) - bounds.h * 0.02;   // bottom of bust on the screen edge
+    camera.position.set(0, lookY, dist);
+    camera.lookAt(0, lookY, 0);
+    points.material.uniforms.uSize.value = 3.0 * renderer.getPixelRatio() * (h / 900) * (COUNT < 60000 ? 1.25 : 1);
+    points.material.uniforms.uHeight.value = bounds.h;
+  }
   camera.updateProjectionMatrix();
 }
-addEventListener('resize', frame);
+addEventListener('resize', () => { frame(); fitHeadline(); });
 frame();
 
-// ---------- animate ----------
-// Idle loop on the skeleton: breathing, weight shift, small head tilts and a
-// slow "judging" tilt every few seconds. Set window.rigTest = true to
-// exaggerate everything (used to check the skin weights).
-function idle(t) {
-  const k = window.rigTest ? 6 : 1;
-  const breathe = Math.sin(t * 1.3);
-  const judge = Math.pow(Math.max(0, Math.sin(t * 0.32)), 6);   // slow pulse, rests at 0
-
-  bones.hips.rotation.z  = Math.sin(t * 0.45) * 0.012 * k;
-  bones.spine.rotation.z = -Math.sin(t * 0.45) * 0.010 * k;
-  bones.spine.rotation.x = breathe * 0.006 * k;
-  bones.chest.rotation.x = -breathe * 0.012 * k;
-  bones.neck.rotation.x  = breathe * 0.006 * k;
-
-  bones.head.rotation.z = (Math.sin(t * 0.6) * 0.03 + judge * 0.16) * k;
-  bones.head.rotation.x = (Math.sin(t * 0.43 + 1) * 0.025 - judge * 0.05) * k;
-  bones.head.rotation.y = Math.sin(t * 0.27) * 0.06 * k;
-
-  for (const [s, dir] of [['R', 1], ['L', -1]]) {
-    const phase = s === 'R' ? 0 : 1.7;
-    bones['upperArm' + s].rotation.z = dir * (0.015 + Math.sin(t * 0.5 + phase) * 0.012 + breathe * 0.004) * k;
-    bones['upperArm' + s].rotation.x = Math.sin(t * 0.37 + phase) * 0.015 * k;
-    bones['foreArm' + s].rotation.x  = (-0.02 - Math.sin(t * 0.5 + phase) * 0.02) * k;
-    bones['hand' + s].rotation.z     = dir * Math.sin(t * 0.7 + phase) * 0.04 * k;
-  }
+// Scale the headline so it spans ~94% of the width in whatever font loaded.
+const headline = document.getElementById('headline');
+function fitHeadline() {
+  headline.style.fontSize = '100px';
+  const w = headline.scrollWidth || 1;
+  headline.style.fontSize = Math.min(240, (innerWidth * 0.94 / w) * 100) + 'px';
 }
+fitHeadline();
+document.fonts?.ready.then(fitHeadline);
 
+// ---------- pointer (mouse or touch) ----------
+const ndc = new THREE.Vector2(9, 9);
+const mouse = new THREE.Vector3(99, 99, 0), lastMouse = new THREE.Vector3(99, 99, 0);
+const mouseVel = new THREE.Vector3();
+let pointerActive = false;
+const ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -0.1);
+function setPointer(e) {
+  ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  pointerActive = true;
+}
+addEventListener('pointermove', setPointer);
+addEventListener('pointerdown', setPointer);
+addEventListener('pointerleave', () => { pointerActive = false; });
+addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') pointerActive = false; });
+
+// ---------- simulate + render ----------
 const clock = new THREE.Clock();
+const inv = new THREE.Matrix4(), hit = new THREE.Vector3();
 renderer.setAnimationLoop(() => {
-  const t = clock.getElapsedTime();
+  const dt = Math.min(clock.getDelta(), 1 / 30);
+  const t = clock.elapsedTime;
 
-  if (bones.head && !window.rigFreeze) idle(t);
+  if (points) {
+    // slow idle turn
+    bust.rotation.y = Math.sin(t * 0.25) * 0.18;
+    bust.updateMatrixWorld();
 
+    // cursor position in the bust's own space
+    if (pointerActive) {
+      ray.setFromCamera(ndc, camera);
+      inv.copy(bust.matrixWorld).invert();
+      const local = ray.ray.clone().applyMatrix4(inv);
+      if (local.intersectPlane(plane, hit)) mouse.copy(hit);
+    } else mouse.set(99, 99, 0);
+    mouseVel.subVectors(mouse, lastMouse).divideScalar(Math.max(dt, 1e-3));
+    if (mouseVel.length() > 20) mouseVel.set(0, 0, 0);          // ignore jumps
+    lastMouse.copy(mouse);
+
+    const pos = points.geometry.attributes.position.array;
+    const flash = points.geometry.attributes.aOff.array;
+    const n = base.length / 3;
+    const damp = Math.pow(DAMPING, dt * 60);
+    const R2 = RADIUS * RADIUS;
+    for (let i = 0; i < n; i++) {
+      const j = i * 3;
+      let ox = off[j], oy = off[j + 1], oz = off[j + 2];
+      let vx = vel[j], vy = vel[j + 1], vz = vel[j + 2];
+      const px = base[j] + ox, py = base[j + 1] + oy;
+      const dx = px - mouse.x, dy = py - mouse.y, d2 = dx * dx + dy * dy;
+      if (d2 < R2) {
+        const d = Math.sqrt(d2) + 1e-4, f = (1 - d / RADIUS) * PUSH * dt;
+        vx += (dx / d) * f + mouseVel.x * f * 0.05;
+        vy += (dy / d) * f + mouseVel.y * f * 0.05;
+        vz += f * 0.6;
+        const sp = Math.hypot(vx, vy, vz);
+        if (sp > 1.5) { vx *= 1.5 / sp; vy *= 1.5 / sp; vz *= 1.5 / sp; }
+      }
+      // spring home, with a little gravity while loose so it falls like sand
+      const loose = Math.min(1, Math.abs(ox) + Math.abs(oy) + Math.abs(oz));
+      vx += -ox * SPRING * dt;
+      vy += -oy * SPRING * dt - loose * 0.6 * dt;
+      vz += -oz * SPRING * dt;
+      vx *= damp; vy *= damp; vz *= damp;
+      ox += vx * dt; oy += vy * dt; oz += vz * dt;
+      off[j] = ox; off[j + 1] = oy; off[j + 2] = oz;
+      vel[j] = vx; vel[j + 1] = vy; vel[j + 2] = vz;
+      pos[j] = base[j] + ox; pos[j + 1] = base[j + 1] + oy; pos[j + 2] = base[j + 2] + oz;
+      flash[i] = Math.min(1, loose * 8);
+    }
+    points.geometry.attributes.position.needsUpdate = true;
+    points.geometry.attributes.aOff.needsUpdate = true;
+    points.material.uniforms.uTime.value = t;
+  }
   renderer.render(scene, camera);
 });
 </script>
