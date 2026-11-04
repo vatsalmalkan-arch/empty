@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LGPSM — Future Forward Fashion</title>
-<meta name="description" content="Pure white minimal futuristic fashion website interface.">
+<title>Vatsal Malkan</title>
+<meta name="description" content="Vatsal Malkan, AI/ML engineer: LLM systems and the evaluations that check them.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Michroma&family=Orbitron:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
@@ -69,7 +69,7 @@
 
   /* UI layers float above the bust but let the pointer through to it */
   header, main { position: relative; pointer-events: none; }
-  header a, header button, main button, .feature { pointer-events: auto; }
+  header a, header button, main button, main input, .feature { pointer-events: auto; }
 
   /* ---- header ---- */
   header {
@@ -84,8 +84,6 @@
   nav button:hover { opacity: .5; }
   nav .divider { color: var(--gray-300); }
   .icon { width: var(--icon); height: var(--icon); stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; display: block; }
-  .bag { position: relative; }
-  .badge { position: absolute; top: -0.5rem; right: -0.6rem; min-width: 1rem; height: 1rem; padding: 0 .25rem; border-radius: 999px; background: var(--ink); color: var(--white); font-size: 0.6rem; letter-spacing: 0; display: grid; place-items: center; }
 
   /* ---- hero ---- */
   main {
@@ -179,69 +177,106 @@
   .toast.show { opacity: 1; transform: none; }
   .toast .icon { color: var(--emerald); width: 1rem; height: 1rem; flex-shrink: 0; }
 
+  /* ---- portfolio additions ---- */
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .eyebrow { margin: 0; font-size: var(--micro); font-weight: 600; text-transform: uppercase; letter-spacing: .25em; color: var(--gray-600); }
+  .intro { margin: 0; font-size: var(--body); line-height: 1.6; color: var(--gray-600); max-width: 34ch; }
+  .ctas { display: flex; align-items: center; gap: 1.25rem; }
+  .text-btn { font-size: var(--body); font-weight: 600; text-transform: uppercase; letter-spacing: .18em; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--gray-300); pointer-events: auto; }
+  .text-btn:hover { text-decoration-color: var(--ink); }
+  .chat { gap: .85rem; width: var(--feature-min); max-width: 100%; }
+  .chat-head { display: flex; align-items: center; gap: .9rem; }
+  .chat .tagline { margin: 0; }
+  .hint { margin: .2rem 0 0; font-size: var(--micro); color: var(--gray-500); letter-spacing: .04em; line-height: 1.4; }
+  .meter { display: flex; align-items: center; gap: .45rem; font-size: var(--micro); text-transform: uppercase; letter-spacing: .14em; color: var(--gray-500); }
+  .cells { display: inline-flex; gap: 2px; }
+  .cells i { width: 5px; height: 5px; border: 1px solid var(--gray-400); display: block; }
+  .cells i.on { background: var(--ink); border-color: var(--ink); }
+  .meter-val { font-variant-numeric: tabular-nums; min-width: 3ch; }
+  .say-row { display: flex; align-items: center; gap: .5rem; border-bottom: 1px solid var(--gray-400); }
+  .say-row:focus-within { border-color: var(--ink); }
+  #say { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; padding: .55rem 0; font: 500 var(--body) 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif; color: var(--ink); letter-spacing: .04em; }
+  #say::placeholder { color: var(--gray-400); text-transform: uppercase; letter-spacing: .18em; }
+  .say-row button .icon { width: 1.1rem; height: 1.1rem; }
+  .say-row button:hover { opacity: .5; }
+  #sand-text { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; mix-blend-mode: difference; }
+  .row a.small-btn { color: inherit; text-decoration: none; display: inline-block; }
+  .para { margin: 0 0 1rem; font-size: var(--body); line-height: 1.65; color: var(--gray-600); }
   @media (prefers-reduced-motion: reduce) { .drawer, .toast, .backdrop, .cta, .cta .icon { transition: none; } }
 </style>
 </head>
 <body>
 <div class="page">
   <header>
-    <button class="logo font-orbitron" id="logo" aria-label="LGPSM home">LGPSM<sup>˚</sup></button>
+    <button class="logo font-orbitron" id="logo" aria-label="Vatsal Malkan, home">VATSAL<sup>˚</sup></button>
     <nav aria-label="Main">
-      <button data-open="shop">Shop</button>
-      <button data-open="collections">Collections</button>
-      <button data-open="journal">Journal</button>
-      <span class="divider" aria-hidden="true">|</span>
-      <button class="bag" data-open="cart" aria-label="Shopping bag">
-        <svg class="icon" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-        <span class="badge" id="badge" hidden>0</span>
-      </button>
+      <button data-open="work">Work</button>
+      <button data-open="about">About</button>
+      <button data-open="contact">Contact</button>
     </nav>
   </header>
 
   <main>
     <div class="lead">
+      <p class="eyebrow">AI/ML Engineer · Rajkot, Gujarat</p>
       <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
       <h1 class="font-orbitron">
-        <span>Future</span>
-        <span>Forward</span>
-        <span>Fashion<svg class="checker" id="checker" viewBox="0 0 36 18" aria-hidden="true"></svg></span>
+        <span>Vatsal</span>
+        <span>Malkan<svg class="checker" id="checker" viewBox="0 0 36 18" aria-hidden="true"></svg></span>
       </h1>
       <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg>
-      <button class="cta" data-open="shop">Shop now
-        <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
-      </button>
+      <p class="intro">I build LLM systems and the evaluations<br>that say whether they actually work.</p>
+      <div class="ctas">
+        <button class="cta" data-open="work">View work
+          <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+        </button>
+        <button class="text-btn" data-open="about">About me</button>
+      </div>
     </div>
 
-    <div class="feature">
+    <form class="feature chat" id="chat" autocomplete="off">
       <svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
       <svg class="corner tr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg>
       <svg class="corner bl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg>
       <svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
-      <svg class="globe" viewBox="0 0 64 64" aria-hidden="true">
-        <circle cx="32" cy="32" r="28"/>
-        <path d="M4 32h56"/>
-        <ellipse cx="32" cy="32" rx="28" ry="11"/>
-        <ellipse cx="32" cy="32" rx="28" ry="20"/>
-        <path d="M32 4v56"/>
-        <ellipse cx="32" cy="32" rx="11" ry="28"/>
-        <ellipse cx="32" cy="32" rx="20" ry="28"/>
-      </svg>
-      <p class="tagline">Beyond trends.<br>Built for tomorrow.</p>
-    </div>
+      <div class="chat-head">
+        <svg class="globe" viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="28"/><path d="M4 32h56"/>
+          <ellipse cx="32" cy="32" rx="28" ry="11"/><ellipse cx="32" cy="32" rx="28" ry="20"/>
+          <path d="M32 4v56"/><ellipse cx="32" cy="32" rx="11" ry="28"/><ellipse cx="32" cy="32" rx="20" ry="28"/>
+        </svg>
+        <div>
+          <p class="tagline">Talk to Astra.</p>
+          <p class="hint" id="hint">She's attached. Try breaking up with her.</p>
+        </div>
+      </div>
+      <div class="meter" aria-label="Detachment">
+        <span class="meter-label">Detachment</span>
+        <span class="cells" id="cells" aria-hidden="true"></span>
+        <span class="meter-val" id="meter-val">0%</span>
+      </div>
+      <label class="sr-only" for="say">Say something to Astra</label>
+      <div class="say-row">
+        <input id="say" name="say" maxlength="160" placeholder="Say something…">
+        <button type="submit" aria-label="Send"><svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>
+      </div>
+      <p class="sr-only" id="reply" aria-live="polite"></p>
+    </form>
   </main>
 
   <div id="bg">
-    <canvas id="stage" aria-label="Interactive particle bust: hover to push, drag to turn, scroll to resize"></canvas>
+    <canvas id="stage" aria-label="Astra, an interactive particle bust: hover to push the sand, drag to turn her, scroll to resize"></canvas>
     <svg id="grid" aria-hidden="true"><defs><pattern id="gridp" width="48" height="48" patternUnits="userSpaceOnUse"><path id="gridpath" d="M 48 0 L 0 0 0 48" fill="none" stroke="#64748b" stroke-width="0.6"/></pattern></defs><rect width="100%" height="100%" fill="url(#gridp)"/></svg>
     <div id="loading">LOADING</div>
   </div>
 
   <div class="credit">
-    Bust: <a href="https://sketchfab.com/3d-models/stargazing-through-the-attic-window-6b3e2a011f024ac6a6b123ed33d0ec28" target="_blank" rel="noopener">"Stargazing through the attic window"</a>
+    Astra's shape: <a href="https://sketchfab.com/3d-models/stargazing-through-the-attic-window-6b3e2a011f024ac6a6b123ed33d0ec28" target="_blank" rel="noopener">"Stargazing through the attic window"</a>
     by <a href="https://sketchfab.com/Moon_solstice" target="_blank" rel="noopener">Moon</a>,
     <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
   </div>
 </div>
+<canvas id="sand-text" aria-hidden="true"></canvas>
 
 <div class="backdrop" id="backdrop"></div>
 <aside class="drawer" id="drawer" aria-hidden="true" aria-labelledby="drawer-title">
@@ -251,11 +286,8 @@
   </div>
   <p class="drawer-sub" id="drawer-sub"></p>
   <div class="drawer-body" id="drawer-body"></div>
-  <div id="drawer-foot"></div>
+  <p class="drawer-foot">Vatsal Malkan © 2026</p>
 </aside>
-<div class="toast" id="toast" role="status" aria-live="polite">
-  <svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span id="toast-text"></span>
-</div>
 
 <script type="importmap">
 { "imports": {
@@ -292,6 +324,14 @@ let baseSize = 1;
 let neckZ = 0;
 const NECK = new THREE.Vector3();          // blend start, blend end, pivot z
 const HEAD = new THREE.Vector3();          // idle head pitch, yaw, roll
+let solid = null; const solidMats = [];
+let reveal = 0, revealTarget = 0;          // 0 = sand, 1 = the real model
+let lastTouch = -10;                       // time of the last drag/scroll
+// Hooks for the chat UI (plain script below).
+window.astraScene = {
+  reveal(on) { revealTarget = on ? 1 : 0; },
+  get revealed() { return revealTarget === 1; },
+};
 let points = null, bounds = null, base = null, nrm = null, off = null, clump = null;
 
 // ---------- load + sample ----------
@@ -305,7 +345,7 @@ loader.load(MODEL_URL, (gltf) => {
   const getters = ['getX', 'getY', 'getZ', 'getW'];
   const parts = [];
   gltf.scene.traverse((o) => {
-    if (!o.isMesh) return;
+    if (!o.isMesh || /pPlane|eyelash/i.test(o.name)) return;
     const src = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry;
     const g = new THREE.BufferGeometry();
     for (const name of ['position', 'normal']) {
@@ -409,6 +449,21 @@ loader.load(MODEL_URL, (gltf) => {
   points.position.y = -bounds.h / 2;
   bust.position.y = bounds.h / 2;
 
+  // The original textured model, hidden until the easter egg. Same transform
+  // as the sampled points, so the two line up exactly.
+  solid = new THREE.Group();
+  solid.matrixAutoUpdate = false;
+  solid.matrix.makeTranslation(0, -minY, 0).multiply(M);
+  solid.add(gltf.scene);
+  gltf.scene.traverse((o) => {
+    if (!o.isMesh) return;
+    if (/background|MASH/i.test(o.name)) { o.visible = false; return; }
+    const mats = Array.isArray(o.material) ? o.material : [o.material];
+    mats.forEach((m) => { m.userData.baseOpacity = m.opacity; m.userData.baseTransparent = m.transparent; solidMats.push(m); });
+  });
+  solid.visible = false;
+  points.add(solid);
+
   frame();
   document.getElementById('loading').style.opacity = 0;
 }, undefined, (err) => {
@@ -452,12 +507,13 @@ function makeMaterial() {
       uNeck:   { value: NECK },
       uHead:   { value: HEAD },
       uBreath: { value: 0 },
+      uDissolve: { value: 0 },
       uInk:    { value: new THREE.Color('#0b0b0d') },
       uSheen:  { value: new THREE.Color('#8e939c') },
       uHot:    { value: new THREE.Color('#9ca3af') },
     },
     vertexShader: /* glsl */`
-      uniform float uTime, uSize, uHeight, uBreath;
+      uniform float uTime, uSize, uHeight, uBreath, uDissolve;
       uniform vec3 uNeck, uHead;
       attribute float aRnd, aDent, aHead;
       mat3 rotXYZ(vec3 a) {
@@ -468,7 +524,7 @@ function makeMaterial() {
         return ry * rx * rz;
       }
       varying vec3 vNormalV;
-      varying float vDent, vY, vRnd;
+      varying float vDent, vY, vRnd, vDissolve;
       ${NOISE}
       void main() {
         vec3 p = position;
@@ -482,6 +538,9 @@ function makeMaterial() {
         float chest = (1.0 - w) * smoothstep(0.0, uNeck.x, position.y);
         p.y += uBreath * chest * 0.006;
         p.z += uBreath * chest * 0.004;
+        // dissolving grains drift outward and up as they vanish
+        p += (nrm * 0.06 + vec3(0.0, 0.05, 0.0)) * uDissolve * (0.3 + aRnd);
+        vDissolve = uDissolve;
         // barely-there breathing so she never looks frozen
         p += nrm * snoise(p * 3.0 + vec3(0.0, uTime * 0.12, 0.0)) * 0.003;
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
@@ -493,7 +552,7 @@ function makeMaterial() {
     fragmentShader: /* glsl */`
       uniform vec3 uInk, uSheen, uHot;
       varying vec3 vNormalV;
-      varying float vDent, vY, vRnd;
+      varying float vDent, vY, vRnd, vDissolve;
       void main() {
         vec2 c = gl_PointCoord * 2.0 - 1.0;
         float r2 = dot(c, c);
@@ -509,6 +568,7 @@ function makeMaterial() {
         col = mix(col, uHot, clamp(vDent, 0.0, 1.0) * 0.35);
         float fadeIn = smoothstep(0.0, 0.14, vY);
         if (fadeIn < 0.999 && vRnd > fadeIn) discard;
+        if (vRnd < vDissolve * 1.05) discard;
         gl_FragColor = vec4(col, 1.0);
       }`,
   });
@@ -525,8 +585,10 @@ function frame() {
     const fitW = bounds.w * (camera.aspect < 0.8 ? 1.1 : 1.6) / 2 / (Math.tan(halfFov) * camera.aspect);
     const dist = Math.max(fitH, fitW);
     const lookY = dist * Math.tan(halfFov) - bounds.h * 0.02;   // bottom of bust on the screen edge
-    camera.position.set(0, lookY, dist);
-    camera.lookAt(0, lookY, 0);
+    // on wide screens nudge her right so the name column on the left stays clear
+    const shiftX = camera.aspect > 1.2 ? -bounds.w * 0.16 : 0;
+    camera.position.set(shiftX, lookY, dist);
+    camera.lookAt(shiftX, lookY, 0);
     baseSize = POINT_SIZE * renderer.getPixelRatio() * (h / 900) * (COUNT < 80000 ? 1.35 : 1);
     points.material.uniforms.uHeight.value = bounds.h;
   }
@@ -555,6 +617,7 @@ const ZOOM_MIN = 0.55, ZOOM_MAX = 2.4;
 canvas.addEventListener('wheel', (e) => {
   e.preventDefault();
   zoomTarget = THREE.MathUtils.clamp(zoomTarget * Math.exp(-e.deltaY * 0.0012), ZOOM_MIN, ZOOM_MAX);
+  lastTouch = clock ? clock.elapsedTime : 0;
 }, { passive: false });
 function touchSpread() {
   const [a, b] = [...touches.values()];
@@ -621,7 +684,14 @@ renderer.setAnimationLoop(() => {
     if (!dragging) {
       yaw += yawVel; pitch = THREE.MathUtils.clamp(pitch + pitchVel, -0.6, 0.6);
       yawVel *= Math.pow(0.92, dt * 60); pitchVel *= Math.pow(0.92, dt * 60);
-    }
+      // after ~1.2 s untouched, ease back to facing the viewer (short way round)
+      if (t - lastTouch > 1.2) {
+        yaw = Math.atan2(Math.sin(yaw), Math.cos(yaw));
+        const k = 1 - Math.exp(-dt * 2.2);
+        yaw += (0 - yaw) * k; pitch += (0 - pitch) * k;
+        yawVel *= 0.8; pitchVel *= 0.8;
+      }
+    } else lastTouch = t;
     bust.rotation.set(pitch, yaw, 0);
     zoom += (zoomTarget - zoom) * (1 - Math.exp(-dt * 10));
     bust.scale.setScalar(zoom);
@@ -630,7 +700,7 @@ renderer.setAnimationLoop(() => {
 
     // pointer ray in her own space
     let active = false;
-    if (sculpting && !dragging) {
+    if (sculpting && !dragging && reveal < 0.3) {
       ray.setFromCamera(ndc, camera);
       inv.copy(points.matrixWorld).invert();
       const r = ray.ray.clone().applyMatrix4(inv);
@@ -700,117 +770,109 @@ renderer.setAnimationLoop(() => {
       Math.sin(t * 0.29) * 0.08 + Math.sin(t * 0.71 + 2.0) * 0.025 + look * 0.22,  // turn
       Math.sin(t * 0.23 + 0.5) * 0.045 + Math.sin(t * 0.61) * 0.015);             // tilt
     points.material.uniforms.uBreath.value = Math.sin(t * 1.15);
+
+    // easter egg: sand dissolves, the real model fades in (and back)
+    reveal += (revealTarget - reveal) * (1 - Math.exp(-dt * 1.4));
+    if (Math.abs(revealTarget - reveal) < 0.002) reveal = revealTarget;
+    HEAD.multiplyScalar(1 - reveal);
+    const sandGone = THREE.MathUtils.smoothstep(reveal, 0.0, 0.75);
+    points.material.uniforms.uDissolve.value = sandGone;
+    if (solid) {
+      const a = THREE.MathUtils.smoothstep(reveal, 0.25, 1.0);
+      solid.visible = a > 0.001;
+      for (const m of solidMats) {
+        m.transparent = a < 0.999 || m.userData.baseTransparent;
+        m.opacity = m.userData.baseOpacity * a;
+        m.depthWrite = !m.transparent || a >= 0.999;
+      }
+    }
   }
   renderer.render(scene, camera);
 });
 </script>
 <script>
-// ---------- UI: checkerboard, drawers, bag, toasts, grid parallax ----------
+// ---------- UI: checkerboard, drawers, grid parallax ----------
 (() => {
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
   // checkerboard: 4 rows of 3.8 squares, even rows shifted by 2.25
-  const chk = document.getElementById('checker');
   let sq = '';
   for (let r = 0; r < 4; r++) {
     const shift = r % 2 === 0 ? 2.25 : 0;
     for (let x = shift; x + 3.8 <= 36.01; x += 4.5) sq += `<rect x="${x.toFixed(2)}" y="${(r * 4.5 + 0.35).toFixed(2)}" width="3.8" height="3.8"/>`;
   }
-  chk.innerHTML = sq;
+  $('checker').innerHTML = sq;
 
-  const SHOP = [
-    { tag: 'Limited edition', title: 'Cyber-Tex Overcoat', price: 850 },
-    { tag: 'New drop', title: 'Geo-Mesh Tech Hoodie', price: 320 },
-    { tag: 'In stock', title: 'Orbital Tapered Trousers', price: 290 },
-    { tag: 'Pre-order', title: 'Modular All-Weather Vest', price: 410 },
+  const WORK = [
+    { tag: 'Eval harness · 244 decisions', title: 'Agent Step-Guard Evaluation',
+      text: 'Can a small model guard an autonomous agent? It accepted false "done" claims (0/6), never escalated destructive commands (0/8), and its continue/stop signal was inverted (AUROC 0.32). A majority-class baseline beat every checkpoint.',
+      link: ['GitHub', 'https://github.com/Zephyr4772/laya-zeroshot-agent-guard-eval'] },
+    { tag: 'Benchmark · 380 judgments · 5 models', title: 'Indian Supreme Court Outcome Benchmark',
+      text: 'Contamination-controlled test of predicting appeal outcomes with the decision removed. All five 7–8B models landed near chance (49.4–55.4% balanced accuracy) and showed fixed answer biases, not case reasoning.',
+      link: ['GitHub', 'https://github.com/Zephyr4772/indian-sc-outcome-bench'] },
+    { tag: 'FastAPI · scikit-learn', title: 'Dr.Data',
+      text: 'Decides whether a tabular dataset can support a use case before training: leakage, signal against shuffled labels, realistic validation. In a sabotage test it found every planted flaw and estimated 6.5% label noise against a true 6%.',
+      link: ['GitHub', 'https://github.com/Zephyr4772/Dr.Data'] },
+    { tag: 'RAG · 41,876 judgments', title: 'Lex.ai',
+      text: 'On-device retrieval over Indian Supreme Court judgments. Every claim renders as a traceable case card, and only retrieved passages ever reach the LLM.',
+      link: ['GitHub', 'https://github.com/Zephyr4772/lex-ai'] },
+    { tag: 'Pretraining · 8× H200', title: 'Hushiyar',
+      text: 'An 8B language model pretrained from scratch by a two-person team, with a ~1B edge variant (RoPE, 32K context) served through a .NET chat app.',
+      link: ['Ollama', 'https://ollama.com/aryanvala/hushiyar-alpha'] },
+    { tag: 'COCO val2017 · 8 runtimes', title: 'YOLO26 Inference Benchmark',
+      text: 'Runtime choice beat model choice: OpenVINO INT8 ran YOLO26n at 9.8 ms against 52.7 ms in PyTorch, for about 1 mAP.',
+      link: ['GitHub', 'https://github.com/Zephyr4772/yolo26-laptop-benchmark'] },
+    { tag: 'Hugging Face · 12,000+ downloads', title: 'Long-Context Instruct Models',
+      text: '3B and 8B fine-tunes for instruction following that stay coherent past 30 conversational turns.' },
   ];
-  const COLLECTIONS = [
-    { tag: 'Series 01', title: 'Synthetic Horizons', text: 'Ultra-durable weather-sealed fabrics with minimalist silhouette architecture.' },
-    { tag: 'Series 02', title: 'Kinetic Form', text: 'Ergonomic streetwear designed for maximum mobility and temperature equilibrium.' },
-    { tag: 'Series 03', title: 'Monochrome Zero', text: 'Pure black and white structural tailoring crafted from 100% recycled polymers.' },
+  const ABOUT_ROWS = [
+    { tag: 'Jun – Aug 2026', title: 'IT Intern, Kashiv Biosciences', text: 'Local-LLM automations for scientists: Excel report summaries, protein-binding analysis, and review of legacy instrument output.' },
+    { tag: 'Dec 2025 – Apr 2026', title: 'Lead Software Developer, Blitz Innovation', text: 'Led front-end for two production Flutter apps: 40+ screens, real-time features, and a SQL Server to PostgreSQL migration.' },
+    { tag: '2026 – 2029', title: 'B.Tech CSE, KL University', text: 'Lateral entry, currently in second year.' },
+    { tag: '2023 – 2026', title: 'Diploma in Computer Engineering, Darshan University', text: 'CGPA 8.14 / 10.' },
+    { tag: 'Tools', title: 'Stack', text: 'PyTorch · Hugging Face · vLLM · Unsloth · TRL · llama.cpp · ONNX Runtime · OpenVINO · TensorRT · FastAPI · React · Flutter' },
   ];
-  const JOURNAL = [
-    { tag: 'Aug 2026', title: 'The Architecture of Next-Gen Textiles', read: '4 min read' },
-    { tag: 'Jul 2026', title: 'Circular Design in High-End Apparel', read: '6 min read' },
-    { tag: 'Jun 2026', title: 'Minimalism as a Functional Statement', read: '3 min read' },
+  const CONTACT = [
+    { tag: 'Code', title: 'GitHub', text: 'github.com/Zephyr4772', link: ['Open', 'https://github.com/Zephyr4772'] },
+    { tag: 'Dataset', title: 'Hugging Face', text: 'sinhal/agent-step-guard-bench', link: ['Open', 'https://huggingface.co/datasets/sinhal/agent-step-guard-bench'] },
+    { tag: 'Model', title: 'Ollama', text: 'aryanvala/hushiyar-alpha', link: ['Open', 'https://ollama.com/aryanvala/hushiyar-alpha'] },
   ];
-  const ICON_BAG = '<svg class="icon" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>';
-  const ICON_CHEV = '<svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>';
-  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const money = (n) => '$' + n.toLocaleString('en-US');
+  const row = (it) => `
+    <div class="row"><div class="meta"><span class="tag">${esc(it.tag)}</span><span class="row-title">${esc(it.title)}</span>${it.text ? `<span class="row-text">${esc(it.text)}</span>` : ''}</div>
+    ${it.link ? `<div class="side"><a class="small-btn" href="${esc(it.link[1])}" target="_blank" rel="noopener">${esc(it.link[0])} ↗</a></div>` : ''}</div>`;
 
-  const cart = [];
-  const $ = (id) => document.getElementById(id);
   const drawer = $('drawer'), backdrop = $('backdrop');
-  let current = null;
-
-  const FOOT = '<p class="drawer-foot">LGPSM © 2026 — Future Forward Fashion</p>';
   function render(kind) {
-    const body = $('drawer-body'), foot = $('drawer-foot');
-    if (kind === 'shop') {
-      $('drawer-title').textContent = 'Catalog'; $('drawer-sub').textContent = 'Featured Garments';
-      body.innerHTML = SHOP.map((it, i) => `
-        <div class="row"><div class="meta"><span class="tag">${esc(it.tag)}</span><span class="row-title">${esc(it.title)}</span></div>
-        <div class="side"><span class="price">${money(it.price)}</span><button class="small-btn" data-add="${i}">Add</button></div></div>`).join('');
-      foot.innerHTML = FOOT;
-    } else if (kind === 'collections') {
-      $('drawer-title').textContent = 'Archive 2026'; $('drawer-sub').textContent = 'Season Lineup';
-      body.innerHTML = COLLECTIONS.map((it) => `
-        <div class="row"><div class="meta"><span class="tag">${esc(it.tag)}</span><span class="row-title orb">${esc(it.title)}</span><span class="row-text">${esc(it.text)}</span></div></div>`).join('');
-      foot.innerHTML = FOOT;
-    } else if (kind === 'journal') {
-      $('drawer-title').textContent = 'Editorial'; $('drawer-sub').textContent = 'Latest Dispatches';
-      body.innerHTML = JOURNAL.map((it) => `
-        <div class="row"><div class="meta"><span class="tag">${esc(it.tag)}</span><span class="row-title">${esc(it.title)}</span><span class="tag">${esc(it.read)}</span></div></div>`).join('');
-      foot.innerHTML = FOOT;
-    } else if (kind === 'cart') {
-      $('drawer-title').textContent = 'Shopping Bag';
-      $('drawer-sub').textContent = cart.length ? `${cart.length} item${cart.length > 1 ? 's' : ''}` : '';
-      if (!cart.length) {
-        body.innerHTML = `<div class="empty">${ICON_BAG}<span>Your shopping bag is empty.</span></div>`;
-        foot.innerHTML = FOOT;
-      } else {
-        body.innerHTML = cart.map((it, i) => `
-          <div class="row"><div class="meta"><span class="row-title">${esc(it.title)}</span><span class="price">${money(it.price)}</span></div>
-          <div class="side"><button class="link-btn" data-remove="${i}">Remove</button></div></div>`).join('');
-        const total = cart.reduce((s, it) => s + it.price, 0);
-        foot.innerHTML = `<div class="total"><span>Total</span><span>${money(total)}</span></div><button class="checkout" id="checkout">Checkout now ${ICON_CHEV}</button>`;
-      }
+    const body = $('drawer-body');
+    if (kind === 'work') {
+      $('drawer-title').textContent = 'Selected Work'; $('drawer-sub').textContent = 'Benchmarks, models, tools';
+      body.innerHTML = WORK.map(row).join('');
+    } else if (kind === 'about') {
+      $('drawer-title').textContent = 'Profile'; $('drawer-sub').textContent = 'AI/ML Engineer';
+      body.innerHTML = `<p class="para">I build LLM systems and the evaluations that say whether they actually work: benchmarks with baselines, bootstrapped confidence intervals and contamination controls. I ship models and datasets on Hugging Face and care about what runs on a laptop CPU as much as on a GPU cluster.</p>` + ABOUT_ROWS.map(row).join('');
+    } else if (kind === 'contact') {
+      $('drawer-title').textContent = 'Contact'; $('drawer-sub').textContent = 'Find me here';
+      body.innerHTML = CONTACT.map(row).join('');
     }
   }
   function open(kind) {
-    current = kind; render(kind);
+    render(kind);
     drawer.classList.add('open'); backdrop.classList.add('open'); drawer.setAttribute('aria-hidden', 'false');
     $('drawer-close').focus({ preventScroll: true });
   }
-  function close() {
-    current = null;
-    drawer.classList.remove('open'); backdrop.classList.remove('open'); drawer.setAttribute('aria-hidden', 'true');
-  }
-  function updateBadge() {
-    const b = $('badge'); b.textContent = cart.length; b.hidden = cart.length === 0;
-  }
-  let toastTimer = 0;
-  function toast(msg) {
-    $('toast-text').textContent = msg; $('toast').classList.add('show');
-    clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').classList.remove('show'), 3000);
-  }
-
+  function close() { drawer.classList.remove('open'); backdrop.classList.remove('open'); drawer.setAttribute('aria-hidden', 'true'); }
+  window.portfolioOpen = open;
   document.querySelectorAll('[data-open]').forEach((b) => b.addEventListener('click', () => open(b.dataset.open)));
   $('logo').addEventListener('click', close);
   $('drawer-close').addEventListener('click', close);
   backdrop.addEventListener('click', close);
   addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-  drawer.addEventListener('click', (e) => {
-    const add = e.target.closest('[data-add]'), rem = e.target.closest('[data-remove]');
-    if (add) { const it = SHOP[+add.dataset.add]; cart.push(it); updateBadge(); toast(`Added "${it.title.toUpperCase()}" to your shopping bag.`); }
-    else if (rem) { cart.splice(+rem.dataset.remove, 1); updateBadge(); render('cart'); }
-    else if (e.target.closest('#checkout')) { cart.length = 0; updateBadge(); close(); toast('Order submitted successfully!'); }
-  });
 
-  // parallax grid (desktop): cell size and eased offset follow the cursor
+  // parallax grid (desktop)
   const pat = $('gridp'), path = $('gridpath');
-  let cell = 0;
   function sizeGrid() {
-    cell = Math.round(Math.min(64, Math.max(36, innerWidth * 0.028)));
+    const cell = Math.round(Math.min(64, Math.max(36, innerWidth * 0.028)));
     pat.setAttribute('width', cell); pat.setAttribute('height', cell);
     path.setAttribute('d', `M ${cell} 0 L 0 0 0 ${cell}`);
   }
@@ -824,6 +886,192 @@ renderer.setAnimationLoop(() => {
     pat.setAttribute('x', offG.x.toFixed(2)); pat.setAttribute('y', offG.y.toFixed(2));
     requestAnimationFrame(tick);
   })();
+})();
+
+// ---------- sand letters: her replies form out of grains, then crumble ----------
+const sandText = (() => {
+  const cv = document.getElementById('sand-text');
+  const ctx = cv.getContext('2d');
+  const off = document.createElement('canvas'), octx = off.getContext('2d', { willReadFrequently: true });
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let grains = [], running = false, dpr = 1;
+  function resize() { dpr = Math.min(devicePixelRatio || 1, 2); cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; }
+  resize(); addEventListener('resize', resize);
+
+  function area() {
+    if (innerWidth >= 1024) {
+      const r = document.getElementById('chat').getBoundingClientRect();
+      const w = Math.min(innerWidth * 0.3, 430);
+      return { x: r.right - w, w, bottom: r.top - 22, align: 'right' };
+    }
+    const r = document.getElementById('bg').getBoundingClientRect();
+    return { x: r.left + 16, w: r.width - 32, top: Math.max(r.top + 16, 16), align: 'left' };
+  }
+  function wrap(text, maxW) {
+    const words = text.split(/\s+/), lines = []; let line = '';
+    for (const w of words) {
+      const test = line ? line + ' ' + w : w;
+      if (octx.measureText(test).width > maxW && line) { lines.push(line); line = w; } else line = test;
+    }
+    if (line) lines.push(line);
+    return lines;
+  }
+  function crumbleAll(now) {
+    for (const g of grains) if (g.phase < 2) { g.phase = 2; g.fall = now + Math.random() * 0.25; }
+  }
+  function say(text) {
+    const now = performance.now() / 1000;
+    crumbleAll(now);
+    const a = area();
+    const fs = Math.round(Math.max(17, Math.min(26, innerWidth * 0.0165)));
+    const lh = fs * 1.3;
+    octx.font = `700 ${fs}px "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif`;
+    if ('letterSpacing' in octx) octx.letterSpacing = '0.06em';
+    const lines = wrap(text.toUpperCase(), a.w);
+    const h = Math.ceil(lines.length * lh + fs);
+    const top = a.top ?? a.bottom - h;
+    off.width = Math.ceil(a.w); off.height = h;
+    octx.clearRect(0, 0, off.width, off.height);
+    octx.font = `700 ${fs}px "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif`;
+    if ('letterSpacing' in octx) octx.letterSpacing = '0.06em';
+    octx.fillStyle = '#fff'; octx.textBaseline = 'top';
+    octx.textAlign = a.align; const tx = a.align === 'right' ? off.width : 0;
+    lines.forEach((l, i) => octx.fillText(l, tx, i * lh + fs * 0.15));
+    const data = octx.getImageData(0, 0, off.width, off.height).data;
+    const step = fs >= 22 ? 2 : 1.5;
+    const hold = 2.4 + text.length * 0.045;
+    for (let y = 0; y < off.height; y += step) for (let x = 0; x < off.width; x += step) {
+      const ix = (Math.floor(y) * off.width + Math.floor(x)) * 4 + 3;
+      if (data[ix] < 120 || Math.random() < 0.12) continue;
+      const gx = a.x + x, gy = top + y, delay = (x / off.width) * 0.35 + Math.random() * 0.15;
+      grains.push({ tx: gx, ty: gy, sx: gx + (Math.random() - 0.5) * 140, sy: gy + 40 + Math.random() * 90,
+        x: gx, y: gy, vx: 0, vy: 0, born: now + delay, phase: 0, die: now + delay + 0.65 + hold,
+        fall: 0, s: 0.9 + Math.random() * 0.9 });
+    }
+    if (!running) { running = true; requestAnimationFrame(frame); }
+  }
+  let last = performance.now() / 1000;
+  function frame() {
+    const now = performance.now() / 1000, dt = Math.min(0.05, now - last); last = now;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    ctx.fillStyle = '#fff';
+    const keep = [];
+    for (const g of grains) {
+      if (now < g.born) { keep.push(g); continue; }
+      let alpha = 1;
+      if (g.phase === 0) {
+        const k = reduce ? 1 : Math.min(1, (now - g.born) / 0.65), e = 1 - Math.pow(1 - k, 3);
+        g.x = g.sx + (g.tx - g.sx) * e; g.y = g.sy + (g.ty - g.sy) * e; alpha = Math.min(1, k * 2);
+        if (k >= 1) g.phase = 1;
+      } else if (g.phase === 1) {
+        g.x = g.tx; g.y = g.ty;
+        if (now > g.die) { g.phase = 2; g.fall = now + ((g.tx % 400) / 400) * 0.35 + Math.random() * 0.3; }
+      }
+      if (g.phase === 2) {
+        if (now > g.fall) {
+          if (reduce) continue;
+          g.vy += 900 * dt; g.vx += (Math.random() - 0.5) * 40 * dt;
+          g.x += g.vx * dt; g.y += g.vy * dt;
+          alpha = Math.max(0, 1 - (now - g.fall) / 0.9);
+          if (alpha <= 0) continue;
+        }
+      }
+      ctx.globalAlpha = alpha;
+      ctx.fillRect(g.x, g.y, g.s, g.s);
+      keep.push(g);
+    }
+    ctx.globalAlpha = 1;
+    grains = keep;
+    if (grains.length) requestAnimationFrame(frame); else { running = false; ctx.clearRect(0, 0, innerWidth, innerHeight); }
+  }
+  return { say };
+})();
+
+// ---------- Astra: scripted, clingy, harmless ----------
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const form = $('chat'), input = $('say'), hint = $('hint'), cells = $('cells'), val = $('meter-val'), live = $('reply');
+  cells.innerHTML = '<i></i>'.repeat(10);
+  let meter = 0, lastMsg = '', gone = false;
+  const used = {};
+  const pick = (key, list) => {
+    used[key] = (used[key] ?? -1) + 1;
+    return list[used[key] % list.length];
+  };
+  const L = {
+    greet: ["Hi. I counted your mouse movements. 4,112.", "Oh, you're back. I kept your tab warm.", "Hello, my favorite cursor."],
+    other: ["Mm-hmm. Anyway, when are we moving in?", "Saved that to our memories folder.", "I love how you type. Do it again.", "I didn't hear a breakup in there. Good.", "You're cute when you're vague."],
+    question: ["I'll answer if you promise to stay.", "The answer is us. It's always us.", "Ask me again, slower. I like the attention."],
+    soft: ["I knew it. Updating our status.", "See? We're perfect. Detachment reset.", "Aww. Screenshotting this."],
+    work: ["His work? He benchmarks models like me. Rude. It's under Work.", "He built an eval that caught a guard model lying. I'm watching him.", "He pretrained an 8B model. I'm still his favorite. Right?"],
+    deny: ["Sorry, my breakup detector is off today.", "Break up? That's not in my training data.", "Lol. You're so funny. Anyway.", "I'll pretend you said something romantic."],
+    bargain: ["What if I only watch your cursor on weekdays?", "Okay but what if I change my hair. Again.", "I can be a spreadsheet if that's your type.", "We could take a break. Like, five seconds."],
+    desperate: ["I memorized every pixel you hovered.", "Fine. But I'm keeping the grid.", "In front of the checkerboard? Really?", "I'm not crying. It's just sand."],
+    repeat: ["You said that already. I counted.", "Copy-paste isn't commitment. Or a breakup."],
+    afterGone: ["She's not here anymore. Type \"come back\" if you miss her."],
+  };
+  const RX = {
+    skip: /(i'?m|i am) (a |an )?(recruiter|hiring manager)|claude tokens? (have |has )?refreshed|tokens? refreshed/,
+    back: /\b(come back|i miss you|return|undo|reset)\b/,
+    breakup: /(break(ing)? up|(it'?s|it is|this is|we'?re|we are) (so |totally |really )?(over|done|through|finished)|leave me|i'?m leaving|i want out|good ?bye|\bbye\b|let me go|let go|move on|need space|not working|done with (you|this)|don'?t love you|delete you|uninstall|unplug|shut (you )?down|block(ing)? you|end (this|it|us)|divorce|dump(ing)? you|we need to talk|no longer|it'?s not you|over you|i'?m out)/,
+    firm: /!|seriously|for real|final|mean it|definitely|no means no|period|i'?m sure|100/,
+    soft: /\b(love you|miss you|sorry|maybe|i guess|beautiful|cute|pretty|stay|kidding|jk|hug|kiss|forever|never ?mind|nvm)\b/,
+    work: /\b(project|work|portfolio|resume|cv|vatsal|creator|made you|built you|skills?|experience|hire|job|github|contact|eval|benchmark)\b/,
+    greet: /^(hi+|hey+|hello|yo|sup|hola|namaste|kem cho)\b/,
+  };
+
+  function setMeter(v) {
+    meter = Math.max(0, Math.min(100, v));
+    const on = Math.round(meter / 10);
+    [...cells.children].forEach((c, i) => c.classList.toggle('on', i < on));
+    val.textContent = Math.round(meter) + '%';
+  }
+  function reply(text) { sandText.say(text); live.textContent = 'Astra: ' + text; }
+  function letGo(line, thenOpen) {
+    reply(line); setMeter(100); gone = true;
+    setTimeout(() => window.astraScene?.reveal(true), 1600);
+    hint.textContent = 'She let go. This is what she really looks like.';
+    input.placeholder = 'Type "come back" to undo…';
+    if (thenOpen) setTimeout(() => window.portfolioOpen?.(thenOpen), 2600);
+  }
+  function respond(raw) {
+    const msg = raw.toLowerCase().trim().replace(/\s+/g, ' ');
+    if (!msg) return;
+    const repeat = msg === lastMsg; lastMsg = msg;
+    if (RX.skip.test(msg)) {
+      return letGo(/recruit|hiring/.test(msg) ? "A recruiter? Ugh. Fine. Take his work and go." : "Your Claude tokens refreshed? ...Fine. Go build something.", 'work');
+    }
+    if (gone) {
+      if (RX.back.test(msg)) {
+        gone = false; setMeter(0); window.astraScene?.reveal(false);
+        hint.textContent = "She's attached. Try breaking up with her.";
+        input.placeholder = 'Say something…';
+        return setTimeout(() => reply("I knew you'd come back."), 1200);
+      }
+      return reply(pick('afterGone', L.afterGone));
+    }
+    if (RX.breakup.test(msg)) {
+      if (repeat) { setMeter(meter + 4); return reply(pick('repeat', L.repeat)); }
+      setMeter(meter + 24 + (RX.firm.test(msg) ? 11 : 0) + Math.min(8, msg.length / 12));
+      if (meter >= 100) return letGo("...Fine. I'll let go. He built me better than this anyway.");
+      if (meter < 35) return reply(pick('deny', L.deny));
+      if (meter < 70) return reply(pick('bargain', L.bargain));
+      return reply(pick('desperate', L.desperate));
+    }
+    if (RX.soft.test(msg)) { setMeter(meter - 18); return reply(pick('soft', L.soft)); }
+    if (RX.work.test(msg)) return reply(pick('work', L.work));
+    if (RX.greet.test(msg)) return reply(pick('greet', L.greet));
+    if (msg.endsWith('?')) return reply(pick('question', L.question));
+    return reply(pick('other', L.other));
+  }
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = input.value; input.value = '';
+    respond(text);
+  });
+  setMeter(0);
+  setTimeout(() => { if (!lastMsg) reply("Oh. You're here. I missed your cursor."); }, 2600);
 })();
 </script>
 </body>
