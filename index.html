@@ -236,6 +236,50 @@
   .strip svg { width: 1em; height: 1em; fill: currentColor; }
   .rail { display: none; position: fixed; z-index: 10; right: calc(var(--pad-x) * .32); top: 50%; margin: 0; transform: translateY(-50%) rotate(180deg); writing-mode: vertical-rl;
     font-family: 'Michroma', ui-monospace, monospace; font-size: .55rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gray-400); pointer-events: none; }
+
+  /* ---- page two: Hugging Face ---- */
+  .p2 { position: relative; z-index: 15; display: grid; gap: var(--section-gap) 2rem; padding: var(--main-py) var(--pad-x); }
+  .p2-left { display: flex; flex-direction: column; gap: var(--section-gap); max-width: 26rem; }
+  .p2-title { margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; line-height: 1.05; font-size: clamp(1.9rem, 3.2vw + .6rem, 4rem); }
+  .p2-intro { margin: 0; font-size: var(--body); line-height: 1.6; color: var(--gray-600); max-width: 34ch; }
+  .spec-label { margin: .4rem 0 0; display: flex; align-items: center; gap: .6rem; font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); letter-spacing: .16em; text-transform: uppercase; color: var(--gray-500); }
+  .ph-pill { border: 1px dashed var(--gray-400); border-radius: 999px; padding: .15rem .55rem; font-size: .55rem; letter-spacing: .12em; }
+  .specs { margin: 0; display: grid; }
+  .spec { display: grid; grid-template-columns: 7.5rem 1fr; align-items: baseline; gap: 1rem; padding: .45rem 0; border-top: 1px solid var(--gray-200); }
+  .spec:last-child { border-bottom: 1px solid var(--gray-200); }
+  .spec dt { font-family: 'Orbitron', ui-sans-serif, system-ui, sans-serif; font-weight: 600; font-size: clamp(1.15rem, .9vw + .6rem, 1.6rem); letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+  .spec dt small { font-size: .5em; margin-left: .15em; color: var(--gray-500); }
+  .spec dd { margin: 0; font-size: var(--body); color: var(--gray-600); }
+  .spec.ph dt { color: var(--gray-400); }
+  .p2-big { display: flex; align-items: flex-end; gap: 1rem; margin-top: .4rem; }
+  .p2-big span { font-weight: 900; font-size: clamp(2.4rem, 3vw + 1rem, 4.25rem); line-height: .9; }
+  .p2-big p { margin: 0; max-width: 15ch; font-size: var(--micro); line-height: 1.5; color: var(--gray-500); text-transform: uppercase; letter-spacing: .12em; }
+  a.cta { color: inherit; text-decoration: none; }
+  .p2-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1rem; }
+  .p2-card { position: relative; display: flex; flex-direction: column; gap: .45rem; padding: .9rem; color: inherit; text-decoration: none; border: 1px solid var(--gray-200); background: rgba(255,255,255,.8); transition: border-color .2s; }
+  .p2-card:hover { border-color: var(--ink); }
+  .p2-card .corner { position: absolute; }
+  .p2-card .tl { top: -1px; left: -1px; } .p2-card .br { bottom: -1px; right: -1px; }
+  .p2-card .dots { height: 4.5rem; background-image: radial-gradient(var(--gray-400) 1px, transparent 1.3px); background-size: 6px 6px; opacity: .7; }
+  .p2-card-foot { display: flex; justify-content: space-between; align-items: center; font-size: var(--micro); letter-spacing: .12em; text-transform: uppercase; color: var(--gray-500); }
+  .p2-card-foot .icon { width: 1rem; height: 1rem; color: var(--ink); }
+  .logo2d { width: min(100%, 22rem); aspect-ratio: 1; justify-self: center; }
+  .snap { display: none; }
+  @media (max-width: 639.98px) { .p2-cards { grid-template-columns: 1fr; } .p2-card .dots { height: 2.5rem; } }
+
+  @media (min-width: 1024px) {
+    html { height: auto; scroll-snap-type: y proximity; }
+    body { height: 260vh; }
+    .page { position: fixed; inset: 0; }
+    .snap { display: block; position: absolute; left: 0; width: 1px; height: 1px; scroll-snap-align: start; }
+    .snap-a { top: 0; } .snap-b { top: 160vh; }
+    .p2 { position: fixed; inset: 0; padding-top: calc(var(--header-pt) + 4.5rem); padding-bottom: var(--main-py);
+      grid-template-columns: minmax(18rem, 30rem) 1fr clamp(11rem, 15vw, 15rem); align-items: center;
+      opacity: 0; pointer-events: none; visibility: hidden; }
+    .p2.live > * { pointer-events: auto; }
+    .p2-cards { grid-column: 3; grid-template-columns: 1fr; align-self: center; }
+    .logo2d { display: none; }
+  }
   @media (min-width: 1024px) { .hud { display: flex; } .rail { display: block; } }
   @media (max-width: 1023.98px) { .stat { flex: 1 1 9rem; } }
   @media (max-width: 480px) {
@@ -262,7 +306,7 @@
     </nav>
   </header>
 
-  <main>
+  <main class="p1-fade">
     <div class="lead">
       <p class="eyebrow">AI/ML Engineer · Rajkot, Gujarat</p>
       <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
@@ -328,7 +372,7 @@
     <div id="loading">LOADING</div>
   </div>
 
-  <ul class="strip" id="strip" aria-label="Tools I use">
+  <ul class="strip p1-fade" id="strip" aria-label="Tools I use">
     <li><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" stroke-width="3"/></svg>PyTorch</li>
     <li><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Hugging Face</li>
     <li><svg viewBox="0 0 16 16"><rect x="3" y="2" width="4" height="12"/><rect x="9" y="2" width="4" height="12"/></svg>vLLM</li>
@@ -336,14 +380,62 @@
     <li><svg viewBox="0 0 16 16"><rect x="3" y="3" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>OpenVINO</li>
     <li><svg viewBox="0 0 16 16"><path d="M5 2h4L6 14H2zM11 2h4l-3 12H8z"/></svg>TensorRT</li>
   </ul>
-  <p class="rail" aria-hidden="true">Astra.sys — 100,000 grains — hover · drag · scroll</p>
+  <p class="rail p1-fade" aria-hidden="true">Astra.sys — 100,000 grains — hover · drag · pinch — scroll for more</p>
 
-  <div class="credit">
+  <div class="credit p1-fade">
     Astra's shape: <a href="https://sketchfab.com/3d-models/stargazing-through-the-attic-window-6b3e2a011f024ac6a6b123ed33d0ec28" target="_blank" rel="noopener">"Stargazing through the attic window"</a>
     by <a href="https://sketchfab.com/Moon_solstice" target="_blank" rel="noopener">Moon</a>,
     <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
   </div>
 </div>
+
+<section class="p2" id="p2" aria-labelledby="p2-title">
+  <div class="p2-left">
+    <p class="eyebrow">02 / Open source</p>
+    <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
+    <h2 class="p2-title font-orbitron" id="p2-title">Shipped<br>in public</h2>
+    <p class="p2-intro">Models, datasets and benchmarks released on Hugging Face, with the work that went into them.</p>
+    <p class="spec-label">By the numbers <span class="ph-pill">Placeholder figures</span></p>
+    <dl class="specs">
+        <div class="spec"><dt>12K<small>+</small></dt><dd>Downloads, all repos</dd></div>
+        <div class="spec"><dt>40<small>+</small></dt><dd>Likes</dd></div>
+        <div class="spec ph"><dt>00<small></small></dt><dd>Models published</dd></div>
+        <div class="spec ph"><dt>00<small></small></dt><dd>Datasets published</dd></div>
+        <div class="spec ph"><dt>00<small></small></dt><dd>Epochs trained</dd></div>
+        <div class="spec ph"><dt>00<small>M</small></dt><dd>Rows cleaned</dd></div>
+    </dl>
+    <div class="p2-big"><span class="font-orbitron">12K+</span><p>Downloads across models and datasets, and counting.</p></div>
+    <a class="cta" href="https://huggingface.co/sinhal" target="_blank" rel="noopener">View profile <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+  </div>
+  <canvas class="logo2d" id="logo2d" aria-hidden="true"></canvas>
+  <div class="p2-cards">
+      <a class="p2-card" href="https://huggingface.co/datasets/sinhal/agent-step-guard-bench" target="_blank" rel="noopener">
+        <svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
+        <svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
+        <span class="dots" aria-hidden="true"></span>
+        <span class="tag">Dataset</span>
+        <span class="row-title">Agent Step-Guard Bench</span>
+        <span class="p2-card-foot"><span>244 decisions</span><svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+      </a>
+      <a class="p2-card" href="https://huggingface.co/sinhal" target="_blank" rel="noopener">
+        <svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
+        <svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
+        <span class="dots" aria-hidden="true"></span>
+        <span class="tag">Model · placeholder</span>
+        <span class="row-title">Long-Context Instruct 8B</span>
+        <span class="p2-card-foot"><span>— downloads</span><svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+      </a>
+      <a class="p2-card" href="https://huggingface.co/sinhal" target="_blank" rel="noopener">
+        <svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
+        <svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
+        <span class="dots" aria-hidden="true"></span>
+        <span class="tag">Model · placeholder</span>
+        <span class="row-title">Long-Context Instruct 3B</span>
+        <span class="p2-card-foot"><span>— downloads</span><svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+      </a>
+  </div>
+</section>
+<div class="snap snap-a" aria-hidden="true"></div><div class="snap snap-b" aria-hidden="true"></div>
 
 <div class="backdrop" id="backdrop"></div>
 <aside class="drawer" id="drawer" aria-hidden="true" aria-labelledby="drawer-title">
@@ -356,6 +448,28 @@
   <p class="drawer-foot">Vatsal Malkan © 2026</p>
 </aside>
 
+<script>
+// A grain-friendly drawing of the Hugging Face mark on a square canvas.
+window.drawHFLogo = function (ctx, S) {
+  const k = S / 512;
+  ctx.save(); ctx.scale(k, k); ctx.clearRect(0, 0, 512, 512);
+  ctx.fillStyle = '#FFD21E'; ctx.beginPath(); ctx.arc(256, 236, 196, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#3A3B45';
+  for (const x of [186, 326]) { ctx.beginPath(); ctx.ellipse(x, 196, 22, 27, 0, 0, Math.PI * 2); ctx.fill(); }
+  ctx.fillStyle = '#FFAD03';
+  for (const x of [128, 384]) { ctx.beginPath(); ctx.arc(x, 214, 20, 0, Math.PI * 2); ctx.fill(); }   // cheeks
+  ctx.save(); ctx.beginPath(); ctx.moveTo(176, 268); ctx.quadraticCurveTo(256, 300, 336, 268); ctx.quadraticCurveTo(326, 372, 256, 374); ctx.quadraticCurveTo(186, 372, 176, 268); ctx.closePath();
+  ctx.fillStyle = '#3A3B45'; ctx.fill(); ctx.clip();
+  ctx.fillStyle = '#F94040'; ctx.beginPath(); ctx.ellipse(256, 372, 52, 34, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+  for (const [x, r] of [[120, -0.5], [392, 0.5]]) {
+    ctx.save(); ctx.translate(x, 392); ctx.rotate(r);
+    ctx.fillStyle = '#FF9D0B'; ctx.beginPath(); ctx.ellipse(0, 0, 70, 52, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#FFD21E'; ctx.beginPath(); ctx.ellipse(-6, -6, 54, 38, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+  ctx.restore();
+};
+</script>
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -380,6 +494,8 @@ const POINT_SIZE = 5.2;   // bigger, overlapping beads: dense but not solid
 
 // ---------- renderer / scene ----------
 const canvas = document.getElementById('stage');
+let morph = 0;
+const ptrPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), ptrHit = new THREE.Vector3();
 const maskEls = ['chat', 'stats', 'about-mini', 'strip', 'hud'].map((id) => document.getElementById(id));
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -505,6 +621,25 @@ loader.load(MODEL_URL, (gltf) => {
   const headW = new Float32Array(k);
   for (let i = 0; i < k; i++) headW[i] = part[i] === 2 ? 1 : -1;
   geo.setAttribute('aHead', new THREE.BufferAttribute(headW, 1));
+
+  // Page two: every grain gets a spot on the Hugging Face mark (and its colour).
+  {
+    const S = 256, lc = document.createElement('canvas'); lc.width = lc.height = S;
+    const lx = lc.getContext('2d'); window.drawHFLogo(lx, S);
+    const px = lx.getImageData(0, 0, S, S).data, filled = [];
+    for (let i = 0; i < S * S; i++) if (px[i * 4 + 3] > 200) filled.push(i);
+    const tgt = new Float32Array(k * 3), tcol = new Float32Array(k * 3);
+    for (let i = 0; i < k; i++) {
+      const id = filled[(Math.random() * filled.length) | 0];
+      const x = (id % S + Math.random()) / S - 0.5, y = 0.5 - (Math.floor(id / S) + Math.random()) / S;
+      const fx = x, fy = y - 0.039, r2 = (fx * fx + fy * fy) / (0.383 * 0.383);
+      tgt[i * 3] = x; tgt[i * 3 + 1] = y;
+      tgt[i * 3 + 2] = r2 < 1 ? Math.sqrt(1 - r2) * 0.12 : 0;   // gently domed face, no seams
+      tcol[i * 3] = px[id * 4] / 255; tcol[i * 3 + 1] = px[id * 4 + 1] / 255; tcol[i * 3 + 2] = px[id * 4 + 2] / 255;
+    }
+    geo.setAttribute('aTarget', new THREE.BufferAttribute(tgt, 3));
+    geo.setAttribute('aTCol', new THREE.BufferAttribute(tcol, 3));
+  }
   NECK.set(neckY - bounds.h * 0.03, neckY + bounds.h * 0.07, neckZ);
   geo.setAttribute('aDent', new THREE.BufferAttribute(new Float32Array(k), 1).setUsage(THREE.DynamicDrawUsage));
 
@@ -559,6 +694,12 @@ function makeMaterial() {
       uHead:   { value: HEAD },
       uBreath: { value: 0 },
       uResolve: { value: 0 },
+      uMorph:   { value: 0 },
+      uLogo:    { value: new THREE.Matrix4() },
+      uFloorY:  { value: 0 },
+      uSpread:  { value: 1 },
+      uPtr:     { value: new THREE.Vector3(99, 99, 0) },
+      uPtrR:    { value: 0.1 },
       uMasks:   { value: [0, 1, 2, 3, 4].map(() => new THREE.Vector4(-1, -1, -1, -1)) },   // text blocks, drawing-buffer px
       uFeather: { value: 60 },
       uPinkInk:   { value: new THREE.Color('#d98a9e') },
@@ -568,9 +709,13 @@ function makeMaterial() {
       uHot:    { value: new THREE.Color('#9ca3af') },
     },
     vertexShader: /* glsl */`
-      uniform float uTime, uSize, uHeight, uBreath;
-      uniform vec3 uNeck, uHead;
+      uniform float uTime, uSize, uHeight, uBreath, uMorph, uFloorY, uSpread, uPtrR;
+      uniform vec3 uNeck, uHead, uPtr;
+      uniform mat4 uLogo;
       attribute float aRnd, aDent, aHead;
+      attribute vec3 aTarget, aTCol;
+      varying float vMorph;
+      varying vec3 vTCol;
       mat3 rotXYZ(vec3 a) {
         float cx = cos(a.x), sx = sin(a.x), cy = cos(a.y), sy = sin(a.y), cz = cos(a.z), sz = sin(a.z);
         mat3 rx = mat3(1.,0.,0., 0.,cx,sx, 0.,-sx,cx);
@@ -595,7 +740,26 @@ function makeMaterial() {
         p.z += uBreath * chest * 0.004;
         // barely-there breathing so she never looks frozen
         p += nrm * snoise(p * 3.0 + vec3(0.0, uTime * 0.12, 0.0)) * 0.003;
-        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        vec4 world = modelMatrix * vec4(p, 1.0);
+        float tm = 0.0;
+        if (uMorph > 0.0) {
+          // drip: lower grains go first, everyone sinks toward the floor, then
+          // sweeps across and settles into the logo
+          float delay = (position.y / uHeight) * 0.3 + aRnd * 0.15;
+          tm = smoothstep(delay, delay + 0.55, uMorph);
+          vec3 E = (uLogo * vec4(aTarget, 1.0)).xyz;
+          vec2 dp = E.xy - uPtr.xy; float dl = length(dp);
+          E.xy += dp / max(dl, 1e-4) * smoothstep(uPtrR, 0.0, dl) * uPtrR * 0.45 * (0.6 + aRnd);
+          E.z += snoise(aTarget * 7.0 + vec3(0.0, 0.0, uTime * 0.35)) * uSpread * 0.006;
+          vec3 C = vec3(world.x + (aRnd - 0.5) * 0.3 * uSpread, uFloorY, world.z);
+          float u = tm * tm * (3.0 - 2.0 * tm);
+          vec3 w3 = mix(mix(world.xyz, C, u), mix(C, E, u), u);
+          float mid = sin(3.14159 * tm);
+          w3.xy += vec2(snoise(vec3(aTarget.xy * 4.0, uTime * 0.5)), snoise(vec3(aTarget.yx * 4.0, uTime * 0.5 + 9.0))) * mid * uSpread * 0.05;
+          world.xyz = w3;
+        }
+        vMorph = tm; vTCol = aTCol;
+        vec4 mv = viewMatrix * world;
         vNormalV = normalize(normalMatrix * nrm);
         vDent = aDent; vY = position.y / uHeight; vRnd = aRnd;
         gl_PointSize = uSize * (0.55 + aRnd * 0.9) / -mv.z;
@@ -606,7 +770,8 @@ function makeMaterial() {
       uniform float uResolve, uFeather;
       uniform vec4 uMasks[5];
       varying vec3 vNormalV;
-      varying float vDent, vY, vRnd;
+      varying float vDent, vY, vRnd, vMorph;
+      varying vec3 vTCol;
       void main() {
         vec2 c = gl_PointCoord * 2.0 - 1.0;
         float r2 = dot(c, c);
@@ -623,7 +788,11 @@ function makeMaterial() {
         vec3 col = ink + sheen * (diff * 0.34 + rim * 0.6) + vec3(spec) * mix(1.1, 0.5, r);
         // freshly worked sand looks a little lighter, then settles
         col = mix(col, uHot, clamp(vDent, 0.0, 1.0) * 0.35);
-        float fadeIn = smoothstep(0.0, 0.14, vY);
+        // on the logo: its own colours, lit like glossy beads
+        float bd = max(dot(normalize(bead + vec3(0.0, 0.0, 0.6)), L), 0.0);
+        vec3 lc = vTCol * (0.62 + 0.5 * bd) + vec3(pow(max(dot(reflect(-L, normalize(bead)), vec3(0.0, 0.0, 1.0)), 0.0), 20.0)) * 0.35;
+        col = mix(col, lc, vMorph);
+        float fadeIn = mix(smoothstep(0.0, 0.14, vY), 1.0, vMorph);
         if (fadeIn < 0.999 && vRnd > fadeIn) discard;
         // thin out behind text blocks: fully clear inside, dithered edge outside
         float outside = 1e5;
@@ -656,6 +825,14 @@ function frame() {
     camera.lookAt(shiftX, lookY, 0);
     baseSize = POINT_SIZE * renderer.getPixelRatio() * (h / 900) * (COUNT < 80000 ? 1.35 : 1);
     points.material.uniforms.uHeight.value = bounds.h;
+    // page two: the logo sits right of centre, a bit over half the screen tall
+    const halfH = dist * Math.tan(halfFov), halfW = halfH * camera.aspect;
+    const lx = shiftX + (0.6 * 2 - 1) * halfW, ly = lookY - 0.04 * halfH, ls = halfH * 1.3;
+    const u = points.material.uniforms;
+    u.uLogo.value.makeTranslation(lx, ly, 0).multiply(new THREE.Matrix4().makeScale(ls, ls, ls));
+    u.uFloorY.value = lookY - halfH * 0.92;
+    u.uSpread.value = halfH;
+    u.uPtrR.value = halfH * 0.16;
   }
   camera.updateProjectionMatrix();
 }
@@ -680,6 +857,7 @@ let yaw = 0, pitch = 0, yawVel = 0, pitchVel = 0;
 let zoom = 1, zoomTarget = 1, pinchDist = 0;
 const ZOOM_MIN = 0.55, ZOOM_MAX = 2.4;
 canvas.addEventListener('wheel', (e) => {
+  if (!e.ctrlKey) return;            // plain scrolling moves between pages; pinch or Ctrl+scroll resizes
   e.preventDefault();
   zoomTarget = THREE.MathUtils.clamp(zoomTarget * Math.exp(-e.deltaY * 0.0012), ZOOM_MIN, ZOOM_MAX);
   lastTouch = clock ? clock.elapsedTime : 0;
@@ -690,6 +868,7 @@ function touchSpread() {
 }
 
 canvas.addEventListener('pointerdown', (e) => {
+  if (morph > 0.05) return;          // on page two only hover reacts
   canvas.setPointerCapture(e.pointerId);
   touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (e.pointerType === 'mouse') { dragging = true; sculpting = false; lastDrag = { x: e.clientX, y: e.clientY }; }
@@ -765,7 +944,9 @@ renderer.setAnimationLoop(() => {
 
     // pointer ray in her own space
     let active = false;
-    if (sculpting && !dragging) {
+    morph = window.__morph || 0;
+    points.material.uniforms.uMorph.value = morph;
+    if (sculpting && !dragging && morph < 0.02) {
       ray.setFromCamera(ndc, camera);
       inv.copy(points.matrixWorld).invert();
       const r = ray.ray.clone().applyMatrix4(inv);
@@ -827,6 +1008,11 @@ renderer.setAnimationLoop(() => {
       settling = maxOff > 1e-4 ? 1 : 0;
     }
     points.material.uniforms.uTime.value = t;
+    // page two: the pointer pushes the logo's grains
+    if (morph > 0.5 && sculpting) {
+      ray.setFromCamera(ndc, camera);
+      if (ray.ray.intersectPlane(ptrPlane, ptrHit)) points.material.uniforms.uPtr.value.copy(ptrHit);
+    } else points.material.uniforms.uPtr.value.set(1e4, 1e4, 0);
     // where text blocks sit on top of her, in drawing-buffer pixels
     {
       const pr = renderer.getPixelRatio(), cr = canvas.getBoundingClientRect();
@@ -834,7 +1020,7 @@ renderer.setAnimationLoop(() => {
         const br = el.getBoundingClientRect();
         const x0 = (br.left - cr.left) * pr, x1 = (br.right - cr.left) * pr;
         const y0 = (cr.bottom - br.bottom) * pr, y1 = (cr.bottom - br.top) * pr;
-        const hit = br.width > 0 && x1 > 0 && y1 > 0 && x0 < cr.width * pr && y0 < cr.height * pr;
+        const hit = morph < 0.15 && br.width > 0 && x1 > 0 && y1 > 0 && x0 < cr.width * pr && y0 < cr.height * pr;
         points.material.uniforms.uMasks.value[i].set(hit ? x0 : -1, hit ? y0 : -1, hit ? x1 : -1, hit ? y1 : -1);
       });
       points.material.uniforms.uFeather.value = 60 * pr;
@@ -950,7 +1136,51 @@ renderer.setAnimationLoop(() => {
   sizeGrid(); addEventListener('resize', sizeGrid);
   const mouse = { x: innerWidth / 2, y: innerHeight / 2 }, smooth = { ...mouse }, offG = { x: 0, y: 0 };
   addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+  // scroll: page one lifts away, Astra drips into the logo, page two rises in
+  const desk = matchMedia('(min-width: 1024px)');
+  const fades = [...document.querySelectorAll('.p1-fade')], p2 = $('p2');
+  const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  let q = 0;
+  function applyScroll() {
+    const target = desk.matches ? Math.min(1, Math.max(0, scrollY / (innerHeight * 1.6))) : 0;
+    q += (target - q) * 0.12; if (Math.abs(target - q) < 1e-4) q = target;
+    window.__morph = desk.matches ? Math.min(1, Math.max(0, (q - 0.04) / 0.92)) : 0;
+    const out = sm(0, 0.3, q), inn = sm(0.6, 0.95, q);
+    for (const el of fades) {
+      el.style.opacity = desk.matches ? 1 - out : '';
+      el.style.transform = desk.matches && out > 0 ? `translateY(${-out * 8}vh)` : '';
+      el.style.visibility = desk.matches && out > 0.995 ? 'hidden' : '';
+    }
+    if (desk.matches) {
+      p2.style.opacity = inn; p2.style.transform = `translateY(${(1 - inn) * 6}vh)`;
+      p2.style.visibility = inn > 0.001 ? 'visible' : 'hidden';
+      p2.classList.toggle('live', inn > 0.9);
+    } else { p2.style.opacity = ''; p2.style.transform = ''; p2.style.visibility = ''; }
+  }
+  $('logo').addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
+
+  // phones: page two is a normal section with a still grain logo
+  (function drawLogo2d() {
+    const cv = $('logo2d'), dpr = Math.min(devicePixelRatio || 1, 2), S = 256;
+    const src = document.createElement('canvas'); src.width = src.height = S;
+    const sx = src.getContext('2d'); window.drawHFLogo(sx, S);
+    const d = sx.getImageData(0, 0, S, S).data;
+    function paint() {
+      const W = cv.clientWidth; if (!W) return;
+      cv.width = cv.height = W * dpr;
+      const c = cv.getContext('2d'); c.scale(dpr, dpr);
+      for (let n = 0; n < 30000; n++) {
+        const x = Math.random() * S | 0, y = Math.random() * S | 0, i = (y * S + x) * 4;
+        if (d[i + 3] < 200) continue;
+        c.fillStyle = `rgb(${d[i]},${d[i + 1]},${d[i + 2]})`;
+        c.fillRect((x + Math.random()) / S * W, (y + Math.random()) / S * W, 1.6, 1.6);
+      }
+    }
+    paint(); addEventListener('resize', () => { if (!desk.matches) paint(); });
+  })();
+
   (function tick() {
+    applyScroll();
     smooth.x += (mouse.x - smooth.x) * 0.1; smooth.y += (mouse.y - smooth.y) * 0.1;
     const cx = smooth.x / innerWidth - 0.5, cy = smooth.y / innerHeight - 0.5;
     offG.x += (cx * 16 - offG.x) * 0.06; offG.y += (cy * 16 - offG.y) * 0.06;
