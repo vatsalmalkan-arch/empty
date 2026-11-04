@@ -289,6 +289,9 @@ const bust = new THREE.Group();
 scene.add(bust);
 
 let baseSize = 1;
+let neckZ = 0;
+const NECK = new THREE.Vector3();          // blend start, blend end, pivot z
+const HEAD = new THREE.Vector3();          // idle head pitch, yaw, roll
 let points = null, bounds = null, base = null, nrm = null, off = null, clump = null;
 
 // ---------- load + sample ----------
@@ -336,6 +339,7 @@ loader.load(MODEL_URL, (gltf) => {
   // don't drown out the face.
   const p = new THREE.Vector3(), n = new THREE.Vector3();
   const posArr = new Float32Array(COUNT * 3), nrmArr = new Float32Array(COUNT * 3), rnd = new Float32Array(COUNT);
+  const part = new Uint8Array(COUNT);   // 0 body, 1 skin/face, 2 hair
   let k = 0;
   for (const [group, share] of Object.entries(BUDGET)) {
     const gs = parts.filter((g) => g.userData.group === group);
@@ -349,6 +353,7 @@ loader.load(MODEL_URL, (gltf) => {
       posArr.set([p.x, p.y, p.z], k * 3);
       nrmArr.set([n.x, n.y, n.z], k * 3);
       rnd[k] = Math.random();
+      part[k] = group === 'hair' ? 2 : group === 'face' ? 1 : 0;
       k++;
     }
   }
@@ -377,6 +382,24 @@ loader.load(MODEL_URL, (gltf) => {
   geo.setAttribute('position', new THREE.BufferAttribute(base.slice(), 3).setUsage(THREE.DynamicDrawUsage));
   geo.setAttribute('normal', new THREE.BufferAttribute(nrm, 3));
   geo.setAttribute('aRnd', new THREE.BufferAttribute(rnd.slice(0, k), 1));
+
+  // Find the neck: the narrowest slice of skin in the lower half of the bust.
+  let neckY = bounds.h * 0.28, best = Infinity;
+  for (let y = bounds.h * 0.12; y < bounds.h * 0.5; y += bounds.h * 0.02) {
+    let lo = Infinity, hi = -Infinity, zs = 0, cnt = 0;
+    for (let i = 0; i < k; i++) {
+      if (part[i] !== 1) continue;
+      const py = base[i * 3 + 1];
+      if (py < y || py >= y + bounds.h * 0.02) continue;
+      const px = base[i * 3]; lo = Math.min(lo, px); hi = Math.max(hi, px); zs += base[i * 3 + 2]; cnt++;
+    }
+    if (cnt > 20 && hi - lo < best) { best = hi - lo; neckY = y; neckZ = zs / cnt; }
+  }
+  // Hair always moves with the head; skin and clothes blend in across the neck.
+  const headW = new Float32Array(k);
+  for (let i = 0; i < k; i++) headW[i] = part[i] === 2 ? 1 : -1;
+  geo.setAttribute('aHead', new THREE.BufferAttribute(headW, 1));
+  NECK.set(neckY - bounds.h * 0.03, neckY + bounds.h * 0.07, neckZ);
   geo.setAttribute('aDent', new THREE.BufferAttribute(new Float32Array(k), 1).setUsage(THREE.DynamicDrawUsage));
 
   points = new THREE.Points(geo, makeMaterial());
@@ -426,22 +449,43 @@ function makeMaterial() {
       uTime:   { value: 0 },
       uSize:   { value: 1 },
       uHeight: { value: 1 },
+      uNeck:   { value: NECK },
+      uHead:   { value: HEAD },
+      uBreath: { value: 0 },
       uInk:    { value: new THREE.Color('#0b0b0d') },
       uSheen:  { value: new THREE.Color('#8e939c') },
       uHot:    { value: new THREE.Color('#9ca3af') },
     },
     vertexShader: /* glsl */`
-      uniform float uTime, uSize, uHeight;
-      attribute float aRnd, aDent;
+      uniform float uTime, uSize, uHeight, uBreath;
+      uniform vec3 uNeck, uHead;
+      attribute float aRnd, aDent, aHead;
+      mat3 rotXYZ(vec3 a) {
+        float cx = cos(a.x), sx = sin(a.x), cy = cos(a.y), sy = sin(a.y), cz = cos(a.z), sz = sin(a.z);
+        mat3 rx = mat3(1.,0.,0., 0.,cx,sx, 0.,-sx,cx);
+        mat3 ry = mat3(cy,0.,-sy, 0.,1.,0., sy,0.,cy);
+        mat3 rz = mat3(cz,sz,0., -sz,cz,0., 0.,0.,1.);
+        return ry * rx * rz;
+      }
       varying vec3 vNormalV;
       varying float vDent, vY, vRnd;
       ${NOISE}
       void main() {
         vec3 p = position;
+        vec3 nrm = normal;
+        // idle: the head turns, nods and tilts around the neck; the chest breathes
+        float w = aHead > 0.0 ? aHead : smoothstep(uNeck.x, uNeck.y, position.y);
+        vec3 pivot = vec3(0.0, uNeck.x, uNeck.z);
+        mat3 R = rotXYZ(uHead * w);
+        p = pivot + R * (p - pivot);
+        nrm = R * nrm;
+        float chest = (1.0 - w) * smoothstep(0.0, uNeck.x, position.y);
+        p.y += uBreath * chest * 0.006;
+        p.z += uBreath * chest * 0.004;
         // barely-there breathing so she never looks frozen
-        p += normal * snoise(p * 3.0 + vec3(0.0, uTime * 0.12, 0.0)) * 0.003;
+        p += nrm * snoise(p * 3.0 + vec3(0.0, uTime * 0.12, 0.0)) * 0.003;
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
-        vNormalV = normalize(normalMatrix * normal);
+        vNormalV = normalize(normalMatrix * nrm);
         vDent = aDent; vY = position.y / uHeight; vRnd = aRnd;
         gl_PointSize = uSize * (0.55 + aRnd * 0.9) / -mv.z;
         gl_Position = projectionMatrix * mv;
@@ -648,6 +692,14 @@ renderer.setAnimationLoop(() => {
       settling = maxOff > 1e-4 ? 1 : 0;
     }
     points.material.uniforms.uTime.value = t;
+    // idle head motion: layered slow waves so it never visibly loops,
+    // plus a slow look-around every ~14 s
+    const look = Math.sin(t * 0.45) * Math.pow(Math.max(0, Math.sin(t * 0.22)), 4);
+    HEAD.set(
+      Math.sin(t * 0.41 + 1.0) * 0.035 + Math.sin(t * 0.93) * 0.012,              // nod
+      Math.sin(t * 0.29) * 0.08 + Math.sin(t * 0.71 + 2.0) * 0.025 + look * 0.22,  // turn
+      Math.sin(t * 0.23 + 0.5) * 0.045 + Math.sin(t * 0.61) * 0.015);             // tilt
+    points.material.uniforms.uBreath.value = Math.sin(t * 1.15);
   }
   renderer.render(scene, camera);
 });
