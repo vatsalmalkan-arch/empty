@@ -268,7 +268,7 @@
 
   @media (min-width: 1024px) {
     html { height: auto; scroll-snap-type: y proximity; }
-    body { height: 260vh; }
+    body { height: 420vh; }
     .page { position: fixed; inset: 0; }
     .snap { display: block; position: absolute; left: 0; width: 1px; height: 1px; scroll-snap-align: start; }
     .snap-a { top: 0; } .snap-b { top: 160vh; }
@@ -323,6 +323,69 @@
     .p2.live > .p2-mid { pointer-events: none; }
   }
   @media (prefers-reduced-motion: reduce) { .bt i, .spark .line, .spark .area, .spark .end { transition: none; } }
+  /* ---- page three: Vercel ---- */
+  .p3 { position: relative; z-index: 15; display: grid; gap: var(--section-gap) 2.5rem; padding: var(--main-py) var(--pad-x); }
+  .p3-left, .p3-mid { display: flex; flex-direction: column; gap: var(--section-gap); min-width: 0; }
+  .p3-logo { height: clamp(10rem, 28vh, 17rem); }
+  .slot3 { width: 100%; height: 100%; display: block; }
+  .site-stats { position: relative; padding: clamp(1rem, 1.4vw, 1.4rem); }
+  .site-stats .corner { position: absolute; }
+  .site-stats .vtl { top: 0; left: 0; } .site-stats .vtr { top: 0; right: 0; } .site-stats .vbl { bottom: 0; left: 0; } .site-stats .vbr { bottom: 0; right: 0; }
+  #ss-body { display: flex; flex-direction: column; gap: .8rem; }
+  .ss-url { margin: -.35rem 0 0; font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); letter-spacing: .08em; color: var(--gray-500); }
+  .chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .chip { border: 1px solid var(--gray-300); border-radius: 999px; padding: .22rem .6rem; font-size: var(--micro); letter-spacing: .1em; text-transform: uppercase; }
+  .site-stats .bt i { transition: width 1s cubic-bezier(.2,.7,.2,1) var(--d, 0s); }
+  .site-stats.in .bt i { width: var(--w); }
+  .ss-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; border-top: 1px solid var(--gray-200); padding-top: .7rem; }
+  .ss-meta div { display: flex; flex-direction: column; gap: .2rem; }
+  .ss-meta span { font-size: var(--micro); letter-spacing: .14em; text-transform: uppercase; color: var(--gray-500); }
+  .ss-meta b { font-family: 'Michroma', ui-monospace, monospace; font-weight: 400; font-size: var(--body); letter-spacing: .04em; }
+  .p3-title { margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; line-height: 1.05; font-size: clamp(1.8rem, 2.6vw + .6rem, 3.4rem); }
+  .p3-index { list-style: none; margin: .4rem 0 0; padding: 0; display: grid; border-top: 1px solid var(--gray-200); }
+  .p3-index button { width: 100%; display: grid; grid-template-columns: 2.4rem 1fr auto; align-items: center; gap: .6rem; padding: .62rem 0; border-bottom: 1px solid var(--gray-200); text-align: left; font-size: var(--body); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--gray-400); transition: color .2s; }
+  .p3-index button span { font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); font-weight: 400; }
+  .p3-index button i { width: 0; height: 1px; background: var(--ink); transition: width .35s; }
+  .p3-index button:hover { color: var(--gray-600); }
+  .p3-index button[aria-current="true"] { color: var(--ink); }
+  .p3-index button[aria-current="true"] i { width: 2.5rem; }
+  .p3-right { display: flex; align-items: center; gap: 1rem; min-width: 0; }
+  .carousel { position: relative; flex: 1; min-width: 0; height: 26rem; perspective: 1200px; overflow: hidden;
+    -webkit-mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent); mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent); }
+  .ccard { position: absolute; left: 50%; top: 50%; width: min(100%, 20rem); aspect-ratio: 4 / 3; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column;
+    background: var(--white); border: 1px solid var(--gray-200); box-shadow: 0 18px 40px -22px rgba(0,0,0,.35); color: inherit; text-decoration: none;
+    transition: transform .7s cubic-bezier(.2,.75,.2,1), opacity .5s, filter .5s; will-change: transform; }
+  .chrome { display: flex; align-items: center; gap: .3rem; padding: .45rem .6rem; border-bottom: 1px solid var(--gray-200); background: #f6f7f9; }
+  .chrome i { width: 6px; height: 6px; border-radius: 50%; background: var(--gray-300); }
+  .chrome span { margin-left: .5rem; font-family: 'Michroma', ui-monospace, monospace; font-size: .5rem; letter-spacing: .08em; color: var(--gray-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mock { flex: 1; position: relative; padding: .8rem; display: grid; grid-template-columns: 1.3fr 1fr; grid-template-rows: auto auto 1fr; gap: .4rem .6rem; background: linear-gradient(160deg, #fff, #f3f4f6); }
+  .mock b { display: block; border-radius: 3px; background: var(--gray-200); }
+  .mock .h { grid-column: 1; height: 1.1rem; background: var(--ink); width: 85%; }
+  .mock .l { grid-column: 1; height: .35rem; width: 70%; } .mock .l.s { width: 48%; }
+  .mock .v { grid-column: 2; grid-row: 1 / 4; border-radius: 6px; background: radial-gradient(circle at 30% 30%, var(--acc), transparent 60%), radial-gradient(circle at 70% 75%, var(--acc2), transparent 55%), #eef0f3; }
+  .mock .g { grid-column: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: .3rem; align-self: end; }
+  .mock .g b { height: 1.6rem; }
+  .mock .g b:first-child { background: var(--acc); opacity: .85; }
+  .ccap { display: flex; align-items: center; gap: .6rem; padding: .5rem .7rem; border-top: 1px solid var(--gray-200); font-size: var(--micro); font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+  .ccap span { font-family: 'Michroma', ui-monospace, monospace; font-weight: 400; color: var(--gray-500); }
+  .ccap em { margin-left: auto; font-style: normal; font-weight: 400; color: var(--gray-400); letter-spacing: .1em; }
+  .car-arrows { display: flex; flex-direction: column; align-items: center; gap: .6rem; font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); letter-spacing: .1em; color: var(--gray-500); writing-mode: horizontal-tb; }
+  .car-arrows button { width: 2.2rem; height: 2.2rem; border: 1px solid var(--gray-300); border-radius: 50%; display: grid; place-items: center; background: var(--white); transition: border-color .2s, background .2s, color .2s; }
+  .car-arrows button:hover { border-color: var(--ink); background: var(--ink); color: var(--white); }
+  .car-arrows .icon { width: 1rem; height: 1rem; }
+  @media (min-width: 1024px) {
+    .p3 { position: fixed; inset: 0; padding-top: calc(var(--header-pt) + 3.75rem); padding-bottom: var(--main-py);
+      grid-template-columns: minmax(17rem, 25rem) minmax(13rem, 1fr) minmax(19rem, 25rem); align-items: center;
+      opacity: 0; pointer-events: none; visibility: hidden; }
+    .p3.live > * { pointer-events: auto; }
+    .p3.live > .p3-left { pointer-events: none; }
+    .p3.live .site-stats { pointer-events: auto; }
+    .p3-left { justify-content: center; }
+    .carousel { height: calc(100vh - var(--header-pt) - 3.75rem - var(--main-py) * 2); max-height: 44rem; }
+    .snap-c { top: 320vh; }
+  }
+  @media (max-width: 1023.98px) { .p3-mid { order: -1; } .p3 { padding-top: calc(var(--main-py) * 2); } }
+  @media (prefers-reduced-motion: reduce) { .ccard, .site-stats .bt i { transition: none; } }
   @media (min-width: 1024px) { .hud { display: flex; } .rail { display: block; } }
   @media (max-width: 1023.98px) { .stat { flex: 1 1 9rem; } }
   @media (max-width: 480px) {
@@ -487,7 +550,35 @@
     </a>
   </div>
 </section>
-<div class="snap snap-a" aria-hidden="true"></div><div class="snap snap-b" aria-hidden="true"></div>
+<section class="p3" id="p3" aria-labelledby="p3-title">
+  <div class="p3-left">
+    <p class="eyebrow">03 / Deployed</p>
+    <div class="p3-logo" id="p3-logo"><canvas class="slot3" data-logo="vercel" aria-hidden="true"></canvas></div>
+    <div class="site-stats" id="site-stats">
+      <svg class="corner vtl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
+      <svg class="corner vtr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg>
+      <svg class="corner vbl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg>
+      <svg class="corner vbr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
+      <div id="ss-body" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="p3-mid">
+    <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
+    <h2 class="p3-title font-orbitron" id="p3-title">Live<br>on the<br>edge</h2>
+    <p class="p2-intro">Web apps, dashboards and tools I've built and shipped to production.</p>
+    <ol class="p3-index" id="p3-index"></ol>
+    <a class="cta" id="p3-open" href="#" target="_blank" rel="noopener">Open site <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+  </div>
+  <div class="p3-right">
+    <div class="carousel" id="carousel" aria-roledescription="carousel" aria-label="Deployed sites"></div>
+    <div class="car-arrows">
+      <button id="c-prev" aria-label="Previous site"><svg class="icon" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg></button>
+      <span id="c-count">01 / 05</span>
+      <button id="c-next" aria-label="Next site"><svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+    </div>
+  </div>
+</section>
+<div class="snap snap-a" aria-hidden="true"></div><div class="snap snap-b" aria-hidden="true"></div><div class="snap snap-c" aria-hidden="true"></div>
 
 <div class="backdrop" id="backdrop"></div>
 <aside class="drawer" id="drawer" aria-hidden="true" aria-labelledby="drawer-title">
@@ -528,6 +619,12 @@ window.drawKaggleLogo = function (ctx, S) {
   ctx.fillRect(150, 50, 70, 412);                                    // stem
   ctx.beginPath(); ctx.moveTo(220, 290); ctx.lineTo(345, 150); ctx.lineTo(430, 150); ctx.lineTo(290, 300); ctx.closePath(); ctx.fill();   // upper arm
   ctx.beginPath(); ctx.moveTo(250, 285); ctx.lineTo(300, 262); ctx.lineTo(440, 462); ctx.lineTo(360, 462); ctx.closePath(); ctx.fill();   // leg
+  ctx.restore();
+};
+window.drawVercelLogo = function (ctx, S) {
+  const k = S / 512;
+  ctx.save(); ctx.scale(k, k); ctx.clearRect(0, 0, 512, 512);
+  ctx.fillStyle = '#111113'; ctx.beginPath(); ctx.moveTo(256, 56); ctx.lineTo(476, 437); ctx.lineTo(36, 437); ctx.closePath(); ctx.fill();
   ctx.restore();
 };
 window.drawTorchLogo = function (ctx, S) {
@@ -703,6 +800,15 @@ loader.load(MODEL_URL, (gltf) => {
       dir[i * 3] = r * Math.cos(a); dir[i * 3 + 1] = z; dir[i * 3 + 2] = r * Math.sin(a);
     }
     geo.setAttribute('aBlob', new THREE.BufferAttribute(dir, 3));
+    // Page three: a spot inside a thick equilateral triangle, centred on its centroid
+    const tri = new Float32Array(k * 3), hw = 1 / Math.sqrt(3);
+    for (let i = 0; i < k; i++) {
+      let a = Math.random(), b = Math.random(); if (a + b > 1) { a = 1 - a; b = 1 - b; }
+      tri[i * 3] = -hw + a * 2 * hw + b * hw;          // vertices: (-hw,-1/3) (hw,-1/3) (0,2/3)
+      tri[i * 3 + 1] = -1 / 3 + b;
+      tri[i * 3 + 2] = (Math.random() - 0.5) * 0.12;
+    }
+    geo.setAttribute('aTri', new THREE.BufferAttribute(tri, 3));
   }
   NECK.set(neckY - bounds.h * 0.03, neckY + bounds.h * 0.07, neckZ);
   geo.setAttribute('aDent', new THREE.BufferAttribute(new Float32Array(k), 1).setUsage(THREE.DynamicDrawUsage));
@@ -763,6 +869,9 @@ function makeMaterial() {
       uBlobR:   { value: 0.2 },
       uBlobRot: { value: new THREE.Matrix3() },
       uSpikes:  { value: Array.from({ length: 24 }, () => new THREE.Vector4(0, 1, 0, 0)) },
+      uMorph2:  { value: 0 },
+      uTriM:    { value: new THREE.Matrix4() },
+      uTriN:    { value: new THREE.Vector3(0, 0, 1) },
       uFloorY:  { value: 0 },
       uSpread:  { value: 1 },
       uPtr:     { value: new THREE.Vector3(99, 99, 0) },
@@ -782,8 +891,11 @@ function makeMaterial() {
       uniform float uBlobR;
       uniform mat3 uBlobRot;
       uniform vec4 uSpikes[24];
+      uniform float uMorph2;
+      uniform mat4 uTriM;
+      uniform vec3 uTriN;
       attribute float aRnd, aDent, aHead;
-      attribute vec3 aBlob;
+      attribute vec3 aBlob, aTri;
       varying float vMorph;
       mat3 rotXYZ(vec3 a) {
         float cx = cos(a.x), sx = sin(a.x), cy = cos(a.y), sy = sin(a.y), cz = cos(a.z), sz = sin(a.z);
@@ -833,6 +945,18 @@ function makeMaterial() {
           float mid = sin(3.14159 * tm);
           w3.xy += vec2(snoise(vec3(aBlob.xy * 4.0, uTime * 0.5)), snoise(vec3(aBlob.yz * 4.0, uTime * 0.5 + 9.0))) * mid * uSpread * 0.05;
           world.xyz = w3;
+          if (uMorph2 > 0.0) {
+            // the ball bursts outward and the grains settle into a spinning Vercel triangle
+            float d2 = aRnd * 0.4;
+            float t2 = smoothstep(d2, d2 + 0.6, uMorph2);
+            vec3 V = (uTriM * vec4(aTri, 1.0)).xyz;
+            vec2 dq = V.xy - uPtr.xy; float dlq = length(dq);
+            V.xy += dq / max(dlq, 1e-4) * smoothstep(uPtrR, 0.0, dlq) * uPtrR * 0.3 * (0.6 + aRnd);
+            vec3 C2 = world.xyz + dw * uBlobR * (1.2 + aRnd * 1.6);
+            float u2 = t2 * t2 * (3.0 - 2.0 * t2);
+            world.xyz = mix(mix(world.xyz, C2, u2), mix(C2, V, u2), u2);
+            blobN = normalize(mix(blobN, normalize(mat3(viewMatrix) * uTriN), t2));
+          }
         }
         vMorph = tm;
         vec4 mv = viewMatrix * world;
@@ -989,6 +1113,7 @@ const logos = logoSlots.map((slot) => {
   return { slot, pts };
 });
 
+const triQ = new THREE.Quaternion();
 const tmpV = new THREE.Vector3(), tmpA = new THREE.Vector3(), rotM4 = new THREE.Matrix4(), rotE = new THREE.Euler();
 let spin = 0, roll = 0;
 function updatePageTwo(dt, t) {
@@ -1011,7 +1136,20 @@ function updatePageTwo(dt, t) {
     u.uSpikes.value[i].set(s.d.x, s.d.y, s.d.z, hgt);
   });
   // the thread: anchor at the top of the page to the top of the ball
-  const op = THREE.MathUtils.smoothstep(morph, 0.75, 1.0);
+  const morph2 = window.__morph2 || 0;
+  u.uMorph2.value = morph2;
+  {
+    const r = document.getElementById('p3-logo').getBoundingClientRect();
+    if (r.width > 0) {
+      pxToWorld(r.left + r.width / 2, r.top + r.height / 2, tmpV);
+      const sc = r.height * wpp * 0.82;
+      const w = t * 0.6;   // spin that lingers face-on and hurries through edge-on
+      triQ.setFromEuler(rotE.set(0, w - 0.45 * Math.sin(2 * w), 0));
+      u.uTriM.value.compose(tmpV, triQ, tmpA.set(sc, sc, sc));
+      u.uTriN.value.set(0, 0, 1).applyQuaternion(triQ);
+    }
+  }
+  const op = THREE.MathUtils.smoothstep(morph, 0.75, 1.0) * (1 - THREE.MathUtils.smoothstep(morph2, 0.0, 0.25));
   thread.visible = op > 0.01; thread.material.opacity = op;
   if (thread.visible) {
     const arr = threadGeo.attributes.position.array, prev = ball.P[ball.N - 1];
@@ -1097,7 +1235,7 @@ function touchSpread() {
 
 canvas.addEventListener('pointerdown', (e) => {
   if (morph > 0.05) {                // page two: grab the ball
-    if (morph > 0.85 && ball.near(e.clientX, e.clientY)) { canvas.setPointerCapture(e.pointerId); ball.grab(e.clientX, e.clientY); }
+    if (morph > 0.85 && (window.__morph2 || 0) < 0.05 && ball.near(e.clientX, e.clientY)) { canvas.setPointerCapture(e.pointerId); ball.grab(e.clientX, e.clientY); }
     return;
   }
   canvas.setPointerCapture(e.pointerId);
@@ -1108,7 +1246,7 @@ canvas.addEventListener('pointerdown', (e) => {
 });
 canvas.addEventListener('pointermove', (e) => {
   if (ball.held) { ball.move(e.clientX, e.clientY); return; }
-  if (morph > 0.85) canvas.style.cursor = ball.near(e.clientX, e.clientY) ? 'grab' : 'default';
+  if (morph > 0.85) canvas.style.cursor = (window.__morph2 || 0) < 0.05 && ball.near(e.clientX, e.clientY) ? 'grab' : 'default';
   if (touches.has(e.pointerId)) touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (dragging) {
     if (e.pointerType !== 'mouse' && touches.size >= 2) {
@@ -1376,32 +1514,42 @@ renderer.setAnimationLoop(() => {
   const fades = [...document.querySelectorAll('.p1-fade')], p2 = $('p2');
   const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   let q = 0;
+  const p3 = $('p3');
   function applyScroll() {
-    const target = desk.matches ? Math.min(1, Math.max(0, scrollY / (innerHeight * 1.6))) : 0;
+    const target = desk.matches ? Math.min(2, Math.max(0, scrollY / (innerHeight * 1.6))) : 0;
     q += (target - q) * 0.12; if (Math.abs(target - q) < 1e-4) q = target;
     window.__morph = desk.matches ? Math.min(1, Math.max(0, (q - 0.04) / 0.92)) : 0;
-    const wasIn = window.__p2in || 0;
-    const out = sm(0, 0.3, q), inn = sm(0.6, 0.95, q);
+    window.__morph2 = desk.matches ? Math.min(1, Math.max(0, (q - 1.04) / 0.92)) : 0;
+    const wasIn = window.__p2in || 0, was3 = window.__p3in || 0;
+    const out = sm(0, 0.3, q), inn = sm(0.6, 0.95, q) * (1 - sm(1.0, 1.3, q)), in3 = sm(1.6, 1.95, q);
     for (const el of fades) {
       el.style.opacity = desk.matches ? 1 - out : '';
       el.style.transform = desk.matches && out > 0 ? `translateY(${-out * 8}vh)` : '';
       el.style.visibility = desk.matches && out > 0.995 ? 'hidden' : '';
     }
     if (desk.matches) {
-      p2.style.opacity = inn; p2.style.transform = `translateY(${(1 - inn) * 6}vh)`;
+      const up2 = sm(1.0, 1.3, q);
+      p2.style.opacity = inn; p2.style.transform = `translateY(${((1 - sm(0.6, 0.95, q)) * 6 - up2 * 8)}vh)`;
       p2.style.visibility = inn > 0.001 ? 'visible' : 'hidden';
       p2.classList.toggle('live', inn > 0.9);
       window.__p2in = inn;
       if (inn > 0.9 && wasIn <= 0.9) viewer.replay();
-    } else { p2.style.opacity = ''; p2.style.transform = ''; p2.style.visibility = ''; }
+      p3.style.opacity = in3; p3.style.transform = `translateY(${(1 - in3) * 6}vh)`;
+      p3.style.visibility = in3 > 0.001 ? 'visible' : 'hidden';
+      p3.classList.toggle('live', in3 > 0.9);
+      window.__p3in = in3;
+      if (in3 > 0.9 && was3 <= 0.9) sites.replay();
+    } else {
+      for (const el of [p2, p3]) { el.style.opacity = ''; el.style.transform = ''; el.style.visibility = ''; }
+    }
   }
   $('logo').addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
 
   // phones: page two is a normal section; the logo boxes get still grain drawings
   (function paintSlots() {
-    const draw = { hf: 'drawHFLogo', kaggle: 'drawKaggleLogo', torch: 'drawTorchLogo' };
+    const draw = { hf: 'drawHFLogo', kaggle: 'drawKaggleLogo', torch: 'drawTorchLogo', vercel: 'drawVercelLogo' };
     function paint() {
-      document.querySelectorAll('.slot').forEach((cv) => {
+      document.querySelectorAll('.slot, .slot3').forEach((cv) => {
         const W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(devicePixelRatio || 1, 2);
         cv.width = W * dpr; cv.height = H * dpr;
         const c = cv.getContext('2d'); c.scale(dpr, dpr);
@@ -1418,6 +1566,97 @@ renderer.setAnimationLoop(() => {
       });
     }
     paint(); addEventListener('resize', paint);
+  })();
+
+  // ---------- page three: deployed sites ----------
+  const sites = (() => {
+    // Placeholder URLs, screenshots and scores; replace when the real ones arrive.
+    const SITES = [
+      { name: 'Lex.ai', url: 'lex-ai.vercel.app', href: 'https://github.com/Zephyr4772/lex-ai', acc: '#2b59ff', acc2: '#9db4ff',
+        desc: 'RAG over 41,876 Supreme Court judgments.', stack: ['React', 'FastAPI', 'ChromaDB', 'Ollama'], framework: 'React', region: 'bom1', deploys: 42,
+        scores: [['Performance', 96], ['Accessibility', 93], ['Best practices', 100], ['SEO', 92]] },
+      { name: 'PharmaScope', url: 'pharmascope.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#18a058', acc2: '#a7e3c1',
+        desc: 'Drug-shortage tracking over 120,000+ Indian drug records.', stack: ['React', 'FastAPI', 'PostgreSQL'], framework: 'React', region: 'bom1', deploys: 31,
+        scores: [['Performance', 91], ['Accessibility', 95], ['Best practices', 96], ['SEO', 100]] },
+      { name: 'Dr.Data', url: 'dr-data.vercel.app', href: 'https://github.com/Zephyr4772/Dr.Data', acc: '#ff6a3d', acc2: '#ffc2ad',
+        desc: 'Checks whether a dataset can support a use case before training.', stack: ['FastAPI', 'scikit-learn', 'React'], framework: 'React', region: 'iad1', deploys: 18,
+        scores: [['Performance', 94], ['Accessibility', 90], ['Best practices', 100], ['SEO', 89]] },
+      { name: 'ShipScript', url: 'shipscript.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#111113', acc2: '#9ca3af',
+        desc: 'MCP server that reads a repo, screenshots its deployment and drafts docs.', stack: ['TypeScript', 'MCP', 'Node'], framework: 'Next.js', region: 'iad1', deploys: 12,
+        scores: [['Performance', 99], ['Accessibility', 97], ['Best practices', 100], ['SEO', 91]] },
+      { name: 'This portfolio', url: 'vatsal.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#ffd21e', acc2: '#ffad03',
+        desc: 'Astra, a hanging ball and this carousel, in one page of WebGL.', stack: ['three.js', 'WebGL', 'JavaScript'], framework: 'Static', region: 'bom1', deploys: 20,
+        scores: [['Performance', 88], ['Accessibility', 94], ['Best practices', 100], ['SEO', 100]] },
+    ];
+    const car = $('carousel'), stats = $('site-stats'), body = $('ss-body'), index = $('p3-index'), open = $('p3-open'), count = $('c-count');
+    let active = 0;
+    car.innerHTML = SITES.map((s, i) => `
+      <a class="ccard" data-i="${i}" href="${esc(s.href)}" target="_blank" rel="noopener" style="--acc:${s.acc};--acc2:${s.acc2}" aria-label="${esc(s.name)}">
+        <div class="chrome"><i></i><i></i><i></i><span>${esc(s.url)}</span></div>
+        <div class="mock" aria-hidden="true"><b class="h"></b><b class="l"></b><b class="l s"></b><b class="v"></b><div class="g"><b></b><b></b><b></b></div></div>
+        <div class="ccap"><span>${String(i + 1).padStart(2, '0')}</span>${esc(s.name)}<em>Preview</em></div>
+      </a>`).join('');
+    index.innerHTML = SITES.map((s, i) => `<li><button data-i="${i}"><span>${String(i + 1).padStart(2, '0')}</span>${esc(s.name)}<i></i></button></li>`).join('');
+    const cards = [...car.querySelectorAll('.ccard')];
+    function layout() {
+      const ch = cards[0].offsetHeight || 240;
+      cards.forEach((c, i) => {
+        let k = i - active;
+        if (k > SITES.length / 2) k -= SITES.length;
+        if (k < -SITES.length / 2) k += SITES.length;
+        const a = Math.abs(k);
+        c.style.transform = `translate(-50%, -50%) translate(${k * k * 22}px, ${k * ch * 0.74}px) rotate(${-k * 9}deg) scale(${1 - a * 0.13})`;
+        c.style.opacity = a > 2 ? 0 : 1 - a * 0.28;
+        c.style.filter = a ? `blur(${a * 1.2}px)` : 'none';
+        c.style.zIndex = 10 - a;
+        c.style.pointerEvents = a > 2 ? 'none' : '';
+        c.tabIndex = a === 0 ? 0 : -1;
+      });
+    }
+    function render() {
+      const s = SITES[active];
+      count.textContent = String(active + 1).padStart(2, '0') + ' / ' + String(SITES.length).padStart(2, '0');
+      index.querySelectorAll('button').forEach((b, i) => b.setAttribute('aria-current', String(i === active)));
+      open.href = s.href;
+      body.innerHTML = `
+        <div class="v-head"><span class="tag">Project ${String(active + 1).padStart(2, '0')} · Vercel</span><span class="ph-pill">Placeholder</span></div>
+        <h3 class="v-name">${esc(s.name)}</h3>
+        <p class="ss-url">${esc(s.url)}</p>
+        <div class="chips">${s.stack.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>
+        <div class="bars">${s.scores.map(([l, v], i) => `
+          <div class="bar ph"><span>${esc(l)}</span><span class="bt"><i style="--w:${v}%;--d:${(0.08 * i).toFixed(2)}s"></i></span><span class="bv" data-to="${v}" data-unit="">0</span></div>`).join('')}
+        </div>
+        <div class="ss-meta"><div><span>Framework</span><b>${esc(s.framework)}</b></div><div><span>Region</span><b>${esc(s.region)}</b></div><div><span>Deploys</span><b>${s.deploys}</b></div></div>`;
+      layout(); replay();
+    }
+    let raf = 0;
+    function replay() {
+      stats.classList.remove('in'); void stats.offsetWidth; stats.classList.add('in');
+      cancelAnimationFrame(raf);
+      const nums = [...body.querySelectorAll('.bv')], t0 = performance.now();
+      const tick = (now) => {
+        const k = Math.min(1, (now - t0) / 1000), e = 1 - Math.pow(1 - k, 3);
+        nums.forEach((el) => { el.textContent = Math.round(+el.dataset.to * e); });
+        if (k < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    }
+    const go = (i) => { active = (i + SITES.length) % SITES.length; render(); };
+    car.addEventListener('click', (e) => {
+      const c = e.target.closest('.ccard'); if (!c) return;
+      if (+c.dataset.i !== active) { e.preventDefault(); go(+c.dataset.i); }
+    });
+    index.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) go(+b.dataset.i); });
+    $('c-prev').addEventListener('click', () => go(active - 1));
+    $('c-next').addEventListener('click', () => go(active + 1));
+    addEventListener('keydown', (e) => {
+      if (!$('p3').classList.contains('live')) return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); go(active + 1); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); go(active - 1); }
+    });
+    addEventListener('resize', layout);
+    render();
+    return { replay };
   })();
 
   // the stats viewer: Models / Datasets toggle, arrows, bars and a line that fill on arrival
