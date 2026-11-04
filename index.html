@@ -323,69 +323,50 @@
     .p2.live > .p2-mid { pointer-events: none; }
   }
   @media (prefers-reduced-motion: reduce) { .bt i, .spark .line, .spark .area, .spark .end { transition: none; } }
-  /* ---- page three: Vercel ---- */
-  .p3 { position: relative; z-index: 15; display: grid; gap: var(--section-gap) 2.5rem; padding: var(--main-py) var(--pad-x); }
-  .p3-left, .p3-mid { display: flex; flex-direction: column; gap: var(--section-gap); min-width: 0; }
-  .p3-logo { height: clamp(10rem, 28vh, 17rem); }
+  /* ---- page three: Vercel (minimal) ---- */
+  .p3 { position: relative; z-index: 15; display: grid; gap: 2rem 4rem; padding: calc(var(--main-py) * 2) var(--pad-x) var(--main-py); }
+  .p3-left { display: flex; flex-direction: column; gap: clamp(1rem, 3vh, 2rem); min-width: 0; }
+  .p3-logo { height: clamp(12rem, 34vh, 21rem); aspect-ratio: 1; max-width: 100%; align-self: flex-start; }
   .slot3 { width: 100%; height: 100%; display: block; }
-  .site-stats { position: relative; padding: clamp(1rem, 1.4vw, 1.4rem); }
-  .site-stats .corner { position: absolute; }
-  .site-stats .vtl { top: 0; left: 0; } .site-stats .vtr { top: 0; right: 0; } .site-stats .vbl { bottom: 0; left: 0; } .site-stats .vbr { bottom: 0; right: 0; }
-  #ss-body { display: flex; flex-direction: column; gap: .8rem; }
-  .ss-url { margin: -.35rem 0 0; font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); letter-spacing: .08em; color: var(--gray-500); }
-  .chips { display: flex; flex-wrap: wrap; gap: .4rem; }
-  .chip { border: 1px solid var(--gray-300); border-radius: 999px; padding: .22rem .6rem; font-size: var(--micro); letter-spacing: .1em; text-transform: uppercase; }
-  .site-stats .bt i { transition: width 1s cubic-bezier(.2,.7,.2,1) var(--d, 0s); }
-  .site-stats.in .bt i { width: var(--w); }
-  .ss-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; border-top: 1px solid var(--gray-200); padding-top: .7rem; }
-  .ss-meta div { display: flex; flex-direction: column; gap: .2rem; }
-  .ss-meta span { font-size: var(--micro); letter-spacing: .14em; text-transform: uppercase; color: var(--gray-500); }
-  .ss-meta b { font-family: 'Michroma', ui-monospace, monospace; font-weight: 400; font-size: var(--body); letter-spacing: .04em; }
-  .p3-title { margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; line-height: 1.05; font-size: clamp(1.8rem, 2.6vw + .6rem, 3.4rem); }
-  .p3-index { list-style: none; margin: .4rem 0 0; padding: 0; display: grid; border-top: 1px solid var(--gray-200); }
-  .p3-index button { width: 100%; display: grid; grid-template-columns: 2.4rem 1fr auto; align-items: center; gap: .6rem; padding: .62rem 0; border-bottom: 1px solid var(--gray-200); text-align: left; font-size: var(--body); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--gray-400); transition: color .2s; }
-  .p3-index button span { font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); font-weight: 400; }
-  .p3-index button i { width: 0; height: 1px; background: var(--ink); transition: width .35s; }
-  .p3-index button:hover { color: var(--gray-600); }
-  .p3-index button[aria-current="true"] { color: var(--ink); }
-  .p3-index button[aria-current="true"] i { width: 2.5rem; }
-  .p3-right { display: flex; align-items: center; gap: 1rem; min-width: 0; }
-  .carousel { position: relative; flex: 1; min-width: 0; height: 26rem; perspective: 1200px; overflow: hidden;
-    -webkit-mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent); mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent); }
-  .ccard { position: absolute; left: 50%; top: 50%; width: min(100%, 20rem); aspect-ratio: 4 / 3; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column;
-    background: var(--white); border: 1px solid var(--gray-200); box-shadow: 0 18px 40px -22px rgba(0,0,0,.35); color: inherit; text-decoration: none;
+  .p3-info { display: flex; flex-direction: column; gap: .6rem; max-width: 24rem; transition: opacity .35s, transform .35s; }
+  .p3-info.swap { opacity: 0; transform: translateY(8px); }
+  .p3-num { font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); letter-spacing: .14em; color: var(--gray-500); }
+  .p3-name { margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; line-height: 1.05; font-size: clamp(1.8rem, 2.4vw + .5rem, 3rem); }
+  .p3-desc { margin: 0; font-size: var(--body); line-height: 1.6; color: var(--gray-600); }
+  .p3-stack { margin: 0; font-size: var(--micro); letter-spacing: .16em; text-transform: uppercase; color: var(--gray-500); }
+  .p3-open { align-self: flex-start; margin-top: .4rem; display: inline-flex; align-items: center; gap: .5rem; color: var(--ink); text-decoration: none; font-size: var(--body); font-weight: 600; letter-spacing: .18em; text-transform: uppercase; border-bottom: 1px solid var(--ink); padding-bottom: .2rem; }
+  .p3-open .icon { width: 1em; height: 1em; transition: transform .25s; }
+  .p3-open:hover .icon { transform: translate(2px, -2px); }
+  .p3-right { display: flex; flex-direction: column; align-items: center; gap: 1rem; min-width: 0; }
+  .carousel { position: relative; width: 100%; height: 26rem; overflow: hidden;
+    -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); }
+  .ccard { position: absolute; left: 50%; top: 50%; width: min(100%, 22rem); aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;
+    background: var(--white); border: 1px solid var(--gray-200); color: inherit; text-decoration: none;
     transition: transform .7s cubic-bezier(.2,.75,.2,1), opacity .5s, filter .5s; will-change: transform; }
-  .chrome { display: flex; align-items: center; gap: .3rem; padding: .45rem .6rem; border-bottom: 1px solid var(--gray-200); background: #f6f7f9; }
+  .ccard.on { box-shadow: 0 24px 50px -30px rgba(0,0,0,.35); }
+  .chrome { display: flex; align-items: center; gap: .3rem; padding: .5rem .7rem; border-bottom: 1px solid var(--gray-200); }
   .chrome i { width: 6px; height: 6px; border-radius: 50%; background: var(--gray-300); }
   .chrome span { margin-left: .5rem; font-family: 'Michroma', ui-monospace, monospace; font-size: .5rem; letter-spacing: .08em; color: var(--gray-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .mock { flex: 1; position: relative; padding: .8rem; display: grid; grid-template-columns: 1.3fr 1fr; grid-template-rows: auto auto 1fr; gap: .4rem .6rem; background: linear-gradient(160deg, #fff, #f3f4f6); }
+  .mock { flex: 1; padding: 1rem; display: grid; grid-template-columns: 1.2fr 1fr; grid-template-rows: auto auto 1fr; gap: .45rem .8rem; }
   .mock b { display: block; border-radius: 3px; background: var(--gray-200); }
-  .mock .h { grid-column: 1; height: 1.1rem; background: var(--ink); width: 85%; }
-  .mock .l { grid-column: 1; height: .35rem; width: 70%; } .mock .l.s { width: 48%; }
-  .mock .v { grid-column: 2; grid-row: 1 / 4; border-radius: 6px; background: radial-gradient(circle at 30% 30%, var(--acc), transparent 60%), radial-gradient(circle at 70% 75%, var(--acc2), transparent 55%), #eef0f3; }
-  .mock .g { grid-column: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: .3rem; align-self: end; }
-  .mock .g b { height: 1.6rem; }
-  .mock .g b:first-child { background: var(--acc); opacity: .85; }
-  .ccap { display: flex; align-items: center; gap: .6rem; padding: .5rem .7rem; border-top: 1px solid var(--gray-200); font-size: var(--micro); font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
-  .ccap span { font-family: 'Michroma', ui-monospace, monospace; font-weight: 400; color: var(--gray-500); }
-  .ccap em { margin-left: auto; font-style: normal; font-weight: 400; color: var(--gray-400); letter-spacing: .1em; }
-  .car-arrows { display: flex; flex-direction: column; align-items: center; gap: .6rem; font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); letter-spacing: .1em; color: var(--gray-500); writing-mode: horizontal-tb; }
-  .car-arrows button { width: 2.2rem; height: 2.2rem; border: 1px solid var(--gray-300); border-radius: 50%; display: grid; place-items: center; background: var(--white); transition: border-color .2s, background .2s, color .2s; }
-  .car-arrows button:hover { border-color: var(--ink); background: var(--ink); color: var(--white); }
-  .car-arrows .icon { width: 1rem; height: 1rem; }
+  .mock .h { height: 1rem; width: 80%; background: var(--ink); }
+  .mock .l { height: .32rem; width: 66%; } .mock .l.s { width: 44%; }
+  .mock .v { grid-column: 2; grid-row: 1 / 4; border-radius: 6px; background: radial-gradient(circle at 35% 35%, var(--acc), transparent 62%), #f1f2f4; }
+  .car-nav { display: flex; gap: .5rem; }
+  .car-nav button { width: 2rem; height: 2rem; display: grid; place-items: center; color: var(--gray-500); transition: color .2s; }
+  .car-nav button:hover { color: var(--ink); }
+  .car-nav .icon { width: 1.1rem; height: 1.1rem; }
   @media (min-width: 1024px) {
-    .p3 { position: fixed; inset: 0; padding-top: calc(var(--header-pt) + 3.75rem); padding-bottom: var(--main-py);
-      grid-template-columns: minmax(17rem, 25rem) minmax(13rem, 1fr) minmax(19rem, 25rem); align-items: center;
+    .p3 { position: fixed; inset: 0; padding-top: calc(var(--header-pt) + 3.75rem);
+      grid-template-columns: minmax(18rem, 1fr) minmax(20rem, 28rem); align-items: center;
       opacity: 0; pointer-events: none; visibility: hidden; }
     .p3.live > * { pointer-events: auto; }
     .p3.live > .p3-left { pointer-events: none; }
-    .p3.live .site-stats { pointer-events: auto; }
-    .p3-left { justify-content: center; }
-    .carousel { height: calc(100vh - var(--header-pt) - 3.75rem - var(--main-py) * 2); max-height: 44rem; }
+    .p3.live .p3-info { pointer-events: auto; }
+    .carousel { height: min(36rem, calc(100vh - var(--header-pt) - 9rem)); }
     .snap-c { top: 320vh; }
   }
-  @media (max-width: 1023.98px) { .p3-mid { order: -1; } .p3 { padding-top: calc(var(--main-py) * 2); } }
-  @media (prefers-reduced-motion: reduce) { .ccard, .site-stats .bt i { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .ccard, .p3-info { transition: none; } }
   @media (min-width: 1024px) { .hud { display: flex; } .rail { display: block; } }
   @media (max-width: 1023.98px) { .stat { flex: 1 1 9rem; } }
   @media (max-width: 480px) {
@@ -550,30 +531,22 @@
     </a>
   </div>
 </section>
-<section class="p3" id="p3" aria-labelledby="p3-title">
+<section class="p3" id="p3" aria-labelledby="p3-eyebrow">
   <div class="p3-left">
-    <p class="eyebrow">03 / Deployed</p>
+    <p class="eyebrow" id="p3-eyebrow">03 / Deployed</p>
     <div class="p3-logo" id="p3-logo"><canvas class="slot3" data-logo="vercel" aria-hidden="true"></canvas></div>
-    <div class="site-stats" id="site-stats">
-      <svg class="corner vtl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
-      <svg class="corner vtr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg>
-      <svg class="corner vbl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg>
-      <svg class="corner vbr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
-      <div id="ss-body" aria-live="polite"></div>
+    <div class="p3-info" id="p3-info" aria-live="polite">
+      <span class="p3-num" id="p3-num">01 / 05</span>
+      <h2 class="p3-name font-orbitron" id="p3-name">Lex.ai</h2>
+      <p class="p3-desc" id="p3-desc"></p>
+      <p class="p3-stack" id="p3-stack"></p>
+      <a class="p3-open" id="p3-open" href="#" target="_blank" rel="noopener">Open site <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
     </div>
-  </div>
-  <div class="p3-mid">
-    <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
-    <h2 class="p3-title font-orbitron" id="p3-title">Live<br>on the<br>edge</h2>
-    <p class="p2-intro">Web apps, dashboards and tools I've built and shipped to production.</p>
-    <ol class="p3-index" id="p3-index"></ol>
-    <a class="cta" id="p3-open" href="#" target="_blank" rel="noopener">Open site <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
   </div>
   <div class="p3-right">
     <div class="carousel" id="carousel" aria-roledescription="carousel" aria-label="Deployed sites"></div>
-    <div class="car-arrows">
+    <div class="car-nav">
       <button id="c-prev" aria-label="Previous site"><svg class="icon" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg></button>
-      <span id="c-count">01 / 05</span>
       <button id="c-next" aria-label="Next site"><svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
     </div>
   </div>
@@ -1570,33 +1543,26 @@ renderer.setAnimationLoop(() => {
 
   // ---------- page three: deployed sites ----------
   const sites = (() => {
-    // Placeholder URLs, screenshots and scores; replace when the real ones arrive.
+    // Placeholder URLs and previews; replace with real screenshots and links.
     const SITES = [
-      { name: 'Lex.ai', url: 'lex-ai.vercel.app', href: 'https://github.com/Zephyr4772/lex-ai', acc: '#2b59ff', acc2: '#9db4ff',
-        desc: 'RAG over 41,876 Supreme Court judgments.', stack: ['React', 'FastAPI', 'ChromaDB', 'Ollama'], framework: 'React', region: 'bom1', deploys: 42,
-        scores: [['Performance', 96], ['Accessibility', 93], ['Best practices', 100], ['SEO', 92]] },
-      { name: 'PharmaScope', url: 'pharmascope.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#18a058', acc2: '#a7e3c1',
-        desc: 'Drug-shortage tracking over 120,000+ Indian drug records.', stack: ['React', 'FastAPI', 'PostgreSQL'], framework: 'React', region: 'bom1', deploys: 31,
-        scores: [['Performance', 91], ['Accessibility', 95], ['Best practices', 96], ['SEO', 100]] },
-      { name: 'Dr.Data', url: 'dr-data.vercel.app', href: 'https://github.com/Zephyr4772/Dr.Data', acc: '#ff6a3d', acc2: '#ffc2ad',
-        desc: 'Checks whether a dataset can support a use case before training.', stack: ['FastAPI', 'scikit-learn', 'React'], framework: 'React', region: 'iad1', deploys: 18,
-        scores: [['Performance', 94], ['Accessibility', 90], ['Best practices', 100], ['SEO', 89]] },
-      { name: 'ShipScript', url: 'shipscript.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#111113', acc2: '#9ca3af',
-        desc: 'MCP server that reads a repo, screenshots its deployment and drafts docs.', stack: ['TypeScript', 'MCP', 'Node'], framework: 'Next.js', region: 'iad1', deploys: 12,
-        scores: [['Performance', 99], ['Accessibility', 97], ['Best practices', 100], ['SEO', 91]] },
-      { name: 'This portfolio', url: 'vatsal.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#ffd21e', acc2: '#ffad03',
-        desc: 'Astra, a hanging ball and this carousel, in one page of WebGL.', stack: ['three.js', 'WebGL', 'JavaScript'], framework: 'Static', region: 'bom1', deploys: 20,
-        scores: [['Performance', 88], ['Accessibility', 94], ['Best practices', 100], ['SEO', 100]] },
+      { name: 'Lex.ai', url: 'lex-ai.vercel.app', href: 'https://github.com/Zephyr4772/lex-ai', acc: '#2b59ff',
+        desc: 'RAG over 41,876 Supreme Court judgments, every claim a traceable case card.', stack: 'React · FastAPI · ChromaDB · Ollama' },
+      { name: 'PharmaScope', url: 'pharmascope.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#18a058',
+        desc: 'Drug-shortage tracking over 120,000+ Indian drug records.', stack: 'React · FastAPI · PostgreSQL' },
+      { name: 'Dr.Data', url: 'dr-data.vercel.app', href: 'https://github.com/Zephyr4772/Dr.Data', acc: '#ff6a3d',
+        desc: 'Checks whether a dataset can support a use case before training starts.', stack: 'FastAPI · scikit-learn' },
+      { name: 'ShipScript', url: 'shipscript.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#111113',
+        desc: 'An MCP server that reads a repo, screenshots its deployment and drafts docs.', stack: 'TypeScript · MCP' },
+      { name: 'This site', url: 'vatsal.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#ffd21e',
+        desc: 'Astra, a hanging ball and this page, in one file of WebGL.', stack: 'three.js · WebGL' },
     ];
-    const car = $('carousel'), stats = $('site-stats'), body = $('ss-body'), index = $('p3-index'), open = $('p3-open'), count = $('c-count');
+    const car = $('carousel'), info = $('p3-info');
     let active = 0;
     car.innerHTML = SITES.map((s, i) => `
-      <a class="ccard" data-i="${i}" href="${esc(s.href)}" target="_blank" rel="noopener" style="--acc:${s.acc};--acc2:${s.acc2}" aria-label="${esc(s.name)}">
+      <a class="ccard" data-i="${i}" href="${esc(s.href)}" target="_blank" rel="noopener" style="--acc:${s.acc}" aria-label="${esc(s.name)}">
         <div class="chrome"><i></i><i></i><i></i><span>${esc(s.url)}</span></div>
-        <div class="mock" aria-hidden="true"><b class="h"></b><b class="l"></b><b class="l s"></b><b class="v"></b><div class="g"><b></b><b></b><b></b></div></div>
-        <div class="ccap"><span>${String(i + 1).padStart(2, '0')}</span>${esc(s.name)}<em>Preview</em></div>
+        <div class="mock" aria-hidden="true"><b class="h"></b><b class="l"></b><b class="l s"></b><b class="v"></b></div>
       </a>`).join('');
-    index.innerHTML = SITES.map((s, i) => `<li><button data-i="${i}"><span>${String(i + 1).padStart(2, '0')}</span>${esc(s.name)}<i></i></button></li>`).join('');
     const cards = [...car.querySelectorAll('.ccard')];
     function layout() {
       const ch = cards[0].offsetHeight || 240;
@@ -1605,48 +1571,34 @@ renderer.setAnimationLoop(() => {
         if (k > SITES.length / 2) k -= SITES.length;
         if (k < -SITES.length / 2) k += SITES.length;
         const a = Math.abs(k);
-        c.style.transform = `translate(-50%, -50%) translate(${k * k * 22}px, ${k * ch * 0.74}px) rotate(${-k * 9}deg) scale(${1 - a * 0.13})`;
-        c.style.opacity = a > 2 ? 0 : 1 - a * 0.28;
-        c.style.filter = a ? `blur(${a * 1.2}px)` : 'none';
+        c.style.transform = `translate(-50%, -50%) translate(${a * 14}px, ${k * ch * 0.8}px) rotate(${-k * 6}deg) scale(${1 - a * 0.12})`;
+        c.style.opacity = a > 1 ? 0 : a ? 0.35 : 1;
+        c.style.filter = a ? 'blur(1.5px)' : 'none';
         c.style.zIndex = 10 - a;
-        c.style.pointerEvents = a > 2 ? 'none' : '';
+        c.style.pointerEvents = a > 1 ? 'none' : '';
+        c.classList.toggle('on', a === 0);
         c.tabIndex = a === 0 ? 0 : -1;
       });
     }
-    function render() {
+    function fill() {
       const s = SITES[active];
-      count.textContent = String(active + 1).padStart(2, '0') + ' / ' + String(SITES.length).padStart(2, '0');
-      index.querySelectorAll('button').forEach((b, i) => b.setAttribute('aria-current', String(i === active)));
-      open.href = s.href;
-      body.innerHTML = `
-        <div class="v-head"><span class="tag">Project ${String(active + 1).padStart(2, '0')} · Vercel</span><span class="ph-pill">Placeholder</span></div>
-        <h3 class="v-name">${esc(s.name)}</h3>
-        <p class="ss-url">${esc(s.url)}</p>
-        <div class="chips">${s.stack.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>
-        <div class="bars">${s.scores.map(([l, v], i) => `
-          <div class="bar ph"><span>${esc(l)}</span><span class="bt"><i style="--w:${v}%;--d:${(0.08 * i).toFixed(2)}s"></i></span><span class="bv" data-to="${v}" data-unit="">0</span></div>`).join('')}
-        </div>
-        <div class="ss-meta"><div><span>Framework</span><b>${esc(s.framework)}</b></div><div><span>Region</span><b>${esc(s.region)}</b></div><div><span>Deploys</span><b>${s.deploys}</b></div></div>`;
-      layout(); replay();
+      $('p3-num').textContent = String(active + 1).padStart(2, '0') + ' / ' + String(SITES.length).padStart(2, '0');
+      $('p3-name').textContent = s.name;
+      $('p3-desc').textContent = s.desc;
+      $('p3-stack').textContent = s.stack;
+      $('p3-open').href = s.href;
     }
-    let raf = 0;
-    function replay() {
-      stats.classList.remove('in'); void stats.offsetWidth; stats.classList.add('in');
-      cancelAnimationFrame(raf);
-      const nums = [...body.querySelectorAll('.bv')], t0 = performance.now();
-      const tick = (now) => {
-        const k = Math.min(1, (now - t0) / 1000), e = 1 - Math.pow(1 - k, 3);
-        nums.forEach((el) => { el.textContent = Math.round(+el.dataset.to * e); });
-        if (k < 1) raf = requestAnimationFrame(tick);
-      };
-      raf = requestAnimationFrame(tick);
+    let swapT = 0;
+    function go(i) {
+      active = (i + SITES.length) % SITES.length;
+      layout();
+      info.classList.add('swap');
+      clearTimeout(swapT); swapT = setTimeout(() => { fill(); info.classList.remove('swap'); }, 220);
     }
-    const go = (i) => { active = (i + SITES.length) % SITES.length; render(); };
     car.addEventListener('click', (e) => {
       const c = e.target.closest('.ccard'); if (!c) return;
       if (+c.dataset.i !== active) { e.preventDefault(); go(+c.dataset.i); }
     });
-    index.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) go(+b.dataset.i); });
     $('c-prev').addEventListener('click', () => go(active - 1));
     $('c-next').addEventListener('click', () => go(active + 1));
     addEventListener('keydown', (e) => {
@@ -1655,8 +1607,8 @@ renderer.setAnimationLoop(() => {
       if (e.key === 'ArrowUp') { e.preventDefault(); go(active - 1); }
     });
     addEventListener('resize', layout);
-    render();
-    return { replay };
+    fill(); layout();
+    return { replay() { info.classList.add('swap'); requestAnimationFrame(() => requestAnimationFrame(() => info.classList.remove('swap'))); } };
   })();
 
   // the stats viewer: Models / Datasets toggle, arrows, bars and a line that fill on arrival
