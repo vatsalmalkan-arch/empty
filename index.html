@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Inter+Tight:wght@400;500&display=swap">
 <style>
-  /* Layout: one full-bleed stage. Pixel headline behind a liquid particle bust, small caption bottom-left. */
+  /* Layout: one full-bleed stage. Pixel headline behind a particle bust you can press and turn, small caption bottom-left. */
   :root {
     color-scheme: dark;
     --bg: #050407;
@@ -99,7 +99,7 @@ const camera = new THREE.PerspectiveCamera(30, 1, 0.01, 50);
 const bust = new THREE.Group();
 scene.add(bust);
 
-let points = null, bounds = null;
+let points = null, bounds = null, base = null, nrm = null, off = null, clump = null;
 
 // ---------- load + sample ----------
 const loader = new GLTFLoader();
@@ -173,13 +173,28 @@ loader.load(MODEL_URL, (gltf) => {
   bounds = { h: maxY - minY, w: maxX * 2 };
 
   const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(posArr.slice(0, k * 3), 3));
-  geo.setAttribute('normal', new THREE.BufferAttribute(nrmArr.slice(0, k * 3), 3));
+  base = posArr.slice(0, k * 3);
+  nrm = nrmArr.slice(0, k * 3);
+  off = new Float32Array(k * 3);
+  // Clumps: neighbouring grains share a random "stickiness" so the surface
+  // tears and dents in chunks, like kinetic sand.
+  clump = new Float32Array(k);
+  for (let i = 0; i < k; i++) {
+    const cx = Math.floor(base[i * 3] * 38), cy = Math.floor(base[i * 3 + 1] * 38), cz = Math.floor(base[i * 3 + 2] * 38);
+    const hsh = Math.sin(cx * 127.1 + cy * 311.7 + cz * 74.7) * 43758.5453;
+    clump[i] = 0.45 + (hsh - Math.floor(hsh)) * 1.1;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(base.slice(), 3).setUsage(THREE.DynamicDrawUsage));
+  geo.setAttribute('normal', new THREE.BufferAttribute(nrm, 3));
   geo.setAttribute('aRnd', new THREE.BufferAttribute(rnd.slice(0, k), 1));
+  geo.setAttribute('aDent', new THREE.BufferAttribute(new Float32Array(k), 1).setUsage(THREE.DynamicDrawUsage));
 
   points = new THREE.Points(geo, makeMaterial());
   points.frustumCulled = false;
   bust.add(points);
+  // turn around her middle, not her base
+  points.position.y = -bounds.h / 2;
+  bust.position.y = bounds.h / 2;
 
   frame();
   document.getElementById('loading').style.opacity = 0;
@@ -188,13 +203,7 @@ loader.load(MODEL_URL, (gltf) => {
   console.error(err);
 });
 
-// ---------- the "symbiote" material ----------
-// Everything moves on the GPU: a slow organic swell, ripples that spread
-// from where the pointer has been (with warped, uneven wavefronts), and
-// tendrils that reach toward the pointer and wobble back.
-const MAX_RIPPLES = 12;
-const ripples = Array.from({ length: MAX_RIPPLES }, () => new THREE.Vector4(0, 0, -100, 0)); // x, y, birth time, strength
-
+// ---------- material: glossy dark beads ----------
 const NOISE = /* glsl */`
   // 3D simplex noise (Ashima Arts / Stefan Gustavson, MIT)
   vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
@@ -223,94 +232,47 @@ const NOISE = /* glsl */`
 
 function makeMaterial() {
   return new THREE.ShaderMaterial({
-    transparent: false,
-    depthWrite: true,
     uniforms: {
-      uTime:    { value: 0 },
-      uSize:    { value: 1 },
-      uHeight:  { value: 1 },
-      uPointer: { value: new THREE.Vector3(99, 99, 0) },
-      uReach:   { value: 0 },        // 0..1, eases in while the pointer is over her
-      uRipples: { value: ripples },
-      uInk:     { value: new THREE.Color('#14111c') },
-      uSheen:   { value: new THREE.Color('#b9b0d6') },
-      uHot:     { value: new THREE.Color('#f1f7c4') },
+      uTime:   { value: 0 },
+      uSize:   { value: 1 },
+      uHeight: { value: 1 },
+      uInk:    { value: new THREE.Color('#14111c') },
+      uSheen:  { value: new THREE.Color('#b9b0d6') },
+      uHot:    { value: new THREE.Color('#e7eeb8') },
     },
     vertexShader: /* glsl */`
-      #define MAX_RIPPLES ${MAX_RIPPLES}
-      uniform float uTime, uSize, uHeight, uReach;
-      uniform vec3 uPointer;
-      uniform vec4 uRipples[MAX_RIPPLES];
-      attribute float aRnd;
+      uniform float uTime, uSize, uHeight;
+      attribute float aRnd, aDent;
       varying vec3 vNormalV;
-      varying float vExcite, vY, vRnd;
+      varying float vDent, vY, vRnd;
       ${NOISE}
       void main() {
         vec3 p = position;
-        vec3 nrm = normalize(normal);
-        float excite = 0.0;
-
-        // 1. slow, uneven swelling of the whole surface
-        float swell = snoise(p * 3.0 + vec3(0.0, uTime * 0.15, uTime * 0.07));
-        p += nrm * swell * 0.006;
-
-        // 2. ripples from where the pointer passed; the wavefront is warped by
-        //    noise so it never spreads as a clean circle
-        for (int i = 0; i < MAX_RIPPLES; i++) {
-          vec4 r = uRipples[i];
-          float age = uTime - r.z;
-          if (age < 0.0 || age > 3.0) continue;
-          float warp = snoise(vec3(p.xy * 6.0, r.z)) * 0.07;
-          float d = distance(p.xy, r.xy) + warp;
-          float front = age * 0.32;
-          float band = exp(-pow((d - front) * 14.0, 2.0));           // one moving ring
-          float wave = sin((d - front) * 60.0) * band;
-          float fade = exp(-age * 1.4) * r.w;
-          p += nrm * wave * fade * 0.035;
-          excite += abs(wave) * fade;
-        }
-
-        // 3. tendrils reaching toward the pointer: an irregular, noisy zone
-        //    whose grains get pulled out and twisted
-        vec2 toP = uPointer.xy - p.xy;
-        float dist = length(toP);
-        float edge = 0.11 + snoise(vec3(p.xy * 9.0, uTime * 0.6)) * 0.06;
-        float grab = smoothstep(edge, 0.0, dist) * uReach;
-        float strand = pow(max(snoise(vec3(p * 22.0) + uTime * 0.4), 0.0), 2.0);
-        vec3 twist = vec3(
-          snoise(p * 7.0 + vec3(uTime * 0.9, 0.0, 0.0)),
-          snoise(p * 7.0 + vec3(0.0, uTime * 0.9, 3.1)),
-          snoise(p * 7.0 + vec3(5.2, 0.0, uTime * 0.9)));
-        p += (nrm * 0.07 + vec3(toP, 0.0) * 0.5 + twist * 0.03) * grab * (0.35 + strand * 2.2);
-        excite += grab * (0.4 + strand);
-
+        // barely-there breathing so she never looks frozen
+        p += normal * snoise(p * 3.0 + vec3(0.0, uTime * 0.12, 0.0)) * 0.003;
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
-        vNormalV = normalize(normalMatrix * nrm);
-        vExcite = clamp(excite, 0.0, 1.0);
-        vY = position.y / uHeight;
-        vRnd = aRnd;
-        gl_PointSize = uSize * (0.55 + aRnd * 0.9) * (1.0 + vExcite * 0.4) / -mv.z;
+        vNormalV = normalize(normalMatrix * normal);
+        vDent = aDent; vY = position.y / uHeight; vRnd = aRnd;
+        gl_PointSize = uSize * (0.55 + aRnd * 0.9) / -mv.z;
         gl_Position = projectionMatrix * mv;
       }`,
     fragmentShader: /* glsl */`
       uniform vec3 uInk, uSheen, uHot;
       varying vec3 vNormalV;
-      varying float vExcite, vY, vRnd;
+      varying float vDent, vY, vRnd;
       void main() {
-        // each grain is a little glossy bead: fake a sphere normal inside the point
         vec2 c = gl_PointCoord * 2.0 - 1.0;
         float r2 = dot(c, c);
         if (r2 > 1.0) discard;
         vec3 bead = vec3(c.x, -c.y, sqrt(1.0 - r2));
         vec3 n = normalize(vNormalV * 1.6 + bead);
         vec3 L = normalize(vec3(-0.4, 0.6, 0.7));
-        vec3 V = vec3(0.0, 0.0, 1.0);
         float diff = max(dot(n, L), 0.0);
-        float spec = pow(max(dot(reflect(-L, n), V), 0.0), 28.0);
-        float rim = pow(1.0 - max(dot(vNormalV, V), 0.0), 2.5);
+        float spec = pow(max(dot(reflect(-L, n), vec3(0.0, 0.0, 1.0)), 0.0), 28.0);
+        float rim = pow(1.0 - max(vNormalV.z, 0.0), 2.5);
         vec3 col = uInk + uSheen * (diff * 0.34 + rim * 0.6) + vec3(spec) * 1.1;
-        col = mix(col, uHot, vExcite * 0.55);
-        // fade into the floor
+        // freshly worked sand looks a little lighter, then settles
+        col = mix(col, uHot, clamp(vDent, 0.0, 1.0) * 0.35);
         float fadeIn = smoothstep(0.0, 0.14, vY);
         if (fadeIn < 0.999 && vRnd > fadeIn) discard;
         gl_FragColor = vec4(col, 1.0);
@@ -349,53 +311,141 @@ function fitHeadline() {
 fitHeadline();
 document.fonts?.ready.then(fitHeadline);
 
-// ---------- pointer (mouse or touch) ----------
+// ---------- interaction ----------
+// Mouse: hover to press into her, drag to turn her around.
+// Touch: one finger presses, two fingers turn her.
+const BRUSH   = 0.085;   // brush radius (model is height 1)
+const DENT    = 1.6;     // how deep a press goes
+const SMEAR   = 1.4;     // how far sand is dragged along with the motion
+const SETTLE  = 0.55;    // how fast dents slump back (per second)
+const MAX_OFF = 0.12;    // never pull a grain further than this
+
 const ndc = new THREE.Vector2(9, 9);
-let pointerActive = false;
-const ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-function setPointer(e) {
-  ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
-  pointerActive = true;
-}
-addEventListener('pointermove', setPointer);
-addEventListener('pointerdown', (e) => { setPointer(e); dropRipple(1.6); });
-addEventListener('pointerleave', () => { pointerActive = false; });
-addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') pointerActive = false; });
+let sculpting = false;
+const touches = new Map();
+let dragging = false, lastDrag = null;
+let yaw = 0, pitch = 0, yawVel = 0, pitchVel = 0;
 
-const pointer = new THREE.Vector3(99, 99, 0), lastDrop = new THREE.Vector3(99, 99, 0);
-let rippleSlot = 0, lastDropTime = -1, now = 0;
-function dropRipple(strength) {
-  if (!points) return;
-  ripples[rippleSlot].set(pointer.x, pointer.y, now, strength);
-  rippleSlot = (rippleSlot + 1) % MAX_RIPPLES;
-  lastDrop.copy(pointer); lastDropTime = now;
+canvas.addEventListener('pointerdown', (e) => {
+  canvas.setPointerCapture(e.pointerId);
+  touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (e.pointerType === 'mouse') { dragging = true; sculpting = false; lastDrag = { x: e.clientX, y: e.clientY }; }
+  else if (touches.size >= 2) { dragging = true; sculpting = false; lastDrag = centroid(); }
+  else { setNdc(e); sculpting = true; }
+});
+canvas.addEventListener('pointermove', (e) => {
+  if (touches.has(e.pointerId)) touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (dragging) {
+    const pt = e.pointerType === 'mouse' ? { x: e.clientX, y: e.clientY } : centroid();
+    const dx = pt.x - lastDrag.x, dy = pt.y - lastDrag.y;
+    lastDrag = pt;
+    yawVel = dx * 0.006; pitchVel = dy * 0.004;
+    yaw += yawVel; pitch = THREE.MathUtils.clamp(pitch + pitchVel, -0.6, 0.6);
+    canvas.style.cursor = 'grabbing';
+    return;
+  }
+  setNdc(e);
+  sculpting = e.pointerType === 'mouse' || touches.size === 1;
+});
+const endPointer = (e) => {
+  touches.delete(e.pointerId);
+  if (e.pointerType === 'mouse') { dragging = false; canvas.style.cursor = 'grab'; }
+  else if (touches.size < 2) { dragging = false; sculpting = touches.size === 1; }
+  if (e.pointerType !== 'mouse' && touches.size === 0) sculpting = false;
+};
+canvas.addEventListener('pointerup', endPointer);
+canvas.addEventListener('pointercancel', endPointer);
+canvas.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse' && !dragging) sculpting = false; });
+canvas.style.cursor = 'grab';
+function setNdc(e) { ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); }
+function centroid() {
+  let x = 0, y = 0; for (const t of touches.values()) { x += t.x; y += t.y; }
+  return { x: x / touches.size, y: y / touches.size };
 }
 
-// ---------- render loop ----------
+// ---------- sculpt + render loop ----------
 const clock = new THREE.Clock();
-const hit = new THREE.Vector3();
-let reach = 0;
+const ray = new THREE.Raycaster(), inv = new THREE.Matrix4();
+const o = new THREE.Vector3(), d = new THREE.Vector3(), brush = new THREE.Vector3(), lastBrush = new THREE.Vector3(), move = new THREE.Vector3();
+let haveLast = false, settling = 0;
+
 renderer.setAnimationLoop(() => {
   const dt = Math.min(clock.getDelta(), 1 / 30);
-  now = clock.elapsedTime;
+  const t = clock.elapsedTime;
 
   if (points) {
-    let over = false;
-    if (pointerActive) {
-      ray.setFromCamera(ndc, camera);
-      if (ray.ray.intersectPlane(plane, hit)) {
-        pointer.copy(hit);
-        over = Math.abs(hit.x) < bounds.w * 0.6 && hit.y > 0 && hit.y < bounds.h * 1.05;
-        // moving drops new ripples; faster movement = stronger, more frequent
-        const moved = pointer.distanceTo(lastDrop);
-        if (over && moved > 0.035 && now - lastDropTime > 0.06) dropRipple(Math.min(1.4, 0.5 + moved * 6));
-      }
+    // turning: follow the drag, then glide to a stop
+    if (!dragging) {
+      yaw += yawVel; pitch = THREE.MathUtils.clamp(pitch + pitchVel, -0.6, 0.6);
+      yawVel *= Math.pow(0.92, dt * 60); pitchVel *= Math.pow(0.92, dt * 60);
     }
-    reach += ((over ? 1 : 0) - reach) * (1 - Math.exp(-dt * (over ? 3 : 1.2)));
-    const u = points.material.uniforms;
-    u.uTime.value = now;
-    u.uReach.value = reach;
-    u.uPointer.value.copy(pointer);
+    bust.rotation.set(pitch, yaw, 0);
+    bust.updateMatrixWorld();
+
+    // pointer ray in her own space
+    let active = false;
+    if (sculpting && !dragging) {
+      ray.setFromCamera(ndc, camera);
+      inv.copy(points.matrixWorld).invert();
+      const r = ray.ray.clone().applyMatrix4(inv);
+      o.copy(r.origin); d.copy(r.direction).normalize();
+      // brush centre: where the ray passes closest to her middle
+      brush.copy(o).addScaledVector(d, -o.clone().sub(new THREE.Vector3(0, bounds.h * 0.5, 0)).dot(d));
+      move.copy(brush).sub(lastBrush);
+      if (!haveLast || move.length() > 0.2) move.set(0, 0, 0);
+      lastBrush.copy(brush); haveLast = true;
+      active = true;
+    } else haveLast = false;
+
+    if (active || settling > 0) {
+      const pos = points.geometry.attributes.position.array;
+      const dent = points.geometry.attributes.aDent.array;
+      const n = base.length / 3;
+      const keep = Math.exp(-SETTLE * dt);
+      const R2 = (BRUSH * 1.7) ** 2;
+      let maxOff = 0;
+      for (let i = 0; i < n; i++) {
+        const j = i * 3;
+        let ox = off[j] * keep, oy = off[j + 1] * keep, oz = off[j + 2] * keep;
+        // loose sand slumps a touch as it settles
+        oy -= (Math.abs(ox) + Math.abs(oz)) * 0.25 * dt;
+
+        if (active) {
+          const px = base[j] + ox, py = base[j + 1] + oy, pz = base[j + 2] + oz;
+          const vx = px - o.x, vy = py - o.y, vz = pz - o.z;
+          const along = vx * d.x + vy * d.y + vz * d.z;
+          const r2 = vx * vx + vy * vy + vz * vz - along * along;     // distance to the ray, squared
+          const nx = nrm[j], ny = nrm[j + 1], nz = nrm[j + 2];
+          const facing = -(nx * d.x + ny * d.y + nz * d.z);          // only the side facing you
+          if (r2 < R2 && facing > 0) {
+            // uneven, wobbling brush edge so presses never look circular
+            const wob = 0.75 + 0.45 * Math.sin(px * 41 + py * 23 + t * 1.7) * Math.sin(pz * 37 - py * 29 + t * 1.1);
+            const rr = Math.sqrt(r2) / (BRUSH * wob);
+            const c = clump[i] * facing * dt * 6;
+            if (rr < 1) {
+              const f = (1 - rr * rr) * c;
+              ox += (-nx * DENT * 0.05 + move.x * SMEAR) * f;
+              oy += (-ny * DENT * 0.05 + move.y * SMEAR) * f;
+              oz += (-nz * DENT * 0.05 + move.z * SMEAR) * f;
+            } else if (rr < 1.7) {
+              // sand pushed out of the dent piles up around its rim
+              const f = (1 - (rr - 1) / 0.7) * c * 0.03;
+              ox += nx * f; oy += ny * f; oz += nz * f;
+            }
+          }
+        }
+        const m = Math.abs(ox) + Math.abs(oy) + Math.abs(oz);
+        if (m > MAX_OFF) { const s = MAX_OFF / m; ox *= s; oy *= s; oz *= s; }
+        off[j] = ox; off[j + 1] = oy; off[j + 2] = oz;
+        pos[j] = base[j] + ox; pos[j + 1] = base[j + 1] + oy; pos[j + 2] = base[j + 2] + oz;
+        dent[i] = Math.min(1, m * 30);
+        if (m > maxOff) maxOff = m;
+      }
+      points.geometry.attributes.position.needsUpdate = true;
+      points.geometry.attributes.aDent.needsUpdate = true;
+      settling = maxOff > 1e-4 ? 1 : 0;
+    }
+    points.material.uniforms.uTime.value = t;
   }
   renderer.render(scene, camera);
 });
