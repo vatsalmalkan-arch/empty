@@ -3,69 +3,258 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vatsal Malkan</title>
+<title>LGPSM — Future Forward Fashion</title>
+<meta name="description" content="Pure white minimal futuristic fashion website interface.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Inter+Tight:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Michroma&family=Orbitron:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
 <style>
-  /* Layout: one full-bleed stage. Pixel headline behind a particle bust you can push, turn and resize, small caption bottom-left. */
+  /* Layout: one full-viewport composition. Particle bust full-bleed behind (z-0),
+     header and hero UI above (z-10/z-20), drawers on the right. White page, black ink. */
   :root {
-    color-scheme: dark;
-    --bg: #050407;
-    --headline: #c9c4d3;
-    --text: #e9e5f0;
-    --muted: #8a8496;
-    --chip: #1b1922;
-    --font-pixel: "Silkscreen", ui-monospace, "SF Mono", Menlo, monospace;
-    --font-body: "Inter Tight", system-ui, -apple-system, "Segoe UI", sans-serif;
+    color-scheme: light;
+    --white: #ffffff;
+    --ink: #000000;
+    --gray-200: #e5e7eb; --gray-300: #d1d5db; --gray-400: #9ca3af;
+    --gray-500: #6b7280; --gray-600: #4b5563;
+    --slate: #64748b;
+    --emerald: #34d399;
+
+    --pad-x: clamp(1.25rem, 4.5vw, 5rem);
+    --pad-y: clamp(1rem, 3vh, 4rem);
+    --header-pt: clamp(1.25rem, 2.5vh, 2.5rem);
+    --gap-nav: clamp(1rem, 2.2vw, 2.25rem);
+    --logo: clamp(1.35rem, 1.2vw + 0.9rem, 2.1rem);
+    --logo-deg: clamp(0.65rem, 0.4vw + 0.45rem, 0.9rem);
+    --nav: clamp(0.65rem, 0.35vw + 0.5rem, 0.875rem);
+    --headline: clamp(2.15rem, 4.5vw + 0.75rem, 5.25rem);
+    --body: clamp(0.7rem, 0.35vw + 0.55rem, 0.9rem);
+    --micro: clamp(0.55rem, 0.25vw + 0.45rem, 0.7rem);
+    --btn-px: clamp(1.15rem, 1.4vw, 1.75rem);
+    --btn-py: clamp(0.6rem, 0.9vh, 0.85rem);
+    --btn-gap: clamp(0.75rem, 1vw, 1.1rem);
+    --feature-pad: clamp(1rem, 1.5vw, 1.75rem);
+    --feature-min: clamp(13rem, 18vw, 20rem);
+    --globe: clamp(2.25rem, 2.5vw + 1rem, 3.25rem);
+    --checker-w: clamp(2.75rem, 4.5vw, 6.5rem);
+    --checker-h: clamp(1.35rem, 2.2vw, 3rem);
+    --corner: clamp(0.65rem, 0.4vw + 0.4rem, 0.95rem);
+    --icon: clamp(1rem, 0.6vw + 0.7rem, 1.35rem);
+    --drawer-pad: clamp(1.25rem, 2.5vw, 2.25rem);
+    --drawer-max: clamp(18rem, 28vw, 28rem);
+    --section-gap: clamp(0.75rem, 1.5vh, 1.5rem);
+    --main-py: clamp(1.25rem, 4vh, 4rem);
   }
-  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
-  #headline {
-    position: fixed; left: 0; right: 0; top: 9vh; margin: 0;
-    font-family: var(--font-pixel); font-weight: 400;
-    font-size: 10vw; line-height: 1; letter-spacing: -0.02em;
-    color: var(--headline); text-align: center; white-space: nowrap;
-    user-select: none; pointer-events: none;
+  * { box-sizing: border-box; }
+  .font-orbitron { font-family: 'Orbitron', ui-sans-serif, system-ui, sans-serif; }
+  .font-jakarta { font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--white); color: var(--ink);
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
   }
-  #stage { position: fixed; inset: 0; display: block; width: 100%; height: 100%; touch-action: none; }
-  #caption {
-    position: fixed; left: max(20px, env(safe-area-inset-left, 0px)); bottom: calc(22px + env(safe-area-inset-bottom, 0px));
-    max-width: min(320px, calc(100% - 40px));
-    font-family: var(--font-body); pointer-events: none;
+  ::selection { background: var(--ink); color: var(--white); }
+  button { font: inherit; color: inherit; text-transform: inherit; letter-spacing: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  [hidden] { display: none !important; }
+  button:focus-visible { outline: 1px solid var(--ink); outline-offset: 4px; }
+
+  .page { min-height: 100%; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+
+  /* ---- background: particle bust + parallax grid (desktop) ---- */
+  #bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
+  #stage { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+  #grid { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.10; pointer-events: none; }
+  #loading { position: absolute; inset: 0; display: grid; place-items: center; font-size: var(--micro); letter-spacing: .3em; color: var(--gray-500); pointer-events: none; transition: opacity .6s; }
+
+  /* UI layers float above the bust but let the pointer through to it */
+  header, main { position: relative; pointer-events: none; }
+  header a, header button, main button, .feature { pointer-events: auto; }
+
+  /* ---- header ---- */
+  header {
+    z-index: 20; display: flex; align-items: center; justify-content: space-between;
+    padding-inline: var(--pad-x); padding-top: var(--header-pt); padding-bottom: var(--section-gap);
   }
-  #caption .tags { display: flex; gap: 10px; align-items: center; font-size: 11px; color: var(--muted); margin-bottom: 12px; }
-  #caption .chip { background: var(--chip); color: var(--text); padding: 4px 9px; border-radius: 6px; }
-  #caption p { margin: 0; font-size: 17px; line-height: 1.3; }
-  #caption p + p { color: var(--muted); }
-  #loading {
-    position: fixed; inset: 0; display: grid; place-items: center;
-    font: 11px var(--font-pixel); letter-spacing: .2em; color: var(--muted);
-    transition: opacity .6s; pointer-events: none;
+  .logo { display: inline-flex; align-items: flex-start; font-weight: 900; letter-spacing: .15em; font-size: var(--logo); line-height: 1; transition: opacity .2s; }
+  .logo:hover { opacity: .8; }
+  .logo sup { font-size: var(--logo-deg); margin-top: -0.125rem; margin-left: 0.125rem; line-height: 1; }
+  nav { display: flex; align-items: center; gap: var(--gap-nav); font-size: var(--nav); font-weight: 500; text-transform: uppercase; letter-spacing: .2em; }
+  nav button { transition: opacity .2s; }
+  nav button:hover { opacity: .5; }
+  nav .divider { color: var(--gray-300); }
+  .icon { width: var(--icon); height: var(--icon); stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; display: block; }
+  .bag { position: relative; }
+  .badge { position: absolute; top: -0.5rem; right: -0.6rem; min-width: 1rem; height: 1rem; padding: 0 .25rem; border-radius: 999px; background: var(--ink); color: var(--white); font-size: 0.6rem; letter-spacing: 0; display: grid; place-items: center; }
+
+  /* ---- hero ---- */
+  main {
+    z-index: 10; flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: var(--section-gap);
+    padding-inline: var(--pad-x); padding-block: var(--main-py);
   }
-  #credit {
-    position: fixed; right: max(8px, env(safe-area-inset-right, 0px)); bottom: calc(8px + env(safe-area-inset-bottom, 0px));
-    font: 10px var(--font-body); color: var(--muted);
+  .lead { display: flex; flex-direction: column; justify-content: center; gap: var(--section-gap); }
+  .corner { width: var(--corner); height: var(--corner); stroke: var(--ink); stroke-width: 1.5; fill: none; display: block; }
+  h1 {
+    margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; line-height: 1.05;
+    font-size: var(--headline); text-wrap: balance;
   }
-  #credit a { color: inherit; }
-  @media (max-width: 600px) {
-    #credit { display: none; }
-    #caption { bottom: auto; top: calc(9vh + 15vw); }
+  h1 span { display: block; }
+  .checker { width: var(--checker-w); height: var(--checker-h); display: inline-block; margin-left: .35em; transform: translateY(2px); vertical-align: baseline; }
+  .cta {
+    align-self: flex-start; display: inline-flex; align-items: center; gap: var(--btn-gap);
+    border: 1px solid var(--gray-400); border-radius: .375rem; text-transform: uppercase; letter-spacing: .18em;
+    font-size: var(--body); font-weight: 600; padding: var(--btn-py) var(--btn-px);
+    transition: background .25s, color .25s, border-color .25s; background: var(--white);
   }
+  .cta .icon { width: 1em; height: 1em; transition: transform .25s; }
+  .cta:hover { background: var(--ink); color: var(--white); border-color: var(--ink); }
+  .cta:hover .icon { transform: translate(2px, -2px); }
+
+  .feature { position: relative; align-self: flex-start; min-width: var(--feature-min); padding: var(--feature-pad); display: flex; flex-direction: column; gap: .9rem; }
+  .feature .corner { position: absolute; }
+  .feature .tl { top: 0; left: 0; } .feature .tr { top: 0; right: 0; }
+  .feature .bl { bottom: 0; left: 0; } .feature .br { bottom: 0; right: 0; }
+  .globe { width: var(--globe); height: var(--globe); stroke: var(--ink); stroke-width: 1.2; fill: none; }
+  .tagline { margin: 0; font-size: var(--body); font-weight: 600; text-transform: uppercase; letter-spacing: .18em; line-height: 1.5; }
+
+  .credit { position: relative; z-index: 10; text-align: center; font-size: var(--micro); color: var(--gray-500); padding: 0 var(--pad-x) .6rem; pointer-events: auto; }
+  .credit a { color: inherit; }
+
+  @media (min-width: 1024px) {
+    .page { height: 100%; }
+    main { flex-direction: row; align-items: stretch; }
+    .feature { align-self: flex-end; }
+    #bust-frame { display: none; }
+  }
+  /* below lg: bust moves into a bordered frame under the hero */
+  @media (max-width: 1023.98px) {
+    #bg { position: relative; inset: auto; z-index: 0; margin: 0 var(--pad-x) var(--section-gap); border: 1px solid var(--gray-200); aspect-ratio: 4 / 5; max-width: calc(100% - 2 * var(--pad-x)); }
+    #grid { display: none; }
+    #stage { touch-action: pan-y; }
+  }
+  @media (min-width: 640px) and (max-width: 1023.98px) { #bg { aspect-ratio: 16 / 9; } }
+
+  /* ---- drawers ---- */
+  .backdrop { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,.2); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); opacity: 0; pointer-events: none; transition: opacity .3s; }
+  .backdrop.open { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 50; width: 100%; max-width: var(--drawer-max);
+    background: var(--white); border-left: 1px solid var(--gray-200); padding: var(--drawer-pad);
+    padding-bottom: calc(var(--drawer-pad) + env(safe-area-inset-bottom, 0px));
+    display: flex; flex-direction: column; gap: var(--section-gap);
+    transform: translateX(100%); transition: transform .35s cubic-bezier(.2,.7,.2,1);
+  }
+  .drawer.open { transform: none; }
+  .drawer-head { display: flex; align-items: center; justify-content: space-between; }
+  .drawer-head h2 { margin: 0; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; font-size: clamp(1rem, 0.8vw + 0.7rem, 1.35rem); }
+  .drawer-sub { margin: 0; font-size: var(--micro); text-transform: uppercase; letter-spacing: .2em; color: var(--gray-500); }
+  .drawer-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-height: 0; }
+  .row { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--gray-200); }
+  .row:first-child { border-top: 1px solid var(--gray-200); }
+  .row .meta { display: flex; flex-direction: column; gap: .3rem; min-width: 0; }
+  .tag { font-size: var(--micro); color: var(--gray-500); text-transform: uppercase; letter-spacing: .2em; }
+  .row-title { font-size: var(--body); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+  .row-title.orb { font-family: 'Orbitron', ui-sans-serif, system-ui, sans-serif; font-weight: 700; letter-spacing: .1em; }
+  .row-text { font-size: var(--body); color: var(--gray-600); line-height: 1.5; }
+  .price { font-size: var(--body); font-variant-numeric: tabular-nums; }
+  .side { display: flex; flex-direction: column; align-items: flex-end; gap: .5rem; flex-shrink: 0; }
+  .small-btn { border: 1px solid var(--gray-300); border-radius: .3rem; padding: .35rem .7rem; font-size: var(--micro); letter-spacing: .2em; text-transform: uppercase; font-weight: 600; transition: background .2s, color .2s, border-color .2s; }
+  .small-btn:hover { background: var(--ink); color: var(--white); border-color: var(--ink); }
+  .link-btn { font-size: var(--micro); letter-spacing: .15em; text-transform: uppercase; color: var(--gray-500); text-decoration: underline; text-underline-offset: 3px; }
+  .link-btn:hover { color: var(--ink); }
+  .empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .8rem; color: var(--gray-500); font-size: var(--body); }
+  .empty .icon { width: 2rem; height: 2rem; }
+  .drawer-foot { font-size: var(--micro); color: var(--gray-500); text-align: center; text-transform: uppercase; letter-spacing: .15em; }
+  .checkout { width: 100%; display: flex; align-items: center; justify-content: center; gap: .5rem; background: var(--ink); color: var(--white); padding: .95rem 1rem; border-radius: .375rem; text-transform: uppercase; letter-spacing: .2em; font-size: var(--body); font-weight: 600; }
+  .checkout .icon { width: 1em; height: 1em; }
+  .total { display: flex; justify-content: space-between; font-size: var(--body); text-transform: uppercase; letter-spacing: .15em; padding: .25rem 0 .75rem; font-variant-numeric: tabular-nums; }
+
+  /* ---- toast ---- */
+  .toast {
+    position: fixed; z-index: 60; top: calc(1rem + env(safe-area-inset-top, 0px)); right: max(1rem, env(safe-area-inset-right, 0px));
+    display: flex; align-items: center; gap: .6rem; max-width: min(24rem, calc(100% - 2rem));
+    background: var(--ink); color: var(--white); padding: .8rem 1rem; border-radius: .375rem; font-size: var(--body);
+    opacity: 0; transform: translateY(-8px); transition: opacity .25s, transform .25s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: none; }
+  .toast .icon { color: var(--emerald); width: 1rem; height: 1rem; flex-shrink: 0; }
+
+  @media (prefers-reduced-motion: reduce) { .drawer, .toast, .backdrop, .cta, .cta .icon { transition: none; } }
 </style>
 </head>
 <body>
-<h1 id="headline">HELLO I'M VATSAL</h1>
-<canvas id="stage"></canvas>
-<div id="caption">
-  <div class="tags"><span class="chip">AI/ML engineer</span><span>Rajkot, Gujarat</span></div>
-  <p>I build models</p>
-  <p>and the evals that check them.</p>
+<div class="page">
+  <header>
+    <button class="logo font-orbitron" id="logo" aria-label="LGPSM home">LGPSM<sup>˚</sup></button>
+    <nav aria-label="Main">
+      <button data-open="shop">Shop</button>
+      <button data-open="collections">Collections</button>
+      <button data-open="journal">Journal</button>
+      <span class="divider" aria-hidden="true">|</span>
+      <button class="bag" data-open="cart" aria-label="Shopping bag">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="badge" id="badge" hidden>0</span>
+      </button>
+    </nav>
+  </header>
+
+  <main>
+    <div class="lead">
+      <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
+      <h1 class="font-orbitron">
+        <span>Future</span>
+        <span>Forward</span>
+        <span>Fashion<svg class="checker" id="checker" viewBox="0 0 36 18" aria-hidden="true"></svg></span>
+      </h1>
+      <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg>
+      <button class="cta" data-open="shop">Shop now
+        <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+      </button>
+    </div>
+
+    <div class="feature">
+      <svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
+      <svg class="corner tr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg>
+      <svg class="corner bl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg>
+      <svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
+      <svg class="globe" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="28"/>
+        <path d="M4 32h56"/>
+        <ellipse cx="32" cy="32" rx="28" ry="11"/>
+        <ellipse cx="32" cy="32" rx="28" ry="20"/>
+        <path d="M32 4v56"/>
+        <ellipse cx="32" cy="32" rx="11" ry="28"/>
+        <ellipse cx="32" cy="32" rx="20" ry="28"/>
+      </svg>
+      <p class="tagline">Beyond trends.<br>Built for tomorrow.</p>
+    </div>
+  </main>
+
+  <div id="bg">
+    <canvas id="stage" aria-label="Interactive particle bust: hover to push, drag to turn, scroll to resize"></canvas>
+    <svg id="grid" aria-hidden="true"><defs><pattern id="gridp" width="48" height="48" patternUnits="userSpaceOnUse"><path id="gridpath" d="M 48 0 L 0 0 0 48" fill="none" stroke="#64748b" stroke-width="0.6"/></pattern></defs><rect width="100%" height="100%" fill="url(#gridp)"/></svg>
+    <div id="loading">LOADING</div>
+  </div>
+
+  <div class="credit">
+    Bust: <a href="https://sketchfab.com/3d-models/stargazing-through-the-attic-window-6b3e2a011f024ac6a6b123ed33d0ec28" target="_blank" rel="noopener">"Stargazing through the attic window"</a>
+    by <a href="https://sketchfab.com/Moon_solstice" target="_blank" rel="noopener">Moon</a>,
+    <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
+  </div>
 </div>
-<div id="loading">LOADING</div>
-<div id="credit">
-  Shape sampled from <a href="https://sketchfab.com/3d-models/stargazing-through-the-attic-window-6b3e2a011f024ac6a6b123ed33d0ec28" target="_blank" rel="noopener">"Stargazing through the attic window"</a>
-  by <a href="https://sketchfab.com/Moon_solstice" target="_blank" rel="noopener">Moon</a>,
-  <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
+
+<div class="backdrop" id="backdrop"></div>
+<aside class="drawer" id="drawer" aria-hidden="true" aria-labelledby="drawer-title">
+  <div class="drawer-head">
+    <h2 class="font-orbitron" id="drawer-title"></h2>
+    <button id="drawer-close" aria-label="Close"><svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+  </div>
+  <p class="drawer-sub" id="drawer-sub"></p>
+  <div class="drawer-body" id="drawer-body"></div>
+  <div id="drawer-foot"></div>
+</aside>
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span id="toast-text"></span>
 </div>
 
 <script type="importmap">
@@ -237,9 +426,9 @@ function makeMaterial() {
       uTime:   { value: 0 },
       uSize:   { value: 1 },
       uHeight: { value: 1 },
-      uInk:    { value: new THREE.Color('#14111c') },
-      uSheen:  { value: new THREE.Color('#b9b0d6') },
-      uHot:    { value: new THREE.Color('#e7eeb8') },
+      uInk:    { value: new THREE.Color('#0b0b0d') },
+      uSheen:  { value: new THREE.Color('#8e939c') },
+      uHot:    { value: new THREE.Color('#9ca3af') },
     },
     vertexShader: /* glsl */`
       uniform float uTime, uSize, uHeight;
@@ -283,12 +472,12 @@ function makeMaterial() {
 
 // ---------- framing ----------
 function frame() {
-  const w = innerWidth, h = innerHeight;
+  const w = canvas.clientWidth || innerWidth, h = canvas.clientHeight || innerHeight;
   renderer.setSize(w, h, false);
   camera.aspect = w / h;
   if (bounds) {
     const halfFov = THREE.MathUtils.degToRad(camera.fov / 2);
-    const fitH = bounds.h * 1.25 / 2 / Math.tan(halfFov);
+    const fitH = bounds.h * 1.08 / 2 / Math.tan(halfFov);
     const fitW = bounds.w * (camera.aspect < 0.8 ? 1.1 : 1.6) / 2 / (Math.tan(halfFov) * camera.aspect);
     const dist = Math.max(fitH, fitW);
     const lookY = dist * Math.tan(halfFov) - bounds.h * 0.02;   // bottom of bust on the screen edge
@@ -299,18 +488,8 @@ function frame() {
   }
   camera.updateProjectionMatrix();
 }
-addEventListener('resize', () => { frame(); fitHeadline(); });
+addEventListener('resize', frame);
 frame();
-
-// Scale the headline so it spans ~94% of the width in whatever font loaded.
-const headline = document.getElementById('headline');
-function fitHeadline() {
-  headline.style.fontSize = '100px';
-  const w = headline.scrollWidth || 1;
-  headline.style.fontSize = Math.min(240, (innerWidth * 0.94 / w) * 100) + 'px';
-}
-fitHeadline();
-document.fonts?.ready.then(fitHeadline);
 
 // ---------- interaction ----------
 // Mouse: hover to push the sand away, drag to turn her, scroll to resize.
@@ -374,7 +553,10 @@ canvas.addEventListener('pointerup', endPointer);
 canvas.addEventListener('pointercancel', endPointer);
 canvas.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse' && !dragging) sculpting = false; });
 canvas.style.cursor = 'grab';
-function setNdc(e) { ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); }
+function setNdc(e) {
+  const r = canvas.getBoundingClientRect();
+  ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+}
 function centroid() {
   let x = 0, y = 0; for (const t of touches.values()) { x += t.x; y += t.y; }
   return { x: x / touches.size, y: y / touches.size };
@@ -469,6 +651,128 @@ renderer.setAnimationLoop(() => {
   }
   renderer.render(scene, camera);
 });
+</script>
+<script>
+// ---------- UI: checkerboard, drawers, bag, toasts, grid parallax ----------
+(() => {
+  // checkerboard: 4 rows of 3.8 squares, even rows shifted by 2.25
+  const chk = document.getElementById('checker');
+  let sq = '';
+  for (let r = 0; r < 4; r++) {
+    const shift = r % 2 === 0 ? 2.25 : 0;
+    for (let x = shift; x + 3.8 <= 36.01; x += 4.5) sq += `<rect x="${x.toFixed(2)}" y="${(r * 4.5 + 0.35).toFixed(2)}" width="3.8" height="3.8"/>`;
+  }
+  chk.innerHTML = sq;
+
+  const SHOP = [
+    { tag: 'Limited edition', title: 'Cyber-Tex Overcoat', price: 850 },
+    { tag: 'New drop', title: 'Geo-Mesh Tech Hoodie', price: 320 },
+    { tag: 'In stock', title: 'Orbital Tapered Trousers', price: 290 },
+    { tag: 'Pre-order', title: 'Modular All-Weather Vest', price: 410 },
+  ];
+  const COLLECTIONS = [
+    { tag: 'Series 01', title: 'Synthetic Horizons', text: 'Ultra-durable weather-sealed fabrics with minimalist silhouette architecture.' },
+    { tag: 'Series 02', title: 'Kinetic Form', text: 'Ergonomic streetwear designed for maximum mobility and temperature equilibrium.' },
+    { tag: 'Series 03', title: 'Monochrome Zero', text: 'Pure black and white structural tailoring crafted from 100% recycled polymers.' },
+  ];
+  const JOURNAL = [
+    { tag: 'Aug 2026', title: 'The Architecture of Next-Gen Textiles', read: '4 min read' },
+    { tag: 'Jul 2026', title: 'Circular Design in High-End Apparel', read: '6 min read' },
+    { tag: 'Jun 2026', title: 'Minimalism as a Functional Statement', read: '3 min read' },
+  ];
+  const ICON_BAG = '<svg class="icon" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>';
+  const ICON_CHEV = '<svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>';
+  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const money = (n) => '$' + n.toLocaleString('en-US');
+
+  const cart = [];
+  const $ = (id) => document.getElementById(id);
+  const drawer = $('drawer'), backdrop = $('backdrop');
+  let current = null;
+
+  const FOOT = '<p class="drawer-foot">LGPSM © 2026 — Future Forward Fashion</p>';
+  function render(kind) {
+    const body = $('drawer-body'), foot = $('drawer-foot');
+    if (kind === 'shop') {
+      $('drawer-title').textContent = 'Catalog'; $('drawer-sub').textContent = 'Featured Garments';
+      body.innerHTML = SHOP.map((it, i) => `
+        <div class="row"><div class="meta"><span class="tag">${esc(it.tag)}</span><span class="row-title">${esc(it.title)}</span></div>
+        <div class="side"><span class="price">${money(it.price)}</span><button class="small-btn" data-add="${i}">Add</button></div></div>`).join('');
+      foot.innerHTML = FOOT;
+    } else if (kind === 'collections') {
+      $('drawer-title').textContent = 'Archive 2026'; $('drawer-sub').textContent = 'Season Lineup';
+      body.innerHTML = COLLECTIONS.map((it) => `
+        <div class="row"><div class="meta"><span class="tag">${esc(it.tag)}</span><span class="row-title orb">${esc(it.title)}</span><span class="row-text">${esc(it.text)}</span></div></div>`).join('');
+      foot.innerHTML = FOOT;
+    } else if (kind === 'journal') {
+      $('drawer-title').textContent = 'Editorial'; $('drawer-sub').textContent = 'Latest Dispatches';
+      body.innerHTML = JOURNAL.map((it) => `
+        <div class="row"><div class="meta"><span class="tag">${esc(it.tag)}</span><span class="row-title">${esc(it.title)}</span><span class="tag">${esc(it.read)}</span></div></div>`).join('');
+      foot.innerHTML = FOOT;
+    } else if (kind === 'cart') {
+      $('drawer-title').textContent = 'Shopping Bag';
+      $('drawer-sub').textContent = cart.length ? `${cart.length} item${cart.length > 1 ? 's' : ''}` : '';
+      if (!cart.length) {
+        body.innerHTML = `<div class="empty">${ICON_BAG}<span>Your shopping bag is empty.</span></div>`;
+        foot.innerHTML = FOOT;
+      } else {
+        body.innerHTML = cart.map((it, i) => `
+          <div class="row"><div class="meta"><span class="row-title">${esc(it.title)}</span><span class="price">${money(it.price)}</span></div>
+          <div class="side"><button class="link-btn" data-remove="${i}">Remove</button></div></div>`).join('');
+        const total = cart.reduce((s, it) => s + it.price, 0);
+        foot.innerHTML = `<div class="total"><span>Total</span><span>${money(total)}</span></div><button class="checkout" id="checkout">Checkout now ${ICON_CHEV}</button>`;
+      }
+    }
+  }
+  function open(kind) {
+    current = kind; render(kind);
+    drawer.classList.add('open'); backdrop.classList.add('open'); drawer.setAttribute('aria-hidden', 'false');
+    $('drawer-close').focus({ preventScroll: true });
+  }
+  function close() {
+    current = null;
+    drawer.classList.remove('open'); backdrop.classList.remove('open'); drawer.setAttribute('aria-hidden', 'true');
+  }
+  function updateBadge() {
+    const b = $('badge'); b.textContent = cart.length; b.hidden = cart.length === 0;
+  }
+  let toastTimer = 0;
+  function toast(msg) {
+    $('toast-text').textContent = msg; $('toast').classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').classList.remove('show'), 3000);
+  }
+
+  document.querySelectorAll('[data-open]').forEach((b) => b.addEventListener('click', () => open(b.dataset.open)));
+  $('logo').addEventListener('click', close);
+  $('drawer-close').addEventListener('click', close);
+  backdrop.addEventListener('click', close);
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  drawer.addEventListener('click', (e) => {
+    const add = e.target.closest('[data-add]'), rem = e.target.closest('[data-remove]');
+    if (add) { const it = SHOP[+add.dataset.add]; cart.push(it); updateBadge(); toast(`Added "${it.title.toUpperCase()}" to your shopping bag.`); }
+    else if (rem) { cart.splice(+rem.dataset.remove, 1); updateBadge(); render('cart'); }
+    else if (e.target.closest('#checkout')) { cart.length = 0; updateBadge(); close(); toast('Order submitted successfully!'); }
+  });
+
+  // parallax grid (desktop): cell size and eased offset follow the cursor
+  const pat = $('gridp'), path = $('gridpath');
+  let cell = 0;
+  function sizeGrid() {
+    cell = Math.round(Math.min(64, Math.max(36, innerWidth * 0.028)));
+    pat.setAttribute('width', cell); pat.setAttribute('height', cell);
+    path.setAttribute('d', `M ${cell} 0 L 0 0 0 ${cell}`);
+  }
+  sizeGrid(); addEventListener('resize', sizeGrid);
+  const mouse = { x: innerWidth / 2, y: innerHeight / 2 }, smooth = { ...mouse }, offG = { x: 0, y: 0 };
+  addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+  (function tick() {
+    smooth.x += (mouse.x - smooth.x) * 0.1; smooth.y += (mouse.y - smooth.y) * 0.1;
+    const cx = smooth.x / innerWidth - 0.5, cy = smooth.y / innerHeight - 0.5;
+    offG.x += (cx * 16 - offG.x) * 0.06; offG.y += (cy * 16 - offG.y) * 0.06;
+    pat.setAttribute('x', offG.x.toFixed(2)); pat.setAttribute('y', offG.y.toFixed(2));
+    requestAnimationFrame(tick);
+  })();
+})();
 </script>
 </body>
 </html>
