@@ -818,7 +818,9 @@ function frame() {
     const fitH = bounds.h * 1.08 / 2 / Math.tan(halfFov);
     const fitW = bounds.w * (camera.aspect < 0.8 ? 1.1 : 1.6) / 2 / (Math.tan(halfFov) * camera.aspect);
     const dist = Math.max(fitH, fitW) * (camera.aspect > 1.2 ? 1.14 : 1);   // a step back on wide screens
-    const lookY = dist * Math.tan(halfFov) - bounds.h * 0.02;   // bottom of bust on the screen edge
+    const baseY = dist * Math.tan(halfFov) - bounds.h * 0.02;   // bottom of bust on the screen edge
+    // on wide screens lift her so her shoulders clear the tool strip
+    const lookY = baseY - (camera.aspect > 1.2 ? dist * Math.tan(halfFov) * 0.14 : 0);
     // on wide screens nudge her right so the name column on the left stays clear
     const shiftX = camera.aspect > 1.2 ? -bounds.w * 0.07 : 0;
     camera.position.set(shiftX, lookY, dist);
