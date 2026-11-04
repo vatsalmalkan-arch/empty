@@ -180,11 +180,7 @@
   /* ---- portfolio additions ---- */
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .eyebrow { margin: 0; font-size: var(--micro); font-weight: 600; text-transform: uppercase; letter-spacing: .25em; color: var(--gray-600); }
-  .intro { margin: 0; font-size: var(--body); line-height: 1.6; color: var(--gray-600); max-width: 34ch; }
-  .ctas { display: flex; align-items: center; gap: 1.25rem; }
-  .text-btn { font-size: var(--body); font-weight: 600; text-transform: uppercase; letter-spacing: .18em; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--gray-300); pointer-events: auto; }
-  .text-btn:hover { text-decoration-color: var(--ink); }
-  .chat { gap: .85rem; width: var(--feature-min); max-width: 100%; }
+  .chat { gap: .85rem; width: clamp(16rem, 22vw, 22rem); max-width: 100%; background: var(--white); }
   .chat-head { display: flex; align-items: center; gap: .9rem; }
   .chat .tagline { margin: 0; }
   .hint { margin: .2rem 0 0; font-size: var(--micro); color: var(--gray-500); letter-spacing: .04em; line-height: 1.4; }
@@ -193,13 +189,15 @@
   .cells i { width: 5px; height: 5px; border: 1px solid var(--gray-400); display: block; }
   .cells i.on { background: var(--ink); border-color: var(--ink); }
   .meter-val { font-variant-numeric: tabular-nums; min-width: 3ch; }
-  .say-row { display: flex; align-items: center; gap: .5rem; border-bottom: 1px solid var(--gray-400); }
+  .say-row { display: flex; align-items: stretch; border: 1px solid var(--gray-400); border-radius: .375rem; overflow: hidden; background: var(--white); }
   .say-row:focus-within { border-color: var(--ink); }
-  #say { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; padding: .55rem 0; font: 500 var(--body) 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif; color: var(--ink); letter-spacing: .04em; }
-  #say::placeholder { color: var(--gray-400); text-transform: uppercase; letter-spacing: .18em; }
-  .say-row button .icon { width: 1.1rem; height: 1.1rem; }
-  .say-row button:hover { opacity: .5; }
-  #sand-text { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; mix-blend-mode: difference; }
+  .send { background: var(--ink); color: var(--white); padding: 0 .8rem; display: grid; place-items: center; }
+  .send:hover { opacity: .8; }
+  .reply-area { position: relative; height: calc(var(--body) * 1.45 * 3 + .4rem); border-top: 1px solid var(--gray-200); border-bottom: 1px solid var(--gray-200); }
+  #sand-text { position: absolute; left: 0; right: 0; top: 0; width: 100%; height: calc(100% + 1.5rem); pointer-events: none; }
+  #say { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; padding: .7rem .8rem; font: 500 var(--body) 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif; color: var(--ink); letter-spacing: .04em; }
+  #say::placeholder { color: var(--gray-500); text-transform: uppercase; letter-spacing: .18em; }
+  .send .icon { width: 1.05rem; height: 1.05rem; }
   .row a.small-btn { color: inherit; text-decoration: none; display: inline-block; }
   .para { margin: 0 0 1rem; font-size: var(--body); line-height: 1.65; color: var(--gray-600); }
   @media (prefers-reduced-motion: reduce) { .drawer, .toast, .backdrop, .cta, .cta .icon { transition: none; } }
@@ -225,13 +223,9 @@
         <span>Malkan<svg class="checker" id="checker" viewBox="0 0 36 18" aria-hidden="true"></svg></span>
       </h1>
       <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg>
-      <p class="intro">I build LLM systems and the evaluations<br>that say whether they actually work.</p>
-      <div class="ctas">
-        <button class="cta" data-open="work">View work
-          <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
-        </button>
-        <button class="text-btn" data-open="about">About me</button>
-      </div>
+      <button class="cta" data-open="work">View work
+        <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+      </button>
     </div>
 
     <form class="feature chat" id="chat" autocomplete="off">
@@ -250,6 +244,7 @@
           <p class="hint" id="hint">She's attached. Try breaking up with her.</p>
         </div>
       </div>
+      <div class="reply-area" id="reply-area" aria-hidden="true"><canvas id="sand-text"></canvas></div>
       <div class="meter" aria-label="Detachment">
         <span class="meter-label">Detachment</span>
         <span class="cells" id="cells" aria-hidden="true"></span>
@@ -258,7 +253,7 @@
       <label class="sr-only" for="say">Say something to Astra</label>
       <div class="say-row">
         <input id="say" name="say" maxlength="160" placeholder="Say something…">
-        <button type="submit" aria-label="Send"><svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>
+        <button type="submit" class="send" aria-label="Send"><svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>
       </div>
       <p class="sr-only" id="reply" aria-live="polite"></p>
     </form>
@@ -276,7 +271,6 @@
     <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
   </div>
 </div>
-<canvas id="sand-text" aria-hidden="true"></canvas>
 
 <div class="backdrop" id="backdrop"></div>
 <aside class="drawer" id="drawer" aria-hidden="true" aria-labelledby="drawer-title">
@@ -324,13 +318,11 @@ let baseSize = 1;
 let neckZ = 0;
 const NECK = new THREE.Vector3();          // blend start, blend end, pivot z
 const HEAD = new THREE.Vector3();          // idle head pitch, yaw, roll
-let solid = null; const solidMats = [];
-let reveal = 0, revealTarget = 0;          // 0 = sand, 1 = the real model
+let resolve = 0, resolveTarget = 0;       // 0 = graphite, 1 = soft pink (she let go)
 let lastTouch = -10;                       // time of the last drag/scroll
 // Hooks for the chat UI (plain script below).
 window.astraScene = {
-  reveal(on) { revealTarget = on ? 1 : 0; },
-  get revealed() { return revealTarget === 1; },
+  resolve(on) { resolveTarget = on ? 1 : 0; },
 };
 let points = null, bounds = null, base = null, nrm = null, off = null, clump = null;
 
@@ -449,21 +441,6 @@ loader.load(MODEL_URL, (gltf) => {
   points.position.y = -bounds.h / 2;
   bust.position.y = bounds.h / 2;
 
-  // The original textured model, hidden until the easter egg. Same transform
-  // as the sampled points, so the two line up exactly.
-  solid = new THREE.Group();
-  solid.matrixAutoUpdate = false;
-  solid.matrix.makeTranslation(0, -minY, 0).multiply(M);
-  solid.add(gltf.scene);
-  gltf.scene.traverse((o) => {
-    if (!o.isMesh) return;
-    if (/background|MASH/i.test(o.name)) { o.visible = false; return; }
-    const mats = Array.isArray(o.material) ? o.material : [o.material];
-    mats.forEach((m) => { m.userData.baseOpacity = m.opacity; m.userData.baseTransparent = m.transparent; solidMats.push(m); });
-  });
-  solid.visible = false;
-  points.add(solid);
-
   frame();
   document.getElementById('loading').style.opacity = 0;
 }, undefined, (err) => {
@@ -507,13 +484,15 @@ function makeMaterial() {
       uNeck:   { value: NECK },
       uHead:   { value: HEAD },
       uBreath: { value: 0 },
-      uDissolve: { value: 0 },
+      uResolve: { value: 0 },
+      uPinkInk:   { value: new THREE.Color('#d98a9e') },
+      uPinkSheen: { value: new THREE.Color('#ffe1e9') },
       uInk:    { value: new THREE.Color('#0b0b0d') },
       uSheen:  { value: new THREE.Color('#8e939c') },
       uHot:    { value: new THREE.Color('#9ca3af') },
     },
     vertexShader: /* glsl */`
-      uniform float uTime, uSize, uHeight, uBreath, uDissolve;
+      uniform float uTime, uSize, uHeight, uBreath;
       uniform vec3 uNeck, uHead;
       attribute float aRnd, aDent, aHead;
       mat3 rotXYZ(vec3 a) {
@@ -524,7 +503,7 @@ function makeMaterial() {
         return ry * rx * rz;
       }
       varying vec3 vNormalV;
-      varying float vDent, vY, vRnd, vDissolve;
+      varying float vDent, vY, vRnd;
       ${NOISE}
       void main() {
         vec3 p = position;
@@ -538,9 +517,6 @@ function makeMaterial() {
         float chest = (1.0 - w) * smoothstep(0.0, uNeck.x, position.y);
         p.y += uBreath * chest * 0.006;
         p.z += uBreath * chest * 0.004;
-        // dissolving grains drift outward and up as they vanish
-        p += (nrm * 0.06 + vec3(0.0, 0.05, 0.0)) * uDissolve * (0.3 + aRnd);
-        vDissolve = uDissolve;
         // barely-there breathing so she never looks frozen
         p += nrm * snoise(p * 3.0 + vec3(0.0, uTime * 0.12, 0.0)) * 0.003;
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
@@ -550,9 +526,10 @@ function makeMaterial() {
         gl_Position = projectionMatrix * mv;
       }`,
     fragmentShader: /* glsl */`
-      uniform vec3 uInk, uSheen, uHot;
+      uniform vec3 uInk, uSheen, uHot, uPinkInk, uPinkSheen;
+      uniform float uResolve;
       varying vec3 vNormalV;
-      varying float vDent, vY, vRnd, vDissolve;
+      varying float vDent, vY, vRnd;
       void main() {
         vec2 c = gl_PointCoord * 2.0 - 1.0;
         float r2 = dot(c, c);
@@ -563,12 +540,14 @@ function makeMaterial() {
         float diff = max(dot(n, L), 0.0);
         float spec = pow(max(dot(reflect(-L, n), vec3(0.0, 0.0, 1.0)), 0.0), 28.0);
         float rim = pow(1.0 - max(vNormalV.z, 0.0), 2.5);
-        vec3 col = uInk + uSheen * (diff * 0.34 + rim * 0.6) + vec3(spec) * 1.1;
+        // resolve: graphite grains soften into a pale pink, grain by grain
+        float r = smoothstep(vRnd * 0.6, vRnd * 0.6 + 0.4, uResolve);
+        vec3 ink = mix(uInk, uPinkInk, r), sheen = mix(uSheen, uPinkSheen, r);
+        vec3 col = ink + sheen * (diff * 0.34 + rim * 0.6) + vec3(spec) * mix(1.1, 0.5, r);
         // freshly worked sand looks a little lighter, then settles
         col = mix(col, uHot, clamp(vDent, 0.0, 1.0) * 0.35);
         float fadeIn = smoothstep(0.0, 0.14, vY);
         if (fadeIn < 0.999 && vRnd > fadeIn) discard;
-        if (vRnd < vDissolve * 1.05) discard;
         gl_FragColor = vec4(col, 1.0);
       }`,
   });
@@ -586,7 +565,7 @@ function frame() {
     const dist = Math.max(fitH, fitW);
     const lookY = dist * Math.tan(halfFov) - bounds.h * 0.02;   // bottom of bust on the screen edge
     // on wide screens nudge her right so the name column on the left stays clear
-    const shiftX = camera.aspect > 1.2 ? -bounds.w * 0.16 : 0;
+    const shiftX = camera.aspect > 1.2 ? -bounds.w * 0.07 : 0;
     camera.position.set(shiftX, lookY, dist);
     camera.lookAt(shiftX, lookY, 0);
     baseSize = POINT_SIZE * renderer.getPixelRatio() * (h / 900) * (COUNT < 80000 ? 1.35 : 1);
@@ -700,7 +679,7 @@ renderer.setAnimationLoop(() => {
 
     // pointer ray in her own space
     let active = false;
-    if (sculpting && !dragging && reveal < 0.3) {
+    if (sculpting && !dragging) {
       ray.setFromCamera(ndc, camera);
       inv.copy(points.matrixWorld).invert();
       const r = ray.ray.clone().applyMatrix4(inv);
@@ -771,21 +750,10 @@ renderer.setAnimationLoop(() => {
       Math.sin(t * 0.23 + 0.5) * 0.045 + Math.sin(t * 0.61) * 0.015);             // tilt
     points.material.uniforms.uBreath.value = Math.sin(t * 1.15);
 
-    // easter egg: sand dissolves, the real model fades in (and back)
-    reveal += (revealTarget - reveal) * (1 - Math.exp(-dt * 1.4));
-    if (Math.abs(revealTarget - reveal) < 0.002) reveal = revealTarget;
-    HEAD.multiplyScalar(1 - reveal);
-    const sandGone = THREE.MathUtils.smoothstep(reveal, 0.0, 0.75);
-    points.material.uniforms.uDissolve.value = sandGone;
-    if (solid) {
-      const a = THREE.MathUtils.smoothstep(reveal, 0.25, 1.0);
-      solid.visible = a > 0.001;
-      for (const m of solidMats) {
-        m.transparent = a < 0.999 || m.userData.baseTransparent;
-        m.opacity = m.userData.baseOpacity * a;
-        m.depthWrite = !m.transparent || a >= 0.999;
-      }
-    }
+    // resolve: once she lets go the grains turn soft pink (and back)
+    resolve += (resolveTarget - resolve) * (1 - Math.exp(-dt * 0.9));
+    points.material.uniforms.uResolve.value = resolve;
+    HEAD.multiplyScalar(1 - resolve * 0.6);   // she calms down
   }
   renderer.render(scene, camera);
 });
@@ -888,25 +856,21 @@ renderer.setAnimationLoop(() => {
   })();
 })();
 
-// ---------- sand letters: her replies form out of grains, then crumble ----------
+// ---------- sand letters: her replies form out of grains inside the chat box ----------
 const sandText = (() => {
-  const cv = document.getElementById('sand-text');
+  const cv = document.getElementById('sand-text'), box = document.getElementById('reply-area');
   const ctx = cv.getContext('2d');
   const off = document.createElement('canvas'), octx = off.getContext('2d', { willReadFrequently: true });
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let grains = [], running = false, dpr = 1;
-  function resize() { dpr = Math.min(devicePixelRatio || 1, 2); cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; }
+  const INK = '#111113';
+  let grains = [], running = false, dpr = 1, W = 0, H = 0;
+  function resize() {
+    dpr = Math.min(devicePixelRatio || 1, 2);
+    W = cv.clientWidth; H = cv.clientHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+  }
   resize(); addEventListener('resize', resize);
 
-  function area() {
-    if (innerWidth >= 1024) {
-      const r = document.getElementById('chat').getBoundingClientRect();
-      const w = Math.min(innerWidth * 0.3, 430);
-      return { x: r.right - w, w, bottom: r.top - 22, align: 'right' };
-    }
-    const r = document.getElementById('bg').getBoundingClientRect();
-    return { x: r.left + 16, w: r.width - 32, top: Math.max(r.top + 16, 16), align: 'left' };
-  }
   function wrap(text, maxW) {
     const words = text.split(/\s+/), lines = []; let line = '';
     for (const w of words) {
@@ -916,66 +880,66 @@ const sandText = (() => {
     if (line) lines.push(line);
     return lines;
   }
-  function crumbleAll(now) {
-    for (const g of grains) if (g.phase < 2) { g.phase = 2; g.fall = now + Math.random() * 0.25; }
+  function setFont(fs) {
+    octx.font = `700 ${fs}px "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif`;
+    if ('letterSpacing' in octx) octx.letterSpacing = '0.04em';
   }
   function say(text) {
+    resize();
     const now = performance.now() / 1000;
-    crumbleAll(now);
-    const a = area();
-    const fs = Math.round(Math.max(17, Math.min(26, innerWidth * 0.0165)));
-    const lh = fs * 1.3;
-    octx.font = `700 ${fs}px "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif`;
-    if ('letterSpacing' in octx) octx.letterSpacing = '0.06em';
-    const lines = wrap(text.toUpperCase(), a.w);
-    const h = Math.ceil(lines.length * lh + fs);
-    const top = a.top ?? a.bottom - h;
-    off.width = Math.ceil(a.w); off.height = h;
-    octx.clearRect(0, 0, off.width, off.height);
-    octx.font = `700 ${fs}px "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif`;
-    if ('letterSpacing' in octx) octx.letterSpacing = '0.06em';
-    octx.fillStyle = '#fff'; octx.textBaseline = 'top';
-    octx.textAlign = a.align; const tx = a.align === 'right' ? off.width : 0;
-    lines.forEach((l, i) => octx.fillText(l, tx, i * lh + fs * 0.15));
-    const data = octx.getImageData(0, 0, off.width, off.height).data;
-    const step = fs >= 22 ? 2 : 1.5;
-    const hold = 2.4 + text.length * 0.045;
-    for (let y = 0; y < off.height; y += step) for (let x = 0; x < off.width; x += step) {
-      const ix = (Math.floor(y) * off.width + Math.floor(x)) * 4 + 3;
-      if (data[ix] < 120 || Math.random() < 0.12) continue;
-      const gx = a.x + x, gy = top + y, delay = (x / off.width) * 0.35 + Math.random() * 0.15;
-      grains.push({ tx: gx, ty: gy, sx: gx + (Math.random() - 0.5) * 140, sy: gy + 40 + Math.random() * 90,
-        x: gx, y: gy, vx: 0, vy: 0, born: now + delay, phase: 0, die: now + delay + 0.65 + hold,
-        fall: 0, s: 0.9 + Math.random() * 0.9 });
+    for (const g of grains) if (g.phase < 2) { g.phase = 2; g.fall = now + Math.random() * 0.2; }
+    const areaH = box.clientHeight;
+    const pad = 4, maxW = W - pad * 2;
+    // biggest font (up to 17px) that fits the reply in three lines
+    let fs = 17, lines;
+    for (; fs >= 11; fs--) {
+      setFont(fs);
+      lines = wrap(text.toUpperCase(), maxW);
+      if (lines.length * fs * 1.3 <= areaH - 6) break;
     }
-    if (!running) { running = true; requestAnimationFrame(frame); }
+    const lh = fs * 1.3, blockH = lines.length * lh;
+    const top = Math.max(2, (areaH - blockH) / 2);
+    off.width = Math.ceil(W); off.height = Math.ceil(areaH);
+    octx.clearRect(0, 0, off.width, off.height);
+    setFont(fs);
+    octx.fillStyle = '#000'; octx.textBaseline = 'top';
+    lines.forEach((l, i) => octx.fillText(l, pad, top + i * lh));
+    const data = octx.getImageData(0, 0, off.width, off.height).data;
+    const step = 1;
+    const hold = 2.6 + text.length * 0.05;
+    for (let y = 0; y < off.height; y += step) for (let x = 0; x < off.width; x += step) {
+      if (data[(y * off.width + x) * 4 + 3] < 110 || Math.random() < 0.18) continue;
+      const delay = (x / off.width) * 0.3 + Math.random() * 0.12;
+      grains.push({ tx: x, ty: y, sx: x + (Math.random() - 0.5) * 50, sy: y + 14 + Math.random() * 26,
+        x, y, vx: 0, vy: 0, born: now + delay, phase: 0, die: now + delay + 0.6 + hold, fall: 0,
+        s: 0.85 + Math.random() * 0.6 });
+    }
+    if (!running) { running = true; last = performance.now() / 1000; requestAnimationFrame(frame); }
   }
-  let last = performance.now() / 1000;
+  let last = 0;
   function frame() {
     const now = performance.now() / 1000, dt = Math.min(0.05, now - last); last = now;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, innerWidth, innerHeight);
-    ctx.fillStyle = '#fff';
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = INK;
     const keep = [];
     for (const g of grains) {
       if (now < g.born) { keep.push(g); continue; }
       let alpha = 1;
       if (g.phase === 0) {
-        const k = reduce ? 1 : Math.min(1, (now - g.born) / 0.65), e = 1 - Math.pow(1 - k, 3);
+        const k = reduce ? 1 : Math.min(1, (now - g.born) / 0.6), e = 1 - Math.pow(1 - k, 3);
         g.x = g.sx + (g.tx - g.sx) * e; g.y = g.sy + (g.ty - g.sy) * e; alpha = Math.min(1, k * 2);
         if (k >= 1) g.phase = 1;
       } else if (g.phase === 1) {
         g.x = g.tx; g.y = g.ty;
-        if (now > g.die) { g.phase = 2; g.fall = now + ((g.tx % 400) / 400) * 0.35 + Math.random() * 0.3; }
+        if (now > g.die) { g.phase = 2; g.fall = now + (g.tx / W) * 0.3 + Math.random() * 0.25; }
       }
-      if (g.phase === 2) {
-        if (now > g.fall) {
-          if (reduce) continue;
-          g.vy += 900 * dt; g.vx += (Math.random() - 0.5) * 40 * dt;
-          g.x += g.vx * dt; g.y += g.vy * dt;
-          alpha = Math.max(0, 1 - (now - g.fall) / 0.9);
-          if (alpha <= 0) continue;
-        }
+      if (g.phase === 2 && now > g.fall) {
+        if (reduce) continue;
+        g.vy += 420 * dt; g.vx += (Math.random() - 0.5) * 30 * dt;
+        g.x += g.vx * dt; g.y += g.vy * dt;
+        alpha = Math.max(0, 1 - (now - g.fall) / 0.8);
+        if (alpha <= 0) continue;
       }
       ctx.globalAlpha = alpha;
       ctx.fillRect(g.x, g.y, g.s, g.s);
@@ -983,7 +947,7 @@ const sandText = (() => {
     }
     ctx.globalAlpha = 1;
     grains = keep;
-    if (grains.length) requestAnimationFrame(frame); else { running = false; ctx.clearRect(0, 0, innerWidth, innerHeight); }
+    if (grains.length) requestAnimationFrame(frame); else { running = false; ctx.clearRect(0, 0, W, H); }
   }
   return { say };
 })();
@@ -1030,9 +994,9 @@ const sandText = (() => {
   function reply(text) { sandText.say(text); live.textContent = 'Astra: ' + text; }
   function letGo(line, thenOpen) {
     reply(line); setMeter(100); gone = true;
-    setTimeout(() => window.astraScene?.reveal(true), 1600);
-    hint.textContent = 'She let go. This is what she really looks like.';
-    input.placeholder = 'Type "come back" to undo…';
+    setTimeout(() => window.astraScene?.resolve(true), 1200);
+    hint.textContent = 'She let go. Type "come back" to undo.';
+    input.placeholder = 'Say something…';
     if (thenOpen) setTimeout(() => window.portfolioOpen?.(thenOpen), 2600);
   }
   function respond(raw) {
@@ -1044,7 +1008,7 @@ const sandText = (() => {
     }
     if (gone) {
       if (RX.back.test(msg)) {
-        gone = false; setMeter(0); window.astraScene?.reveal(false);
+        gone = false; setMeter(0); window.astraScene?.resolve(false);
         hint.textContent = "She's attached. Try breaking up with her.";
         input.placeholder = 'Say something…';
         return setTimeout(() => reply("I knew you'd come back."), 1200);
