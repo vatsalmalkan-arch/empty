@@ -263,7 +263,6 @@
   .p2-card .dots { height: 4.5rem; background-image: radial-gradient(var(--gray-400) 1px, transparent 1.3px); background-size: 6px 6px; opacity: .7; }
   .p2-card-foot { display: flex; justify-content: space-between; align-items: center; font-size: var(--micro); letter-spacing: .12em; text-transform: uppercase; color: var(--gray-500); }
   .p2-card-foot .icon { width: 1rem; height: 1rem; color: var(--ink); }
-  .logo2d { width: min(100%, 22rem); aspect-ratio: 1; justify-self: center; }
   .snap { display: none; }
   @media (max-width: 639.98px) { .p2-cards { grid-template-columns: 1fr; } .p2-card .dots { height: 2.5rem; } }
 
@@ -278,8 +277,50 @@
       opacity: 0; pointer-events: none; visibility: hidden; }
     .p2.live > * { pointer-events: auto; }
     .p2-cards { grid-column: 3; grid-template-columns: 1fr; align-self: center; }
-    .logo2d { display: none; }
   }
+  /* ---- page two v2: viewer, living ball, logo boxes ---- */
+  .p2-title { font-size: clamp(1.8rem, 2.4vw + .6rem, 3rem); }
+  .viewer { position: relative; display: flex; flex-direction: column; gap: .8rem; padding: 1rem; border: 1px solid var(--gray-200); background: rgba(255,255,255,.75); }
+  .viewer .corner { position: absolute; } .viewer .vtl { top: -1px; left: -1px; } .viewer .vbr { bottom: -1px; right: -1px; }
+  .viewer-top { display: flex; justify-content: space-between; align-items: center; gap: .75rem; }
+  .seg { display: inline-flex; border: 1px solid var(--gray-300); border-radius: 999px; padding: 2px; }
+  .seg button { padding: .38rem .8rem; border-radius: 999px; font-size: var(--micro); font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--gray-500); transition: background .2s, color .2s; }
+  .seg button[aria-selected="true"] { background: var(--ink); color: var(--white); }
+  .arrows { display: flex; align-items: center; gap: .4rem; font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); letter-spacing: .12em; color: var(--gray-500); font-variant-numeric: tabular-nums; }
+  .arrows span { margin-right: .3rem; }
+  .arrows button { width: 1.9rem; height: 1.9rem; border: 1px solid var(--gray-300); border-radius: 50%; display: grid; place-items: center; transition: border-color .2s; }
+  .arrows button:hover { border-color: var(--ink); }
+  .arrows .icon { width: .95rem; height: .95rem; }
+  .viewer-body { display: flex; flex-direction: column; gap: .7rem; }
+  .v-head { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
+  .v-name { margin: 0; font-family: 'Orbitron', ui-sans-serif, system-ui, sans-serif; font-weight: 700; font-size: clamp(.95rem, .7vw + .55rem, 1.3rem); letter-spacing: .06em; text-transform: uppercase; line-height: 1.2; }
+  .v-desc { margin: 0; font-size: var(--body); line-height: 1.5; color: var(--gray-600); min-height: 3em; }
+  .bars { display: grid; gap: .5rem; }
+  .bar { display: grid; grid-template-columns: 6.2rem 1fr 4.6rem; align-items: center; gap: .7rem; font-size: var(--micro); letter-spacing: .12em; text-transform: uppercase; color: var(--gray-500); }
+  .bt { position: relative; height: 7px; background: repeating-linear-gradient(90deg, var(--gray-200) 0 3px, transparent 3px 5px); }
+  .bt i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: repeating-linear-gradient(90deg, var(--ink) 0 3px, transparent 3px 5px); transition: width 1s cubic-bezier(.2,.7,.2,1) var(--d, 0s); }
+  .viewer.in .bt i { width: var(--w); }
+  .bar.ph .bt i { background: repeating-linear-gradient(90deg, var(--gray-400) 0 3px, transparent 3px 5px); }
+  .bv { text-align: right; font-family: 'Michroma', ui-monospace, monospace; letter-spacing: .04em; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .bar.ph .bv { color: var(--gray-400); }
+  .spark-wrap { display: flex; flex-direction: column; gap: .3rem; }
+  .spark-label { display: flex; justify-content: space-between; font-size: var(--micro); letter-spacing: .12em; text-transform: uppercase; color: var(--gray-500); }
+  .spark { width: 100%; height: 2.4rem; overflow: visible; display: block; }
+  .spark .gl { stroke: var(--gray-200); stroke-width: 1; }
+  .spark .area { fill: var(--gray-200); opacity: 0; transition: opacity .8s ease .9s; }
+  .spark .line { fill: none; stroke: var(--ink); stroke-width: 1.3; stroke-linejoin: round; stroke-dasharray: var(--len); stroke-dashoffset: var(--len); transition: stroke-dashoffset 1.3s ease .15s; }
+  .spark .end { fill: var(--ink); opacity: 0; transition: opacity .3s ease 1.4s; }
+  .viewer.in .spark .line { stroke-dashoffset: 0; } .viewer.in .spark .area { opacity: .55; } .viewer.in .spark .end { opacity: 1; }
+  .p2-mid { display: none; }
+  .mid-hint { margin: 0; font-family: 'Michroma', ui-monospace, monospace; font-size: .55rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gray-400); }
+  .p2-card { background: transparent; padding: .75rem; gap: .35rem; }
+  .slot { display: block; width: 100%; height: clamp(4.5rem, 7vw, 6.25rem); }
+  @media (min-width: 1024px) {
+    .p2 { grid-template-columns: minmax(19rem, 27rem) 1fr clamp(10.5rem, 14vw, 13.5rem); }
+    .p2-mid { display: flex; grid-column: 2; align-self: stretch; justify-content: center; align-items: flex-end; }
+    .p2.live > .p2-mid { pointer-events: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .bt i, .spark .line, .spark .area, .spark .end { transition: none; } }
   @media (min-width: 1024px) { .hud { display: flex; } .rail { display: block; } }
   @media (max-width: 1023.98px) { .stat { flex: 1 1 9rem; } }
   @media (max-width: 480px) {
@@ -394,45 +435,50 @@
     <p class="eyebrow">02 / Open source</p>
     <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
     <h2 class="p2-title font-orbitron" id="p2-title">Shipped<br>in public</h2>
-    <p class="p2-intro">Models, datasets and benchmarks released on Hugging Face, with the work that went into them.</p>
-    <p class="spec-label">By the numbers <span class="ph-pill">Placeholder figures</span></p>
-    <dl class="specs">
-        <div class="spec"><dt>12K<small>+</small></dt><dd>Downloads, all repos</dd></div>
-        <div class="spec"><dt>40<small>+</small></dt><dd>Likes</dd></div>
-        <div class="spec ph"><dt>00<small></small></dt><dd>Models published</dd></div>
-        <div class="spec ph"><dt>00<small></small></dt><dd>Datasets published</dd></div>
-        <div class="spec ph"><dt>00<small></small></dt><dd>Epochs trained</dd></div>
-        <div class="spec ph"><dt>00<small>M</small></dt><dd>Rows cleaned</dd></div>
-    </dl>
-    <div class="p2-big"><span class="font-orbitron">12K+</span><p>Downloads across models and datasets, and counting.</p></div>
-    <a class="cta" href="https://huggingface.co/sinhal" target="_blank" rel="noopener">View profile <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+    <p class="p2-intro">Models, datasets and benchmarks released in the open, with the work that went into them.</p>
+    <div class="viewer" id="viewer">
+      <svg class="corner vtl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
+      <svg class="corner vbr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
+      <div class="viewer-top">
+        <div class="seg" role="tablist" aria-label="Show">
+          <button role="tab" aria-selected="true" data-kind="models">Models</button>
+          <button role="tab" aria-selected="false" data-kind="datasets">Datasets</button>
+        </div>
+        <div class="arrows">
+          <span id="v-count">01 / 03</span>
+          <button id="v-prev" aria-label="Previous"><svg class="icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+          <button id="v-next" aria-label="Next"><svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+        </div>
+      </div>
+      <div class="viewer-body" id="v-body" aria-live="polite"></div>
+    </div>
   </div>
-  <canvas class="logo2d" id="logo2d" aria-hidden="true"></canvas>
+  <div class="p2-mid" id="p2-mid" aria-hidden="true"><p class="mid-hint">Grab · pull · let go</p></div>
   <div class="p2-cards">
-      <a class="p2-card" href="https://huggingface.co/datasets/sinhal/agent-step-guard-bench" target="_blank" rel="noopener">
-        <svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
-        <svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
-        <span class="dots" aria-hidden="true"></span>
-        <span class="tag">Dataset</span>
-        <span class="row-title">Agent Step-Guard Bench</span>
-        <span class="p2-card-foot"><span>244 decisions</span><svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
-      </a>
-      <a class="p2-card" href="https://huggingface.co/sinhal" target="_blank" rel="noopener">
-        <svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
-        <svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
-        <span class="dots" aria-hidden="true"></span>
-        <span class="tag">Model · placeholder</span>
-        <span class="row-title">Long-Context Instruct 8B</span>
-        <span class="p2-card-foot"><span>— downloads</span><svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
-      </a>
-      <a class="p2-card" href="https://huggingface.co/sinhal" target="_blank" rel="noopener">
-        <svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
-        <svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
-        <span class="dots" aria-hidden="true"></span>
-        <span class="tag">Model · placeholder</span>
-        <span class="row-title">Long-Context Instruct 3B</span>
-        <span class="p2-card-foot"><span>— downloads</span><svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
-      </a>
+    <a class="p2-card" href="https://huggingface.co/sinhal" target="_blank" rel="noopener">
+      <svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
+      <svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
+      <canvas class="slot" data-logo="hf" aria-hidden="true"></canvas>
+      <span class="tag">Models · datasets</span>
+      <span class="row-title">Hugging Face</span>
+      <span class="p2-card-foot"><span>12K+ downloads</span><svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+    </a>
+    <a class="p2-card" href="https://www.kaggle.com" target="_blank" rel="noopener">
+      <svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
+      <svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
+      <canvas class="slot" data-logo="kaggle" aria-hidden="true"></canvas>
+      <span class="tag">Notebooks · placeholder</span>
+      <span class="row-title">Kaggle</span>
+      <span class="p2-card-foot"><span>— notebooks</span><svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+    </a>
+    <a class="p2-card" href="https://github.com/Zephyr4772" target="_blank" rel="noopener">
+      <svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
+      <svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
+      <canvas class="slot" data-logo="torch" aria-hidden="true"></canvas>
+      <span class="tag">Built with</span>
+      <span class="row-title">PyTorch</span>
+      <span class="p2-card-foot"><span>Training code</span><svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+    </a>
   </div>
 </section>
 <div class="snap snap-a" aria-hidden="true"></div><div class="snap snap-b" aria-hidden="true"></div>
@@ -469,6 +515,25 @@ window.drawHFLogo = function (ctx, S) {
   }
   ctx.restore();
 };
+window.drawKaggleLogo = function (ctx, S) {
+  const k = S / 512;
+  ctx.save(); ctx.scale(k, k); ctx.clearRect(0, 0, 512, 512);
+  ctx.fillStyle = '#20BEFF';
+  ctx.fillRect(150, 50, 70, 412);                                    // stem
+  ctx.beginPath(); ctx.moveTo(220, 290); ctx.lineTo(345, 150); ctx.lineTo(430, 150); ctx.lineTo(290, 300); ctx.closePath(); ctx.fill();   // upper arm
+  ctx.beginPath(); ctx.moveTo(250, 285); ctx.lineTo(300, 262); ctx.lineTo(440, 462); ctx.lineTo(360, 462); ctx.closePath(); ctx.fill();   // leg
+  ctx.restore();
+};
+window.drawTorchLogo = function (ctx, S) {
+  const k = S / 512;
+  ctx.save(); ctx.scale(k, k); ctx.clearRect(0, 0, 512, 512);
+  ctx.strokeStyle = ctx.fillStyle = '#EE4C2C';
+  ctx.lineWidth = 58; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(256, 300, 150, -0.3 * Math.PI, 1.25 * Math.PI); ctx.stroke();      // ring, open at the top
+  ctx.beginPath(); ctx.moveTo(126, 184); ctx.lineTo(176, 234); ctx.lineTo(262, 52); ctx.closePath(); ctx.fill();   // flame tip
+  ctx.beginPath(); ctx.arc(350, 140, 30, 0, Math.PI * 2); ctx.fill();   // dot
+  ctx.restore();
+};
 </script>
 <script type="importmap">
 { "imports": {
@@ -495,6 +560,8 @@ const POINT_SIZE = 5.2;   // bigger, overlapping beads: dense but not solid
 // ---------- renderer / scene ----------
 const canvas = document.getElementById('stage');
 let morph = 0;
+const VIEW = { camX: 0, lookY: 0, halfW: 1, halfH: 1, W: 1, H: 1 };
+const pxToWorld = (x, y, out) => out.set(VIEW.camX + (x / VIEW.W * 2 - 1) * VIEW.halfW, VIEW.lookY + (1 - y / VIEW.H * 2) * VIEW.halfH, 0);
 const ptrPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), ptrHit = new THREE.Vector3();
 const maskEls = ['chat', 'stats', 'about-mini', 'strip', 'hud'].map((id) => document.getElementById(id));
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true });
@@ -622,23 +689,14 @@ loader.load(MODEL_URL, (gltf) => {
   for (let i = 0; i < k; i++) headW[i] = part[i] === 2 ? 1 : -1;
   geo.setAttribute('aHead', new THREE.BufferAttribute(headW, 1));
 
-  // Page two: every grain gets a spot on the Hugging Face mark (and its colour).
+  // Page two: every grain gets a direction on the living ball.
   {
-    const S = 256, lc = document.createElement('canvas'); lc.width = lc.height = S;
-    const lx = lc.getContext('2d'); window.drawHFLogo(lx, S);
-    const px = lx.getImageData(0, 0, S, S).data, filled = [];
-    for (let i = 0; i < S * S; i++) if (px[i * 4 + 3] > 200) filled.push(i);
-    const tgt = new Float32Array(k * 3), tcol = new Float32Array(k * 3);
+    const dir = new Float32Array(k * 3);
     for (let i = 0; i < k; i++) {
-      const id = filled[(Math.random() * filled.length) | 0];
-      const x = (id % S + Math.random()) / S - 0.5, y = 0.5 - (Math.floor(id / S) + Math.random()) / S;
-      const fx = x, fy = y - 0.039, r2 = (fx * fx + fy * fy) / (0.383 * 0.383);
-      tgt[i * 3] = x; tgt[i * 3 + 1] = y;
-      tgt[i * 3 + 2] = r2 < 1 ? Math.sqrt(1 - r2) * 0.12 : 0;   // gently domed face, no seams
-      tcol[i * 3] = px[id * 4] / 255; tcol[i * 3 + 1] = px[id * 4 + 1] / 255; tcol[i * 3 + 2] = px[id * 4 + 2] / 255;
+      const z = Math.random() * 2 - 1, a = Math.random() * Math.PI * 2, r = Math.sqrt(1 - z * z);
+      dir[i * 3] = r * Math.cos(a); dir[i * 3 + 1] = z; dir[i * 3 + 2] = r * Math.sin(a);
     }
-    geo.setAttribute('aTarget', new THREE.BufferAttribute(tgt, 3));
-    geo.setAttribute('aTCol', new THREE.BufferAttribute(tcol, 3));
+    geo.setAttribute('aBlob', new THREE.BufferAttribute(dir, 3));
   }
   NECK.set(neckY - bounds.h * 0.03, neckY + bounds.h * 0.07, neckZ);
   geo.setAttribute('aDent', new THREE.BufferAttribute(new Float32Array(k), 1).setUsage(THREE.DynamicDrawUsage));
@@ -695,7 +753,10 @@ function makeMaterial() {
       uBreath: { value: 0 },
       uResolve: { value: 0 },
       uMorph:   { value: 0 },
-      uLogo:    { value: new THREE.Matrix4() },
+      uBlobC:   { value: new THREE.Vector3() },
+      uBlobR:   { value: 0.2 },
+      uBlobRot: { value: new THREE.Matrix3() },
+      uSpikes:  { value: Array.from({ length: 24 }, () => new THREE.Vector4(0, 1, 0, 0)) },
       uFloorY:  { value: 0 },
       uSpread:  { value: 1 },
       uPtr:     { value: new THREE.Vector3(99, 99, 0) },
@@ -711,11 +772,13 @@ function makeMaterial() {
     vertexShader: /* glsl */`
       uniform float uTime, uSize, uHeight, uBreath, uMorph, uFloorY, uSpread, uPtrR;
       uniform vec3 uNeck, uHead, uPtr;
-      uniform mat4 uLogo;
+      uniform vec3 uBlobC;
+      uniform float uBlobR;
+      uniform mat3 uBlobRot;
+      uniform vec4 uSpikes[24];
       attribute float aRnd, aDent, aHead;
-      attribute vec3 aTarget, aTCol;
+      attribute vec3 aBlob;
       varying float vMorph;
-      varying vec3 vTCol;
       mat3 rotXYZ(vec3 a) {
         float cx = cos(a.x), sx = sin(a.x), cy = cos(a.y), sy = sin(a.y), cz = cos(a.z), sz = sin(a.z);
         mat3 rx = mat3(1.,0.,0., 0.,cx,sx, 0.,-sx,cx);
@@ -742,25 +805,32 @@ function makeMaterial() {
         p += nrm * snoise(p * 3.0 + vec3(0.0, uTime * 0.12, 0.0)) * 0.003;
         vec4 world = modelMatrix * vec4(p, 1.0);
         float tm = 0.0;
+        vec3 blobN = vec3(0.0, 0.0, 1.0);
         if (uMorph > 0.0) {
           // drip: lower grains go first, everyone sinks toward the floor, then
           // sweeps across and settles into the logo
           float delay = (position.y / uHeight) * 0.3 + aRnd * 0.15;
           tm = smoothstep(delay, delay + 0.55, uMorph);
-          vec3 E = (uLogo * vec4(aTarget, 1.0)).xyz;
+          // the living ball: spikes rise and melt back, the surface oozes
+          vec3 d = aBlob;
+          float sp = 0.0;
+          for (int i = 0; i < 24; i++) { vec4 s = uSpikes[i]; sp += s.w * pow(max(dot(d, s.xyz), 0.0), 70.0); }
+          sp += snoise(d * 2.3 + vec3(0.0, uTime * 0.3, uTime * 0.17)) * 0.05;
+          vec3 dw = uBlobRot * d;
+          vec3 E = uBlobC + dw * uBlobR * (1.0 + sp);
           vec2 dp = E.xy - uPtr.xy; float dl = length(dp);
-          E.xy += dp / max(dl, 1e-4) * smoothstep(uPtrR, 0.0, dl) * uPtrR * 0.45 * (0.6 + aRnd);
-          E.z += snoise(aTarget * 7.0 + vec3(0.0, 0.0, uTime * 0.35)) * uSpread * 0.006;
+          E.xy += dp / max(dl, 1e-4) * smoothstep(uPtrR, 0.0, dl) * uPtrR * 0.35 * (0.6 + aRnd);
+          blobN = normalize(mat3(viewMatrix) * dw);
           vec3 C = vec3(world.x + (aRnd - 0.5) * 0.3 * uSpread, uFloorY, world.z);
           float u = tm * tm * (3.0 - 2.0 * tm);
           vec3 w3 = mix(mix(world.xyz, C, u), mix(C, E, u), u);
           float mid = sin(3.14159 * tm);
-          w3.xy += vec2(snoise(vec3(aTarget.xy * 4.0, uTime * 0.5)), snoise(vec3(aTarget.yx * 4.0, uTime * 0.5 + 9.0))) * mid * uSpread * 0.05;
+          w3.xy += vec2(snoise(vec3(aBlob.xy * 4.0, uTime * 0.5)), snoise(vec3(aBlob.yz * 4.0, uTime * 0.5 + 9.0))) * mid * uSpread * 0.05;
           world.xyz = w3;
         }
-        vMorph = tm; vTCol = aTCol;
+        vMorph = tm;
         vec4 mv = viewMatrix * world;
-        vNormalV = normalize(normalMatrix * nrm);
+        vNormalV = normalize(mix(normalize(normalMatrix * nrm), blobN, tm));
         vDent = aDent; vY = position.y / uHeight; vRnd = aRnd;
         gl_PointSize = uSize * (0.55 + aRnd * 0.9) / -mv.z;
         gl_Position = projectionMatrix * mv;
@@ -771,7 +841,6 @@ function makeMaterial() {
       uniform vec4 uMasks[5];
       varying vec3 vNormalV;
       varying float vDent, vY, vRnd, vMorph;
-      varying vec3 vTCol;
       void main() {
         vec2 c = gl_PointCoord * 2.0 - 1.0;
         float r2 = dot(c, c);
@@ -788,10 +857,6 @@ function makeMaterial() {
         vec3 col = ink + sheen * (diff * 0.34 + rim * 0.6) + vec3(spec) * mix(1.1, 0.5, r);
         // freshly worked sand looks a little lighter, then settles
         col = mix(col, uHot, clamp(vDent, 0.0, 1.0) * 0.35);
-        // on the logo: its own colours, lit like glossy beads
-        float bd = max(dot(normalize(bead + vec3(0.0, 0.0, 0.6)), L), 0.0);
-        vec3 lc = vTCol * (0.62 + 0.5 * bd) + vec3(pow(max(dot(reflect(-L, normalize(bead)), vec3(0.0, 0.0, 1.0)), 0.0), 20.0)) * 0.35;
-        col = mix(col, lc, vMorph);
         float fadeIn = mix(smoothstep(0.0, 0.14, vY), 1.0, vMorph);
         if (fadeIn < 0.999 && vRnd > fadeIn) discard;
         // thin out behind text blocks: fully clear inside, dithered edge outside
@@ -805,6 +870,162 @@ function makeMaterial() {
         if (outside < 1e4 && vRnd > smoothstep(0.0, uFeather, outside)) discard;
         gl_FragColor = vec4(col, 1.0);
       }`,
+  });
+}
+
+// ---------- page two: the ball on an elastic thread (Verlet rope) ----------
+const ball = (() => {
+  const N = 22;                                   // rope segments; node N is the ball
+  const P = Array.from({ length: N + 1 }, () => ({ x: 0, y: 0, px: 0, py: 0 }));
+  const S = { ax: 0, rest: 10, r: 80, held: false, gx: 0, gy: 0, ready: false, speed: 0 };
+  const G = 2600, DAMP = 0.996, STIFF = 0.55, ITER = 6, BALL_W = 0.22;
+  function layout() {
+    const m = document.getElementById('p2-mid').getBoundingClientRect();
+    S.ax = m.left + m.width / 2;
+    S.r = Math.min(m.width * 0.3, innerHeight * 0.17);
+    const hangY = innerHeight * 0.5;
+    S.rest = (hangY / N) * 0.86;                 // the thread stretches the rest of the way under the ball's weight
+    return hangY;
+  }
+  function reset() {
+    const hangY = layout();
+    P.forEach((p, i) => { p.x = p.px = S.ax; p.y = p.py = (hangY * i) / N; });
+    S.ready = true;
+  }
+  function step(dt) {
+    const sub = 3, h = dt / sub;
+    for (let s = 0; s < sub; s++) {
+      for (let i = 1; i <= N; i++) {
+        const p = P[i], vx = (p.x - p.px) * DAMP, vy = (p.y - p.py) * DAMP;
+        p.px = p.x; p.py = p.y;
+        p.x += vx; p.y += vy + G * h * h;
+      }
+      if (S.held) { const b = P[N]; b.x += (S.gx - b.x) * 0.35; b.y += (S.gy - b.y) * 0.35; }
+      for (let it = 0; it < ITER; it++) {
+        P[0].x = S.ax; P[0].y = 0;
+        for (let i = 0; i < N; i++) {
+          const a = P[i], b = P[i + 1];
+          const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1e-6;
+          const wa = i === 0 ? 0 : 1, wb = i + 1 === N ? (S.held ? 0.05 : BALL_W) : 1;
+          const c = ((len - S.rest) / len) * STIFF / (wa + wb);
+          a.x += dx * c * wa; a.y += dy * c * wa;
+          b.x -= dx * c * wb; b.y -= dy * c * wb;
+        }
+      }
+      const b = P[N];                                 // keep the ball on screen
+      b.x = Math.min(innerWidth - S.r, Math.max(S.r, b.x));
+      b.y = Math.min(innerHeight - S.r, Math.max(S.r, b.y));
+    }
+    const b = P[N];
+    S.speed = Math.hypot(b.x - b.px, b.y - b.py) / h;
+  }
+  return {
+    P, S, N, reset, step,
+    get held() { return S.held; },
+    near(x, y) { const b = P[N]; return S.ready && Math.hypot(x - b.x, y - b.y) < S.r * 1.25; },
+    grab(x, y) { S.held = true; S.gx = x; S.gy = y; },
+    move(x, y) { S.gx = x; S.gy = y; },
+    release() { S.held = false; },
+  };
+})();
+
+// spikes that rise and melt back at random spots on the ball
+const spikes = Array.from({ length: 24 }, () => ({ d: new THREE.Vector3(), t0: 0, life: 1, h: 0 }));
+function respawn(s, t) {
+  s.d.randomDirection(); s.t0 = t + Math.random() * 1.2; s.life = 2.2 + Math.random() * 3.2; s.h = 0.12 + Math.random() * 0.3;
+}
+spikes.forEach((s) => { respawn(s, 0); s.t0 = -Math.random() * s.life; });
+
+// the thread
+const threadGeo = new THREE.BufferGeometry();
+threadGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array((ball.N + 1) * 3), 3));
+const thread = new THREE.Line(threadGeo, new THREE.LineBasicMaterial({ color: 0x111113, transparent: true, opacity: 0 }));
+thread.frustumCulled = false; thread.visible = false;
+scene.add(thread);
+
+// three small grain logos that spin inside the right-hand boxes
+const LOGO_DRAW = { hf: 'drawHFLogo', kaggle: 'drawKaggleLogo', torch: 'drawTorchLogo' };
+const logoSlots = [...document.querySelectorAll('.slot')];
+const logoMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false,
+  uniforms: { uSize: { value: 1 }, uOpacity: { value: 0 } },
+  vertexShader: /* glsl */`
+    uniform float uSize; attribute vec3 aCol; attribute float aR; varying vec3 vCol;
+    void main() { vCol = aCol; vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      gl_PointSize = uSize * (0.6 + aR * 0.8) / -mv.z; gl_Position = projectionMatrix * mv; }`,
+  fragmentShader: /* glsl */`
+    uniform float uOpacity; varying vec3 vCol;
+    void main() { vec2 c = gl_PointCoord * 2.0 - 1.0; float r2 = dot(c, c); if (r2 > 1.0) discard;
+      vec3 n = vec3(c.x, -c.y, sqrt(1.0 - r2)); vec3 L = normalize(vec3(-0.4, 0.6, 0.7));
+      float d = max(dot(n, L), 0.0), s = pow(max(dot(reflect(-L, n), vec3(0.0, 0.0, 1.0)), 0.0), 20.0);
+      gl_FragColor = vec4(vCol * (0.6 + 0.55 * d) + vec3(s) * 0.3, uOpacity); }`,
+});
+const logos = logoSlots.map((slot) => {
+  const S = 256, c = document.createElement('canvas'); c.width = c.height = S;
+  const x = c.getContext('2d'); window[LOGO_DRAW[slot.dataset.logo]](x, S);
+  const d = x.getImageData(0, 0, S, S).data, filled = [];
+  for (let i = 0; i < S * S; i++) if (d[i * 4 + 3] > 200) filled.push(i);
+  const n = 6500, pos = new Float32Array(n * 3), col = new Float32Array(n * 3), rr = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const id = filled[(Math.random() * filled.length) | 0];
+    pos[i * 3] = (id % S + Math.random()) / S - 0.5;
+    pos[i * 3 + 1] = 0.5 - (Math.floor(id / S) + Math.random()) / S;
+    pos[i * 3 + 2] = (Math.random() - 0.5) * 0.09;               // a little thickness so edge-on still reads
+    col[i * 3] = d[id * 4] / 255; col[i * 3 + 1] = d[id * 4 + 1] / 255; col[i * 3 + 2] = d[id * 4 + 2] / 255;
+    rr[i] = Math.random();
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('aCol', new THREE.BufferAttribute(col, 3));
+  g.setAttribute('aR', new THREE.BufferAttribute(rr, 1));
+  const pts = new THREE.Points(g, logoMat); pts.frustumCulled = false; pts.visible = false; pts.renderOrder = 2;
+  scene.add(pts);
+  return { slot, pts };
+});
+
+const tmpV = new THREE.Vector3(), tmpA = new THREE.Vector3(), rotM4 = new THREE.Matrix4(), rotE = new THREE.Euler();
+let spin = 0, roll = 0;
+function updatePageTwo(dt, t) {
+  const u = points.material.uniforms, inn = window.__p2in || 0, wpp = (2 * VIEW.halfH) / VIEW.H;
+  // the ball: rest pose until the grains arrive, then live physics
+  if (morph < 0.3 || !ball.S.ready) ball.reset();
+  else ball.step(dt);
+  const b = ball.P[ball.N];
+  pxToWorld(b.x, b.y, u.uBlobC.value);
+  u.uBlobR.value = ball.S.r * wpp;
+  // roll with sideways motion, idle turn otherwise
+  roll += -((b.x - b.px) / Math.max(dt, 1e-3)) * dt * 0.004; spin += dt * 0.18;
+  rotM4.makeRotationFromEuler(rotE.set(0, spin, roll));
+  u.uBlobRot.value.setFromMatrix4(rotM4);
+  const agitate = Math.min(1.5, ball.S.speed / 900);
+  spikes.forEach((s, i) => {
+    let age = (t - s.t0) / s.life;
+    if (age > 1) { respawn(s, t); age = 0; }
+    const hgt = age < 0 ? 0 : Math.pow(Math.sin(Math.PI * age), 2) * s.h * (1 + agitate);
+    u.uSpikes.value[i].set(s.d.x, s.d.y, s.d.z, hgt);
+  });
+  // the thread: anchor at the top of the page to the top of the ball
+  const op = THREE.MathUtils.smoothstep(morph, 0.75, 1.0);
+  thread.visible = op > 0.01; thread.material.opacity = op;
+  if (thread.visible) {
+    const arr = threadGeo.attributes.position.array, prev = ball.P[ball.N - 1];
+    for (let i = 0; i <= ball.N; i++) {
+      let x = ball.P[i].x, y = ball.P[i].y;
+      if (i === ball.N) { const dx = x - prev.x, dy = y - prev.y, l = Math.hypot(dx, dy) || 1; x -= dx / l * ball.S.r * 0.85; y -= dy / l * ball.S.r * 0.85; }
+      pxToWorld(x, y, tmpV); arr[i * 3] = tmpV.x; arr[i * 3 + 1] = tmpV.y; arr[i * 3 + 2] = 0;
+    }
+    threadGeo.attributes.position.needsUpdate = true;
+  }
+  // logos follow their boxes and spin
+  logoMat.uniforms.uOpacity.value = inn;
+  logoMat.uniforms.uSize.value = baseSize * 0.75;
+  logos.forEach(({ slot, pts }, i) => {
+    const r = slot.getBoundingClientRect();
+    pts.visible = inn > 0.01 && r.width > 0;
+    if (!pts.visible) return;
+    pxToWorld(r.left + r.width / 2, r.top + r.height / 2, pts.position);
+    pts.scale.setScalar(r.height * wpp * 0.95);
+    pts.rotation.y = t * 0.7 + i * 2.1;
   });
 }
 
@@ -829,9 +1050,8 @@ function frame() {
     points.material.uniforms.uHeight.value = bounds.h;
     // page two: the logo sits right of centre, a bit over half the screen tall
     const halfH = dist * Math.tan(halfFov), halfW = halfH * camera.aspect;
-    const lx = shiftX + (0.6 * 2 - 1) * halfW, ly = lookY - 0.04 * halfH, ls = halfH * 1.3;
+    Object.assign(VIEW, { camX: shiftX, lookY, halfW, halfH, W: w, H: h });
     const u = points.material.uniforms;
-    u.uLogo.value.makeTranslation(lx, ly, 0).multiply(new THREE.Matrix4().makeScale(ls, ls, ls));
     u.uFloorY.value = lookY - halfH * 0.92;
     u.uSpread.value = halfH;
     u.uPtrR.value = halfH * 0.16;
@@ -870,7 +1090,10 @@ function touchSpread() {
 }
 
 canvas.addEventListener('pointerdown', (e) => {
-  if (morph > 0.05) return;          // on page two only hover reacts
+  if (morph > 0.05) {                // page two: grab the ball
+    if (morph > 0.85 && ball.near(e.clientX, e.clientY)) { canvas.setPointerCapture(e.pointerId); ball.grab(e.clientX, e.clientY); }
+    return;
+  }
   canvas.setPointerCapture(e.pointerId);
   touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (e.pointerType === 'mouse') { dragging = true; sculpting = false; lastDrag = { x: e.clientX, y: e.clientY }; }
@@ -878,6 +1101,8 @@ canvas.addEventListener('pointerdown', (e) => {
   else { setNdc(e); sculpting = true; }
 });
 canvas.addEventListener('pointermove', (e) => {
+  if (ball.held) { ball.move(e.clientX, e.clientY); return; }
+  if (morph > 0.85) canvas.style.cursor = ball.near(e.clientX, e.clientY) ? 'grab' : 'default';
   if (touches.has(e.pointerId)) touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (dragging) {
     if (e.pointerType !== 'mouse' && touches.size >= 2) {
@@ -897,6 +1122,7 @@ canvas.addEventListener('pointermove', (e) => {
   sculpting = e.pointerType === 'mouse' || touches.size === 1;
 });
 const endPointer = (e) => {
+  if (ball.held) { ball.release(); canvas.style.cursor = 'grab'; }
   touches.delete(e.pointerId);
   if (e.pointerType === 'mouse') { dragging = false; canvas.style.cursor = 'grab'; }
   else if (touches.size < 2) { dragging = false; sculpting = touches.size === 1; }
@@ -1010,8 +1236,9 @@ renderer.setAnimationLoop(() => {
       settling = maxOff > 1e-4 ? 1 : 0;
     }
     points.material.uniforms.uTime.value = t;
-    // page two: the pointer pushes the logo's grains
-    if (morph > 0.5 && sculpting) {
+    updatePageTwo(dt, t);
+    // page two: the pointer pushes the ball's grains
+    if (morph > 0.5 && sculpting && !ball.held) {
       ray.setFromCamera(ndc, camera);
       if (ray.ray.intersectPlane(ptrPlane, ptrHit)) points.material.uniforms.uPtr.value.copy(ptrHit);
     } else points.material.uniforms.uPtr.value.set(1e4, 1e4, 0);
@@ -1147,6 +1374,7 @@ renderer.setAnimationLoop(() => {
     const target = desk.matches ? Math.min(1, Math.max(0, scrollY / (innerHeight * 1.6))) : 0;
     q += (target - q) * 0.12; if (Math.abs(target - q) < 1e-4) q = target;
     window.__morph = desk.matches ? Math.min(1, Math.max(0, (q - 0.04) / 0.92)) : 0;
+    const wasIn = window.__p2in || 0;
     const out = sm(0, 0.3, q), inn = sm(0.6, 0.95, q);
     for (const el of fades) {
       el.style.opacity = desk.matches ? 1 - out : '';
@@ -1157,28 +1385,117 @@ renderer.setAnimationLoop(() => {
       p2.style.opacity = inn; p2.style.transform = `translateY(${(1 - inn) * 6}vh)`;
       p2.style.visibility = inn > 0.001 ? 'visible' : 'hidden';
       p2.classList.toggle('live', inn > 0.9);
+      window.__p2in = inn;
+      if (inn > 0.9 && wasIn <= 0.9) viewer.replay();
     } else { p2.style.opacity = ''; p2.style.transform = ''; p2.style.visibility = ''; }
   }
   $('logo').addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
 
-  // phones: page two is a normal section with a still grain logo
-  (function drawLogo2d() {
-    const cv = $('logo2d'), dpr = Math.min(devicePixelRatio || 1, 2), S = 256;
-    const src = document.createElement('canvas'); src.width = src.height = S;
-    const sx = src.getContext('2d'); window.drawHFLogo(sx, S);
-    const d = sx.getImageData(0, 0, S, S).data;
+  // phones: page two is a normal section; the logo boxes get still grain drawings
+  (function paintSlots() {
+    const draw = { hf: 'drawHFLogo', kaggle: 'drawKaggleLogo', torch: 'drawTorchLogo' };
     function paint() {
-      const W = cv.clientWidth; if (!W) return;
-      cv.width = cv.height = W * dpr;
-      const c = cv.getContext('2d'); c.scale(dpr, dpr);
-      for (let n = 0; n < 30000; n++) {
-        const x = Math.random() * S | 0, y = Math.random() * S | 0, i = (y * S + x) * 4;
-        if (d[i + 3] < 200) continue;
-        c.fillStyle = `rgb(${d[i]},${d[i + 1]},${d[i + 2]})`;
-        c.fillRect((x + Math.random()) / S * W, (y + Math.random()) / S * W, 1.6, 1.6);
-      }
+      document.querySelectorAll('.slot').forEach((cv) => {
+        const W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(devicePixelRatio || 1, 2);
+        cv.width = W * dpr; cv.height = H * dpr;
+        const c = cv.getContext('2d'); c.scale(dpr, dpr);
+        if (desk.matches || !W) return;                    // desktop draws these in 3D
+        const S = 256, src = document.createElement('canvas'); src.width = src.height = S;
+        const sx = src.getContext('2d'); window[draw[cv.dataset.logo]](sx, S);
+        const d = sx.getImageData(0, 0, S, S).data, size = Math.min(W, H) * 0.95, ox = (W - size) / 2, oy = (H - size) / 2;
+        for (let n = 0; n < 9000; n++) {
+          const x = Math.random() * S | 0, y = Math.random() * S | 0, i = (y * S + x) * 4;
+          if (d[i + 3] < 200) continue;
+          c.fillStyle = `rgb(${d[i]},${d[i + 1]},${d[i + 2]})`;
+          c.fillRect(ox + (x + Math.random()) / S * size, oy + (y + Math.random()) / S * size, 1.4, 1.4);
+        }
+      });
     }
-    paint(); addEventListener('resize', () => { if (!desk.matches) paint(); });
+    paint(); addEventListener('resize', paint);
+  })();
+
+  // the stats viewer: Models / Datasets toggle, arrows, bars and a line that fill on arrival
+  const viewer = (() => {
+    // Placeholder figures are flagged ph: true; swap in real numbers when they arrive.
+    const DATA = {
+      models: [
+        { name: 'Long-Context Instruct 8B', type: 'Model · 8B · Hugging Face', desc: 'Instruction and multi-turn dialogue fine-tune that stays coherent past 30 turns.', link: 'https://huggingface.co/sinhal',
+          stats: [['Downloads', 7400, 10000, '', true], ['Likes', 26, 50, '', true], ['Context', 32, 32, 'K', true], ['Epochs', 3, 5, '', true]] },
+        { name: 'Long-Context Instruct 3B', type: 'Model · 3B · Hugging Face', desc: 'The smaller sibling: the same long-dialogue tuning in a size that runs on a laptop.', link: 'https://huggingface.co/sinhal',
+          stats: [['Downloads', 4800, 10000, '', true], ['Likes', 15, 50, '', true], ['Context', 32, 32, 'K', true], ['Epochs', 3, 5, '', true]] },
+        { name: 'Hushiyar 1B', type: 'Model · 1B · Ollama', desc: 'Edge variant of an 8B model pretrained from scratch. RoPE, 32K context.', link: 'https://ollama.com/aryanvala/hushiyar-alpha',
+          stats: [['Pulls', 900, 10000, '', true], ['Params', 1, 8, 'B', false], ['Context', 32, 32, 'K', false], ['Epochs', 1, 5, '', true]] },
+      ],
+      datasets: [
+        { name: 'Agent Step-Guard Bench', type: 'Dataset · Benchmark', desc: '61 hand-written agent transcripts with four guard decisions each.', link: 'https://huggingface.co/datasets/sinhal/agent-step-guard-bench',
+          stats: [['Rows', 244, 500, '', false], ['Transcripts', 61, 100, '', false], ['Downloads', 300, 1000, '', true], ['Likes', 4, 50, '', true]] },
+        { name: 'Indian SC Judgments', type: 'Dataset · Corpus', desc: 'Supreme Court judgments converted from raw court PDFs; the corpus behind Lex.ai.', link: 'https://huggingface.co/sinhal',
+          stats: [['Rows', 41876, 50000, '', false], ['Rows cleaned', 41876, 50000, '', true], ['Downloads', 600, 1000, '', true], ['Likes', 9, 50, '', true]] },
+        { name: 'SC Outcome Bench', type: 'Dataset · Benchmark', desc: 'Appeal outcomes with the decision removed; 2023–24 and 1995–2005 cases with matched labels.', link: 'https://github.com/Zephyr4772/indian-sc-outcome-bench',
+          stats: [['Cases', 380, 500, '', false], ['Models run', 5, 10, '', false], ['Downloads', 150, 1000, '', true], ['Likes', 3, 50, '', true]] },
+      ],
+    };
+    const root = $('viewer'), body = $('v-body'), count = $('v-count');
+    let kind = 'models', idx = 0;
+    const fmt = (n, u) => (n >= 10000 ? (n / 1000).toFixed(n >= 100000 ? 0 : 1).replace(/\.0$/, '') + 'K' : n.toLocaleString('en-US')) + u;
+    // stable pseudo-random weekly series per item (placeholder)
+    function series(seed) {
+      let s = seed * 9301 + 49297, v = 0.3; const out = [];
+      for (let i = 0; i < 14; i++) { s = (s * 9301 + 49297) % 233280; v = Math.max(0.05, Math.min(1, v + (s / 233280 - 0.42) * 0.3)); out.push(v); }
+      return out;
+    }
+    function render() {
+      const list = DATA[kind], it = list[idx];
+      count.textContent = String(idx + 1).padStart(2, '0') + ' / ' + String(list.length).padStart(2, '0');
+      const anyPh = it.stats.some((s) => s[4]);
+      const pts = series(idx + (kind === 'models' ? 1 : 7)), W = 200, H = 34;
+      const xy = pts.map((v, i) => [(i / (pts.length - 1)) * W, H - v * H]);
+      const line = xy.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+      const last = xy[xy.length - 1];
+      body.innerHTML = `
+        <div class="v-head"><span class="tag">${esc(it.type)}</span>${anyPh ? '<span class="ph-pill">Placeholder</span>' : ''}</div>
+        <h3 class="v-name"><a href="${esc(it.link)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${esc(it.name)} ↗</a></h3>
+        <p class="v-desc">${esc(it.desc)}</p>
+        <div class="bars">${it.stats.map(([label, val, max, unit, ph], i) => `
+          <div class="bar${ph ? ' ph' : ''}"><span>${esc(label)}</span>
+            <span class="bt"><i style="--w:${Math.max(3, Math.min(100, (val / max) * 100)).toFixed(1)}%;--d:${(0.08 * i).toFixed(2)}s"></i></span>
+            <span class="bv" data-to="${val}" data-unit="${esc(unit)}">0${esc(unit)}</span></div>`).join('')}
+        </div>
+        <div class="spark-wrap">
+          <div class="spark-label"><span>Weekly downloads</span><span>Placeholder</span></div>
+          <svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+            <line class="gl" x1="0" y1="${H}" x2="${W}" y2="${H}"/><line class="gl" x1="0" y1="${H / 2}" x2="${W}" y2="${H / 2}" stroke-dasharray="2 3"/>
+            <path class="area" d="${line} L ${W} ${H} L 0 ${H} Z"/>
+            <path class="line" d="${line}" vector-effect="non-scaling-stroke"/>
+          </svg>
+        </div>`;
+      const path = body.querySelector('.line');
+      path.style.setProperty('--len', Math.ceil(path.getTotalLength ? path.getTotalLength() * 1.2 : 400));
+      replay();
+    }
+    let countRaf = 0;
+    function replay() {
+      root.classList.remove('in');
+      void root.offsetWidth;
+      root.classList.add('in');
+      cancelAnimationFrame(countRaf);
+      const nums = [...body.querySelectorAll('.bv')], t0 = performance.now();
+      const tick = (now) => {
+        const k = Math.min(1, (now - t0) / 1000), e = 1 - Math.pow(1 - k, 3);
+        nums.forEach((el) => { el.textContent = fmt(Math.round(+el.dataset.to * e), el.dataset.unit); });
+        if (k < 1) countRaf = requestAnimationFrame(tick);
+      };
+      countRaf = requestAnimationFrame(tick);
+    }
+    root.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => {
+      kind = b.dataset.kind; idx = 0;
+      root.querySelectorAll('.seg button').forEach((x) => x.setAttribute('aria-selected', String(x === b)));
+      render();
+    }));
+    $('v-prev').addEventListener('click', () => { idx = (idx - 1 + DATA[kind].length) % DATA[kind].length; render(); });
+    $('v-next').addEventListener('click', () => { idx = (idx + 1) % DATA[kind].length; render(); });
+    render();
+    return { replay };
   })();
 
   (function tick() {
