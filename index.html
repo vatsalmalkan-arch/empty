@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Inter+Tight:wght@400;500&display=swap">
 <style>
-  /* Layout: one full-bleed stage. Pixel headline behind a particle bust you can press and turn, small caption bottom-left. */
+  /* Layout: one full-bleed stage. Pixel headline behind a particle bust you can push, turn and resize, small caption bottom-left. */
   :root {
     color-scheme: dark;
     --bg: #050407;
@@ -99,6 +99,7 @@ const camera = new THREE.PerspectiveCamera(30, 1, 0.01, 50);
 const bust = new THREE.Group();
 scene.add(bust);
 
+let baseSize = 1;
 let points = null, bounds = null, base = null, nrm = null, off = null, clump = null;
 
 // ---------- load + sample ----------
@@ -293,7 +294,7 @@ function frame() {
     const lookY = dist * Math.tan(halfFov) - bounds.h * 0.02;   // bottom of bust on the screen edge
     camera.position.set(0, lookY, dist);
     camera.lookAt(0, lookY, 0);
-    points.material.uniforms.uSize.value = POINT_SIZE * renderer.getPixelRatio() * (h / 900) * (COUNT < 80000 ? 1.35 : 1);
+    baseSize = POINT_SIZE * renderer.getPixelRatio() * (h / 900) * (COUNT < 80000 ? 1.35 : 1);
     points.material.uniforms.uHeight.value = bounds.h;
   }
   camera.updateProjectionMatrix();
@@ -312,10 +313,11 @@ fitHeadline();
 document.fonts?.ready.then(fitHeadline);
 
 // ---------- interaction ----------
-// Mouse: hover to press into her, drag to turn her around.
-// Touch: one finger presses, two fingers turn her.
+// Mouse: hover to push the sand away, drag to turn her, scroll to resize.
+// Touch: one finger pushes, two fingers turn her, pinch to resize.
 const BRUSH   = 0.085;   // brush radius (model is height 1)
-const DENT    = 1.6;     // how deep a press goes
+const REPEL   = 1.8;     // how hard grains are pushed away from the cursor
+const LIFT    = 0.8;     // how much they also pop out toward you
 const SMEAR   = 1.4;     // how far sand is dragged along with the motion
 const SETTLE  = 0.55;    // how fast dents slump back (per second)
 const MAX_OFF = 0.12;    // never pull a grain further than this
@@ -325,17 +327,32 @@ let sculpting = false;
 const touches = new Map();
 let dragging = false, lastDrag = null;
 let yaw = 0, pitch = 0, yawVel = 0, pitchVel = 0;
+let zoom = 1, zoomTarget = 1, pinchDist = 0;
+const ZOOM_MIN = 0.55, ZOOM_MAX = 2.4;
+canvas.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  zoomTarget = THREE.MathUtils.clamp(zoomTarget * Math.exp(-e.deltaY * 0.0012), ZOOM_MIN, ZOOM_MAX);
+}, { passive: false });
+function touchSpread() {
+  const [a, b] = [...touches.values()];
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
 
 canvas.addEventListener('pointerdown', (e) => {
   canvas.setPointerCapture(e.pointerId);
   touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (e.pointerType === 'mouse') { dragging = true; sculpting = false; lastDrag = { x: e.clientX, y: e.clientY }; }
-  else if (touches.size >= 2) { dragging = true; sculpting = false; lastDrag = centroid(); }
+  else if (touches.size >= 2) { dragging = true; sculpting = false; lastDrag = centroid(); pinchDist = touchSpread(); }
   else { setNdc(e); sculpting = true; }
 });
 canvas.addEventListener('pointermove', (e) => {
   if (touches.has(e.pointerId)) touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (dragging) {
+    if (e.pointerType !== 'mouse' && touches.size >= 2) {
+      const s = touchSpread();
+      if (pinchDist > 0) zoomTarget = THREE.MathUtils.clamp(zoomTarget * s / pinchDist, ZOOM_MIN, ZOOM_MAX);
+      pinchDist = s;
+    }
     const pt = e.pointerType === 'mouse' ? { x: e.clientX, y: e.clientY } : centroid();
     const dx = pt.x - lastDrag.x, dy = pt.y - lastDrag.y;
     lastDrag = pt;
@@ -380,6 +397,9 @@ renderer.setAnimationLoop(() => {
       yawVel *= Math.pow(0.92, dt * 60); pitchVel *= Math.pow(0.92, dt * 60);
     }
     bust.rotation.set(pitch, yaw, 0);
+    zoom += (zoomTarget - zoom) * (1 - Math.exp(-dt * 10));
+    bust.scale.setScalar(zoom);
+    points.material.uniforms.uSize.value = baseSize * Math.sqrt(zoom);   // stay dense when enlarged
     bust.updateMatrixWorld();
 
     // pointer ray in her own space
@@ -402,7 +422,8 @@ renderer.setAnimationLoop(() => {
       const dent = points.geometry.attributes.aDent.array;
       const n = base.length / 3;
       const keep = Math.exp(-SETTLE * dt);
-      const R2 = (BRUSH * 1.7) ** 2;
+      const brushR = BRUSH / zoom;                        // same size on screen at any zoom
+      const R2 = (brushR * 1.7) ** 2;
       let maxOff = 0;
       for (let i = 0; i < n; i++) {
         const j = i * 3;
@@ -418,19 +439,18 @@ renderer.setAnimationLoop(() => {
           const nx = nrm[j], ny = nrm[j + 1], nz = nrm[j + 2];
           const facing = -(nx * d.x + ny * d.y + nz * d.z);          // only the side facing you
           if (r2 < R2 && facing > 0) {
-            // uneven, wobbling brush edge so presses never look circular
+            // uneven, wobbling brush edge so the push never looks circular
             const wob = 0.75 + 0.45 * Math.sin(px * 41 + py * 23 + t * 1.7) * Math.sin(pz * 37 - py * 29 + t * 1.1);
-            const rr = Math.sqrt(r2) / (BRUSH * wob);
-            const c = clump[i] * facing * dt * 6;
+            const dist = Math.sqrt(r2) + 1e-5;
+            const rr = dist / (brushR * wob);
             if (rr < 1) {
-              const f = (1 - rr * rr) * c;
-              ox += (-nx * DENT * 0.05 + move.x * SMEAR) * f;
-              oy += (-ny * DENT * 0.05 + move.y * SMEAR) * f;
-              oz += (-nz * DENT * 0.05 + move.z * SMEAR) * f;
-            } else if (rr < 1.7) {
-              // sand pushed out of the dent piles up around its rim
-              const f = (1 - (rr - 1) / 0.7) * c * 0.03;
-              ox += nx * f; oy += ny * f; oz += nz * f;
+              // shove the grain straight away from the cursor (sideways to your
+              // view), a little toward you, and along with the cursor's motion
+              const rx = vx - along * d.x, ry = vy - along * d.y, rz = vz - along * d.z;
+              const f = (1 - rr) * (1 - rr) * clump[i] * facing * dt * 6;
+              ox += (rx / dist * REPEL * 0.06 - d.x * LIFT * 0.02 + move.x * SMEAR) * f;
+              oy += (ry / dist * REPEL * 0.06 - d.y * LIFT * 0.02 + move.y * SMEAR) * f;
+              oz += (rz / dist * REPEL * 0.06 - d.z * LIFT * 0.02 + move.z * SMEAR) * f;
             }
           }
         }
