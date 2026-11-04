@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Inter+Tight:wght@400;500&display=swap">
 <style>
-  /* Layout: one full-bleed stage. Pixel headline behind a particle bust, small caption bottom-left. */
+  /* Layout: one full-bleed stage. Pixel headline behind a liquid particle bust, small caption bottom-left. */
   :root {
     color-scheme: dark;
     --bg: #050407;
@@ -63,8 +63,8 @@
 </div>
 <div id="loading">LOADING</div>
 <div id="credit">
-  Shape sampled from <a href="https://sketchfab.com/3d-models/futuristic-bootylicious-female-robot-e0bf22fc62064d979e114f947275684b" target="_blank" rel="noopener">"Futuristic female robot"</a>
-  by <a href="https://sketchfab.com/HasanXRFX" target="_blank" rel="noopener">Syed Mohammad Hasan</a>,
+  Shape sampled from <a href="https://sketchfab.com/3d-models/stargazing-through-the-attic-window-6b3e2a011f024ac6a6b123ed33d0ec28" target="_blank" rel="noopener">"Stargazing through the attic window"</a>
+  by <a href="https://sketchfab.com/Moon_solstice" target="_blank" rel="noopener">Moon</a>,
   <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
 </div>
 
@@ -79,14 +79,16 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { MeshSurfaceSampler } from 'three/addons/math/MeshSurfaceSampler.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 // ---------- settings ----------
-const COUNT   = innerWidth < 700 ? 45000 : 90000;  // particles
-const CROP_Y  = 0.95;     // keep everything above this height (model units): chest up
-const RADIUS  = 0.11;     // cursor influence radius
-const PUSH    = 2.2;      // how hard the cursor shoves
-const SPRING  = 11.0;     // pull back to the shape
-const DAMPING = 0.88;     // per frame at 60 fps
+const MODEL_URL = 'assets/girl.glb';
+const MODEL_YAW = window.__yaw ?? 0;
+const MODEL_PITCH = window.__pitch ?? 0.25;   // she looks up at the sky; tilt her face toward us
+const BUDGET = { face: 0.38, hair: 0.42, body: 0.20 };   // share of particles per part
+const COUNT   = innerWidth < 700 ? 50000 : 100000;  // particles
+const CROP_Y  = 0.0;      // drop points below this height (model is normalised to height 1)
+const POINT_SIZE = 5.2;   // bigger, overlapping beads: dense but not solid
 
 // ---------- renderer / scene ----------
 const canvas = document.getElementById('stage');
@@ -97,45 +99,68 @@ const camera = new THREE.PerspectiveCamera(30, 1, 0.01, 50);
 const bust = new THREE.Group();
 scene.add(bust);
 
-let points = null, base = null, off = null, vel = null, bounds = null;
+let points = null, bounds = null;
 
 // ---------- load + sample ----------
 const loader = new GLTFLoader();
 loader.setMeshoptDecoder(MeshoptDecoder);
-loader.load('assets/robot.glb', (gltf) => {
+loader.load(MODEL_URL, (gltf) => {
   gltf.scene.updateMatrixWorld(true);
-  let mesh = null;
-  gltf.scene.traverse((o) => { if (o.isMesh && !mesh) mesh = o; });
 
-  // Dequantize + bake transforms so we sample in plain model units.
-  const g = mesh.geometry;
+  // Bake every mesh into one geometry (position + normal only, plain floats)
+  // so we can sample the whole figure at once.
   const getters = ['getX', 'getY', 'getZ', 'getW'];
-  for (const name of ['position', 'normal']) {
-    const a = g.getAttribute(name);
-    const out = new Float32Array(a.count * a.itemSize);
-    for (let i = 0; i < a.count; i++)
-      for (let c = 0; c < a.itemSize; c++) out[i * a.itemSize + c] = a[getters[c]](i);
-    g.setAttribute(name, new THREE.BufferAttribute(out, a.itemSize));
-  }
-  for (const name of Object.keys(g.attributes)) if (name !== 'position' && name !== 'normal') g.deleteAttribute(name);
-  g.applyMatrix4(mesh.matrixWorld);
-  g.computeBoundingBox();
-  const c = g.boundingBox.getCenter(new THREE.Vector3());
-  g.translate(-c.x, -g.boundingBox.min.y, -c.z);
-  const sampleMesh = new THREE.Mesh(g);
+  const parts = [];
+  gltf.scene.traverse((o) => {
+    if (!o.isMesh) return;
+    const src = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry;
+    const g = new THREE.BufferGeometry();
+    for (const name of ['position', 'normal']) {
+      const a = src.getAttribute(name);
+      if (!a) continue;
+      const out = new Float32Array(a.count * 3);
+      for (let i = 0; i < a.count; i++)
+        for (let c = 0; c < 3; c++) out[i * 3 + c] = a[getters[c]](i);
+      g.setAttribute(name, new THREE.BufferAttribute(out, 3));
+    }
+    if (!g.getAttribute('normal')) g.computeVertexNormals();
+    g.applyMatrix4(o.matrixWorld);
+    g.userData.group = /face|pSphere/i.test(o.name) ? 'face' : /hair/i.test(o.name) ? 'hair' : 'body';
+    parts.push(g);
+  });
 
-  // Sample the surface, keep the bust region only.
-  const sampler = new MeshSurfaceSampler(sampleMesh).build();
+  // Normalise all parts the same way: bottom at y = 0, centred, height 1,
+  // then turn and tilt her to face the camera.
+  const all = mergeGeometries(parts);
+  all.computeBoundingBox();
+  const size = all.boundingBox.getSize(new THREE.Vector3());
+  const c = all.boundingBox.getCenter(new THREE.Vector3());
+  const M = new THREE.Matrix4()
+    .multiply(new THREE.Matrix4().makeRotationX(MODEL_PITCH))
+    .multiply(new THREE.Matrix4().makeRotationY(MODEL_YAW))
+    .multiply(new THREE.Matrix4().makeScale(1 / size.y, 1 / size.y, 1 / size.y))
+    .multiply(new THREE.Matrix4().makeTranslation(-c.x, -all.boundingBox.min.y, -c.z));
+  parts.forEach((g) => g.applyMatrix4(M));
+
+  // Sample each group with its own budget so the dense hair strands
+  // don't drown out the face.
   const p = new THREE.Vector3(), n = new THREE.Vector3();
   const posArr = new Float32Array(COUNT * 3), nrmArr = new Float32Array(COUNT * 3), rnd = new Float32Array(COUNT);
-  let k = 0, guard = 0;
-  while (k < COUNT && guard++ < COUNT * 20) {
-    sampler.sample(p, n);
-    if (p.y < CROP_Y) continue;
-    posArr.set([p.x, p.y, p.z], k * 3);
-    nrmArr.set([n.x, n.y, n.z], k * 3);
-    rnd[k] = Math.random();
-    k++;
+  let k = 0;
+  for (const [group, share] of Object.entries(BUDGET)) {
+    const gs = parts.filter((g) => g.userData.group === group);
+    if (!gs.length) continue;
+    const sampler = new MeshSurfaceSampler(new THREE.Mesh(mergeGeometries(gs))).build();
+    const target = Math.min(COUNT, k + Math.round(COUNT * share));
+    let guard = 0;
+    while (k < target && guard++ < COUNT * 20) {
+      sampler.sample(p, n);
+      if (p.y < CROP_Y) continue;
+      posArr.set([p.x, p.y, p.z], k * 3);
+      nrmArr.set([n.x, n.y, n.z], k * 3);
+      rnd[k] = Math.random();
+      k++;
+    }
   }
 
   // Centre the bust: its bottom at y = 0.
@@ -147,15 +172,10 @@ loader.load('assets/robot.glb', (gltf) => {
   for (let i = 0; i < k; i++) posArr[i * 3 + 1] -= minY;
   bounds = { h: maxY - minY, w: maxX * 2 };
 
-  base = posArr.slice(0, k * 3);
-  off = new Float32Array(k * 3);
-  vel = new Float32Array(k * 3);
-
   const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(posArr.slice(0, k * 3), 3).setUsage(THREE.DynamicDrawUsage));
+  geo.setAttribute('position', new THREE.BufferAttribute(posArr.slice(0, k * 3), 3));
   geo.setAttribute('normal', new THREE.BufferAttribute(nrmArr.slice(0, k * 3), 3));
   geo.setAttribute('aRnd', new THREE.BufferAttribute(rnd.slice(0, k), 1));
-  geo.setAttribute('aOff', new THREE.BufferAttribute(new Float32Array(k), 1).setUsage(THREE.DynamicDrawUsage));
 
   points = new THREE.Points(geo, makeMaterial());
   points.frustumCulled = false;
@@ -168,49 +188,132 @@ loader.load('assets/robot.glb', (gltf) => {
   console.error(err);
 });
 
-// ---------- particle material ----------
+// ---------- the "symbiote" material ----------
+// Everything moves on the GPU: a slow organic swell, ripples that spread
+// from where the pointer has been (with warped, uneven wavefronts), and
+// tendrils that reach toward the pointer and wobble back.
+const MAX_RIPPLES = 12;
+const ripples = Array.from({ length: MAX_RIPPLES }, () => new THREE.Vector4(0, 0, -100, 0)); // x, y, birth time, strength
+
+const NOISE = /* glsl */`
+  // 3D simplex noise (Ashima Arts / Stefan Gustavson, MIT)
+  vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
+  vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
+  vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}
+  vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
+  float snoise(vec3 v){
+    const vec2 C=vec2(1.0/6.0,1.0/3.0); const vec4 D=vec4(0.0,0.5,1.0,2.0);
+    vec3 i=floor(v+dot(v,C.yyy)); vec3 x0=v-i+dot(i,C.xxx);
+    vec3 g=step(x0.yzx,x0.xyz); vec3 l=1.0-g; vec3 i1=min(g.xyz,l.zxy); vec3 i2=max(g.xyz,l.zxy);
+    vec3 x1=x0-i1+C.xxx; vec3 x2=x0-i2+C.yyy; vec3 x3=x0-D.yyy;
+    i=mod289(i);
+    vec4 p=permute(permute(permute(i.z+vec4(0.0,i1.z,i2.z,1.0))+i.y+vec4(0.0,i1.y,i2.y,1.0))+i.x+vec4(0.0,i1.x,i2.x,1.0));
+    float n_=0.142857142857; vec3 ns=n_*D.wyz-D.xzx;
+    vec4 j=p-49.0*floor(p*ns.z*ns.z); vec4 x_=floor(j*ns.z); vec4 y_=floor(j-7.0*x_);
+    vec4 x=x_*ns.x+ns.yyyy; vec4 y=y_*ns.x+ns.yyyy; vec4 h=1.0-abs(x)-abs(y);
+    vec4 b0=vec4(x.xy,y.xy); vec4 b1=vec4(x.zw,y.zw);
+    vec4 s0=floor(b0)*2.0+1.0; vec4 s1=floor(b1)*2.0+1.0; vec4 sh=-step(h,vec4(0.0));
+    vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy; vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+    vec3 p0=vec3(a0.xy,h.x); vec3 p1=vec3(a0.zw,h.y); vec3 p2=vec3(a1.xy,h.z); vec3 p3=vec3(a1.zw,h.w);
+    vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+    p0*=norm.x; p1*=norm.y; p2*=norm.z; p3*=norm.w;
+    vec4 m=max(0.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.0); m=m*m;
+    return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+  }`;
+
 function makeMaterial() {
   return new THREE.ShaderMaterial({
-    transparent: true,
+    transparent: false,
     depthWrite: true,
     uniforms: {
-      uTime:  { value: 0 },
-      uSize:  { value: 1 },
-      uHeight: { value: 1 },
-      uLight: { value: new THREE.Color('#efeaff') },
-      uShade: { value: new THREE.Color('#5d5677') },
-      uGlow:  { value: new THREE.Color('#e9f2a8') },
+      uTime:    { value: 0 },
+      uSize:    { value: 1 },
+      uHeight:  { value: 1 },
+      uPointer: { value: new THREE.Vector3(99, 99, 0) },
+      uReach:   { value: 0 },        // 0..1, eases in while the pointer is over her
+      uRipples: { value: ripples },
+      uInk:     { value: new THREE.Color('#14111c') },
+      uSheen:   { value: new THREE.Color('#b9b0d6') },
+      uHot:     { value: new THREE.Color('#f1f7c4') },
     },
     vertexShader: /* glsl */`
-      uniform float uTime, uSize, uHeight;
-      attribute float aRnd, aOff;
-      varying float vLit, vRnd, vY, vOff;
+      #define MAX_RIPPLES ${MAX_RIPPLES}
+      uniform float uTime, uSize, uHeight, uReach;
+      uniform vec3 uPointer;
+      uniform vec4 uRipples[MAX_RIPPLES];
+      attribute float aRnd;
+      varying vec3 vNormalV;
+      varying float vExcite, vY, vRnd;
+      ${NOISE}
       void main() {
         vec3 p = position;
-        // faint shimmer so the cloud never looks frozen
-        p += normal * sin(uTime * 2.0 + aRnd * 40.0) * 0.0025;
+        vec3 nrm = normalize(normal);
+        float excite = 0.0;
+
+        // 1. slow, uneven swelling of the whole surface
+        float swell = snoise(p * 3.0 + vec3(0.0, uTime * 0.15, uTime * 0.07));
+        p += nrm * swell * 0.006;
+
+        // 2. ripples from where the pointer passed; the wavefront is warped by
+        //    noise so it never spreads as a clean circle
+        for (int i = 0; i < MAX_RIPPLES; i++) {
+          vec4 r = uRipples[i];
+          float age = uTime - r.z;
+          if (age < 0.0 || age > 3.0) continue;
+          float warp = snoise(vec3(p.xy * 6.0, r.z)) * 0.07;
+          float d = distance(p.xy, r.xy) + warp;
+          float front = age * 0.32;
+          float band = exp(-pow((d - front) * 14.0, 2.0));           // one moving ring
+          float wave = sin((d - front) * 60.0) * band;
+          float fade = exp(-age * 1.4) * r.w;
+          p += nrm * wave * fade * 0.035;
+          excite += abs(wave) * fade;
+        }
+
+        // 3. tendrils reaching toward the pointer: an irregular, noisy zone
+        //    whose grains get pulled out and twisted
+        vec2 toP = uPointer.xy - p.xy;
+        float dist = length(toP);
+        float edge = 0.11 + snoise(vec3(p.xy * 9.0, uTime * 0.6)) * 0.06;
+        float grab = smoothstep(edge, 0.0, dist) * uReach;
+        float strand = pow(max(snoise(vec3(p * 22.0) + uTime * 0.4), 0.0), 2.0);
+        vec3 twist = vec3(
+          snoise(p * 7.0 + vec3(uTime * 0.9, 0.0, 0.0)),
+          snoise(p * 7.0 + vec3(0.0, uTime * 0.9, 3.1)),
+          snoise(p * 7.0 + vec3(5.2, 0.0, uTime * 0.9)));
+        p += (nrm * 0.07 + vec3(toP, 0.0) * 0.5 + twist * 0.03) * grab * (0.35 + strand * 2.2);
+        excite += grab * (0.4 + strand);
+
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
-        vec3 nv = normalize(normalMatrix * normal);
-        vec3 L = normalize(vec3(-0.35, 0.55, 0.75));
-        vLit = clamp(dot(nv, L) * 0.75 + 0.35 + pow(1.0 - abs(nv.z), 3.0) * 0.35, 0.0, 1.0);
-        vRnd = aRnd; vY = position.y / uHeight; vOff = aOff;
-        gl_PointSize = uSize * (0.75 + aRnd * 0.6) / -mv.z;
+        vNormalV = normalize(normalMatrix * nrm);
+        vExcite = clamp(excite, 0.0, 1.0);
+        vY = position.y / uHeight;
+        vRnd = aRnd;
+        gl_PointSize = uSize * (0.55 + aRnd * 0.9) * (1.0 + vExcite * 0.4) / -mv.z;
         gl_Position = projectionMatrix * mv;
       }`,
     fragmentShader: /* glsl */`
-      uniform vec3 uLight, uShade, uGlow;
-      varying float vLit, vRnd, vY, vOff;
+      uniform vec3 uInk, uSheen, uHot;
+      varying vec3 vNormalV;
+      varying float vExcite, vY, vRnd;
       void main() {
-        vec2 c = gl_PointCoord - 0.5;
-        if (dot(c, c) > 0.25) discard;
-        vec3 col = mix(uShade, uLight, vLit);
-        // warm glow rising from the bottom edge
-        float glow = 1.0 - smoothstep(0.0, 0.35, vY);
-        col = mix(col, uGlow, glow * 0.55);
-        // disturbed grains flash brighter
-        col += vOff * 0.6;
-        float a = smoothstep(0.0, 0.12, vY) * (0.75 + vRnd * 0.25);
-        gl_FragColor = vec4(col, a);
+        // each grain is a little glossy bead: fake a sphere normal inside the point
+        vec2 c = gl_PointCoord * 2.0 - 1.0;
+        float r2 = dot(c, c);
+        if (r2 > 1.0) discard;
+        vec3 bead = vec3(c.x, -c.y, sqrt(1.0 - r2));
+        vec3 n = normalize(vNormalV * 1.6 + bead);
+        vec3 L = normalize(vec3(-0.4, 0.6, 0.7));
+        vec3 V = vec3(0.0, 0.0, 1.0);
+        float diff = max(dot(n, L), 0.0);
+        float spec = pow(max(dot(reflect(-L, n), V), 0.0), 28.0);
+        float rim = pow(1.0 - max(dot(vNormalV, V), 0.0), 2.5);
+        vec3 col = uInk + uSheen * (diff * 0.34 + rim * 0.6) + vec3(spec) * 1.1;
+        col = mix(col, uHot, vExcite * 0.55);
+        // fade into the floor
+        float fadeIn = smoothstep(0.0, 0.14, vY);
+        if (fadeIn < 0.999 && vRnd > fadeIn) discard;
+        gl_FragColor = vec4(col, 1.0);
       }`,
   });
 }
@@ -228,7 +331,7 @@ function frame() {
     const lookY = dist * Math.tan(halfFov) - bounds.h * 0.02;   // bottom of bust on the screen edge
     camera.position.set(0, lookY, dist);
     camera.lookAt(0, lookY, 0);
-    points.material.uniforms.uSize.value = 3.0 * renderer.getPixelRatio() * (h / 900) * (COUNT < 60000 ? 1.25 : 1);
+    points.material.uniforms.uSize.value = POINT_SIZE * renderer.getPixelRatio() * (h / 900) * (COUNT < 80000 ? 1.35 : 1);
     points.material.uniforms.uHeight.value = bounds.h;
   }
   camera.updateProjectionMatrix();
@@ -248,76 +351,51 @@ document.fonts?.ready.then(fitHeadline);
 
 // ---------- pointer (mouse or touch) ----------
 const ndc = new THREE.Vector2(9, 9);
-const mouse = new THREE.Vector3(99, 99, 0), lastMouse = new THREE.Vector3(99, 99, 0);
-const mouseVel = new THREE.Vector3();
 let pointerActive = false;
-const ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -0.1);
+const ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
 function setPointer(e) {
   ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
   pointerActive = true;
 }
 addEventListener('pointermove', setPointer);
-addEventListener('pointerdown', setPointer);
+addEventListener('pointerdown', (e) => { setPointer(e); dropRipple(1.6); });
 addEventListener('pointerleave', () => { pointerActive = false; });
 addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') pointerActive = false; });
 
-// ---------- simulate + render ----------
+const pointer = new THREE.Vector3(99, 99, 0), lastDrop = new THREE.Vector3(99, 99, 0);
+let rippleSlot = 0, lastDropTime = -1, now = 0;
+function dropRipple(strength) {
+  if (!points) return;
+  ripples[rippleSlot].set(pointer.x, pointer.y, now, strength);
+  rippleSlot = (rippleSlot + 1) % MAX_RIPPLES;
+  lastDrop.copy(pointer); lastDropTime = now;
+}
+
+// ---------- render loop ----------
 const clock = new THREE.Clock();
-const inv = new THREE.Matrix4(), hit = new THREE.Vector3();
+const hit = new THREE.Vector3();
+let reach = 0;
 renderer.setAnimationLoop(() => {
   const dt = Math.min(clock.getDelta(), 1 / 30);
-  const t = clock.elapsedTime;
+  now = clock.elapsedTime;
 
   if (points) {
-    // slow idle turn
-    bust.rotation.y = Math.sin(t * 0.25) * 0.18;
-    bust.updateMatrixWorld();
-
-    // cursor position in the bust's own space
+    let over = false;
     if (pointerActive) {
       ray.setFromCamera(ndc, camera);
-      inv.copy(bust.matrixWorld).invert();
-      const local = ray.ray.clone().applyMatrix4(inv);
-      if (local.intersectPlane(plane, hit)) mouse.copy(hit);
-    } else mouse.set(99, 99, 0);
-    mouseVel.subVectors(mouse, lastMouse).divideScalar(Math.max(dt, 1e-3));
-    if (mouseVel.length() > 20) mouseVel.set(0, 0, 0);          // ignore jumps
-    lastMouse.copy(mouse);
-
-    const pos = points.geometry.attributes.position.array;
-    const flash = points.geometry.attributes.aOff.array;
-    const n = base.length / 3;
-    const damp = Math.pow(DAMPING, dt * 60);
-    const R2 = RADIUS * RADIUS;
-    for (let i = 0; i < n; i++) {
-      const j = i * 3;
-      let ox = off[j], oy = off[j + 1], oz = off[j + 2];
-      let vx = vel[j], vy = vel[j + 1], vz = vel[j + 2];
-      const px = base[j] + ox, py = base[j + 1] + oy;
-      const dx = px - mouse.x, dy = py - mouse.y, d2 = dx * dx + dy * dy;
-      if (d2 < R2) {
-        const d = Math.sqrt(d2) + 1e-4, f = (1 - d / RADIUS) * PUSH * dt;
-        vx += (dx / d) * f + mouseVel.x * f * 0.05;
-        vy += (dy / d) * f + mouseVel.y * f * 0.05;
-        vz += f * 0.6;
-        const sp = Math.hypot(vx, vy, vz);
-        if (sp > 1.5) { vx *= 1.5 / sp; vy *= 1.5 / sp; vz *= 1.5 / sp; }
+      if (ray.ray.intersectPlane(plane, hit)) {
+        pointer.copy(hit);
+        over = Math.abs(hit.x) < bounds.w * 0.6 && hit.y > 0 && hit.y < bounds.h * 1.05;
+        // moving drops new ripples; faster movement = stronger, more frequent
+        const moved = pointer.distanceTo(lastDrop);
+        if (over && moved > 0.035 && now - lastDropTime > 0.06) dropRipple(Math.min(1.4, 0.5 + moved * 6));
       }
-      // spring home, with a little gravity while loose so it falls like sand
-      const loose = Math.min(1, Math.abs(ox) + Math.abs(oy) + Math.abs(oz));
-      vx += -ox * SPRING * dt;
-      vy += -oy * SPRING * dt - loose * 0.6 * dt;
-      vz += -oz * SPRING * dt;
-      vx *= damp; vy *= damp; vz *= damp;
-      ox += vx * dt; oy += vy * dt; oz += vz * dt;
-      off[j] = ox; off[j + 1] = oy; off[j + 2] = oz;
-      vel[j] = vx; vel[j + 1] = vy; vel[j + 2] = vz;
-      pos[j] = base[j] + ox; pos[j + 1] = base[j + 1] + oy; pos[j + 2] = base[j + 2] + oz;
-      flash[i] = Math.min(1, loose * 8);
     }
-    points.geometry.attributes.position.needsUpdate = true;
-    points.geometry.attributes.aOff.needsUpdate = true;
-    points.material.uniforms.uTime.value = t;
+    reach += ((over ? 1 : 0) - reach) * (1 - Math.exp(-dt * (over ? 3 : 1.2)));
+    const u = points.material.uniforms;
+    u.uTime.value = now;
+    u.uReach.value = reach;
+    u.uPointer.value.copy(pointer);
   }
   renderer.render(scene, camera);
 });
