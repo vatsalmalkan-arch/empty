@@ -112,8 +112,8 @@ loader.load('assets/robot.glb', (gltf) => {
   model.geometry.translate(-c.x, -bounds.min.y, -c.z);
   model.geometry.computeBoundingBox();
   bounds = model.geometry.boundingBox.clone();
+  model = buildSkeleton(model);
   rig.add(model);
-
 
   frame();
   document.getElementById('loading').style.opacity = 0;
@@ -121,6 +121,141 @@ loader.load('assets/robot.glb', (gltf) => {
   document.getElementById('loading').textContent = 'COULD NOT LOAD MODEL';
   console.error(err);
 });
+
+// ---------- skeleton (built in code; the model ships without a rig) ----------
+// Joint positions measured from the mesh (hips at y = 0, model height ~1.90,
+// +x is her left as seen from the front camera, +z faces the camera).
+const JOINTS = {
+  hips:  [0, 0.00, -0.03],
+  spine: [0, 0.55, -0.03],
+  chest: [0, 0.95, -0.04],
+  neck:  [0, 1.37, -0.04],
+  head:  [0, 1.49, -0.03],
+  top:   [0, 1.90, -0.03],
+  shoulder: [0.33, 1.28, -0.08],
+  elbow:    [0.40, 0.88, -0.085],
+  wrist:    [0.60, 0.43, -0.05],
+  fingers:  [0.56, 0.00, -0.06],
+};
+const bones = {};
+
+function buildSkeleton(mesh) {
+  const v = (name, side = 1) => {
+    const [x, y, z] = JOINTS[name];
+    return new THREE.Vector3(x * side, y, z);
+  };
+  // Bone list; the index is the skin index.
+  const defs = [
+    ['hips',  null,    v('hips')],
+    ['spine', 'hips',  v('spine')],
+    ['chest', 'spine', v('chest')],
+    ['neck',  'chest', v('neck')],
+    ['head',  'neck',  v('head')],
+  ];
+  for (const [side, s] of [['R', 1], ['L', -1]]) {
+    defs.push(
+      ['upperArm' + side, 'chest',          v('shoulder', s)],
+      ['foreArm' + side,  'upperArm' + side, v('elbow', s)],
+      ['hand' + side,     'foreArm' + side,  v('wrist', s)],
+    );
+  }
+  const list = [], world = {};
+  for (const [name, parent, pos] of defs) {
+    const b = new THREE.Bone();
+    b.name = name;
+    world[name] = pos;
+    if (parent) { b.position.copy(pos).sub(world[parent]); bones[parent].add(b); }
+    else b.position.copy(pos);
+    bones[name] = b;
+    list.push(b);
+  }
+  const idx = Object.fromEntries(list.map((b, i) => [b.name, i]));
+
+  // --- skin weights ---
+  const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  const lerpTable = (xs, ys, x) => {
+    if (x <= xs[0]) return ys[0];
+    for (let i = 1; i < xs.length; i++) if (x <= xs[i]) {
+      const t = (x - xs[i - 1]) / (xs[i] - xs[i - 1]);
+      return ys[i - 1] + (ys[i] - ys[i - 1]) * t;
+    }
+    return ys[ys.length - 1];
+  };
+  // Below the shoulders the arms are separate from the body: this is the |x|
+  // that splits arm from torso/thigh at each height (from mesh slices).
+  const gapY = [0.00, 0.15, 0.30, 0.50, 0.70, 0.90, 0.97];
+  const gapX = [0.41, 0.42, 0.43, 0.38, 0.29, 0.26, 0.26];
+
+  const seg = new THREE.Line3(), tmp = new THREE.Vector3(), p = new THREE.Vector3();
+  const armSegs = (s) => [
+    [v('shoulder', s), v('elbow', s)],
+    [v('elbow', s), v('wrist', s)],
+    [v('wrist', s), v('fingers', s)],
+  ];
+  const segsBySide = { R: armSegs(1), L: armSegs(-1) };
+
+  const pos = mesh.geometry.getAttribute('position');
+  const n = pos.count;
+  const skinIndex = new Uint16Array(n * 4), skinWeight = new Float32Array(n * 4);
+
+  for (let i = 0; i < n; i++) {
+    p.fromBufferAttribute(pos, i);
+    const ax = Math.abs(p.x), side = p.x >= 0 ? 'R' : 'L';
+    const w = new Map();
+    const add = (name, val) => { if (val > 1e-4) w.set(idx[name], (w.get(idx[name]) || 0) + val); };
+
+    // How much this vertex belongs to the arm chain vs the torso chain.
+    let arm;
+    if (p.y < 0.97) arm = ax > lerpTable(gapY, gapX, p.y) ? 1 : 0;
+    else arm = smooth(0.24, 0.33, ax) * (1 - smooth(1.30, 1.40, p.y));
+
+    // Torso chain: blend by height.
+    const torso = 1 - arm;
+    if (torso > 0) {
+      const y = p.y;
+      const hipsW  = 1 - smooth(0.45, 0.65, y);
+      const chestIn = smooth(0.85, 1.05, y);
+      const neckIn = smooth(1.33, 1.40, y);
+      const headIn = smooth(1.46, 1.52, y);
+      const parts = {
+        hips: hipsW,
+        spine: (1 - hipsW) * (1 - chestIn),
+        chest: chestIn * (1 - neckIn),
+        neck: neckIn * (1 - headIn),
+        head: headIn,
+      };
+      for (const k in parts) add(k, parts[k] * torso);
+    }
+
+    // Arm chain: inverse distance to each bone segment, so joints blend.
+    if (arm > 0) {
+      const segs = segsBySide[side];
+      const names = ['upperArm', 'foreArm', 'hand'];
+      const raw = segs.map(([a, b]) => {
+        seg.set(a, b);
+        seg.closestPointToPoint(p, true, tmp);
+        return 1 / Math.pow(tmp.distanceTo(p) + 0.02, 6);
+      });
+      const sum = raw.reduce((s, x) => s + x, 0);
+      raw.forEach((r, k) => add(names[k] + side, (r / sum) * arm));
+    }
+
+    // Keep the 4 strongest influences, normalised.
+    const top = [...w.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
+    const total = top.reduce((s, [, x]) => s + x, 0) || 1;
+    top.forEach(([bi, x], k) => { skinIndex[i * 4 + k] = bi; skinWeight[i * 4 + k] = x / total; });
+  }
+  mesh.geometry.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(skinIndex, 4));
+  mesh.geometry.setAttribute('skinWeight', new THREE.Float32BufferAttribute(skinWeight, 4));
+
+  const skinned = new THREE.SkinnedMesh(mesh.geometry, mesh.material);
+  skinned.add(bones.hips);
+  skinned.updateMatrixWorld(true);
+  skinned.bind(new THREE.Skeleton(list));
+  skinned.frustumCulled = false;   // bounds change as she moves
+  window.robotBones = bones;       // handy for tweaking poses from the console
+  return skinned;
+}
 
 // ---------- framing: hips at the bottom edge, head in the upper third ----------
 function frame() {
@@ -145,15 +280,38 @@ addEventListener('resize', frame);
 frame();
 
 // ---------- animate ----------
+// Idle loop on the skeleton: breathing, weight shift, small head tilts and a
+// slow "judging" tilt every few seconds. Set window.rigTest = true to
+// exaggerate everything (used to check the skin weights).
+function idle(t) {
+  const k = window.rigTest ? 6 : 1;
+  const breathe = Math.sin(t * 1.3);
+  const judge = Math.pow(Math.max(0, Math.sin(t * 0.32)), 6);   // slow pulse, rests at 0
+
+  bones.hips.rotation.z  = Math.sin(t * 0.45) * 0.012 * k;
+  bones.spine.rotation.z = -Math.sin(t * 0.45) * 0.010 * k;
+  bones.spine.rotation.x = breathe * 0.006 * k;
+  bones.chest.rotation.x = -breathe * 0.012 * k;
+  bones.neck.rotation.x  = breathe * 0.006 * k;
+
+  bones.head.rotation.z = (Math.sin(t * 0.6) * 0.03 + judge * 0.16) * k;
+  bones.head.rotation.x = (Math.sin(t * 0.43 + 1) * 0.025 - judge * 0.05) * k;
+  bones.head.rotation.y = Math.sin(t * 0.27) * 0.06 * k;
+
+  for (const [s, dir] of [['R', 1], ['L', -1]]) {
+    const phase = s === 'R' ? 0 : 1.7;
+    bones['upperArm' + s].rotation.z = dir * (0.015 + Math.sin(t * 0.5 + phase) * 0.012 + breathe * 0.004) * k;
+    bones['upperArm' + s].rotation.x = Math.sin(t * 0.37 + phase) * 0.015 * k;
+    bones['foreArm' + s].rotation.x  = (-0.02 - Math.sin(t * 0.5 + phase) * 0.02) * k;
+    bones['hand' + s].rotation.z     = dir * Math.sin(t * 0.7 + phase) * 0.04 * k;
+  }
+}
+
 const clock = new THREE.Clock();
 renderer.setAnimationLoop(() => {
   const t = clock.getElapsedTime();
 
-  // Idle: slow breathing bob and a lazy sway.
-  rig.position.y = Math.sin(t * 1.1) * 0.006;
-  rig.rotation.y = Math.sin(t * 0.35) * 0.06;
-  rig.rotation.z = Math.sin(t * 0.5) * 0.008;
-
+  if (bones.head && !window.rigFreeze) idle(t);
 
   renderer.render(scene, camera);
 });
