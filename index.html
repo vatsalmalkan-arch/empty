@@ -73,43 +73,6 @@ const key = new THREE.DirectionalLight(0xffffff, 1.6);  key.position.set(1.5, 2.
 const rimL = new THREE.DirectionalLight(0x6fe7ff, 2.2); rimL.position.set(-3, 1.5, -2); scene.add(rimL);
 const rimR = new THREE.DirectionalLight(0xff7ad9, 1.6); rimR.position.set(3, 1, -2.5);  scene.add(rimR);
 
-// ---------- head-follow (model has no rig, so twist vertices above the neck) ----------
-const headUniforms = {
-  uNeckY:  { value: 0 },    // height where the twist starts
-  uBlend:  { value: 0.1 },  // height over which it fades in
-  uPivot:  { value: new THREE.Vector3() },
-  uYaw:    { value: 0 },
-  uPitch:  { value: 0 },
-};
-
-function addHeadTwist(material) {
-  material.onBeforeCompile = (shader) => {
-    Object.assign(shader.uniforms, headUniforms);
-    const fn = /* glsl */`
-      uniform float uNeckY, uBlend, uYaw, uPitch;
-      uniform vec3 uPivot;
-      mat3 headRot(float w) {
-        float y = uYaw * w, p = uPitch * w;
-        mat3 ry = mat3(cos(y),0.,-sin(y), 0.,1.,0., sin(y),0.,cos(y));
-        mat3 rx = mat3(1.,0.,0., 0.,cos(p),sin(p), 0.,-sin(p),cos(p));
-        return ry * rx;
-      }`;
-    shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', '#include <common>\n' + fn)
-      .replace('#include <beginnormal_vertex>', `
-        #include <beginnormal_vertex>
-        float hw = smoothstep(uNeckY, uNeckY + uBlend, position.y);
-        mat3 hr = headRot(hw);
-        objectNormal = hr * objectNormal;
-        #ifdef USE_TANGENT
-          objectTangent = hr * objectTangent;
-        #endif`)
-      .replace('#include <begin_vertex>', `
-        #include <begin_vertex>
-        transformed = uPivot + hr * (transformed - uPivot);`);
-  };
-}
-
 // ---------- load ----------
 const rig = new THREE.Group();   // idle motion goes here
 scene.add(rig);
@@ -141,7 +104,6 @@ loader.load('assets/robot.glb', (gltf) => {
 
   const m = model.material;
   m.envMapIntensity = 1.2;
-  addHeadTwist(m);
 
   // Hips sit at y = 0, centred on x/z.
   model.geometry.computeBoundingBox();
@@ -152,10 +114,6 @@ loader.load('assets/robot.glb', (gltf) => {
   bounds = model.geometry.boundingBox.clone();
   rig.add(model);
 
-  const h = bounds.max.y;
-  headUniforms.uNeckY.value = h * 0.80;
-  headUniforms.uBlend.value = h * 0.06;
-  headUniforms.uPivot.value.set(0, h * 0.80, 0);
 
   frame();
   document.getElementById('loading').style.opacity = 0;
@@ -186,30 +144,16 @@ function frame() {
 addEventListener('resize', frame);
 frame();
 
-// ---------- input: she looks at the pointer ----------
-const pointer = new THREE.Vector2(0, 0);   // -1..1
-addEventListener('pointermove', (e) => {
-  pointer.set((e.clientX / innerWidth) * 2 - 1, -((e.clientY / innerHeight) * 2 - 1));
-});
-
 // ---------- animate ----------
 const clock = new THREE.Clock();
-let yaw = 0, pitch = 0;
 renderer.setAnimationLoop(() => {
-  const dt = Math.min(clock.getDelta(), 0.05);
-  const t = clock.elapsedTime;
+  const t = clock.getElapsedTime();
 
   // Idle: slow breathing bob and a lazy sway.
   rig.position.y = Math.sin(t * 1.1) * 0.006;
   rig.rotation.y = Math.sin(t * 0.35) * 0.06;
   rig.rotation.z = Math.sin(t * 0.5) * 0.008;
 
-  // Head eases toward the pointer (limited range so the neck stays believable).
-  const k = 1 - Math.exp(-4 * (dt || 0.016));
-  yaw   += (pointer.x * 0.45 - yaw) * k;
-  pitch += (-pointer.y * 0.22 - pitch) * k;
-  headUniforms.uYaw.value = yaw - rig.rotation.y;
-  headUniforms.uPitch.value = pitch;
 
   renderer.render(scene, camera);
 });
