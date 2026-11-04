@@ -326,7 +326,8 @@
   /* ---- page three: Vercel (minimal) ---- */
   .p3 { position: relative; z-index: 15; display: grid; gap: 2rem 4rem; padding: calc(var(--main-py) * 2) var(--pad-x) var(--main-py); }
   .p3-left { display: flex; flex-direction: column; gap: clamp(1rem, 3vh, 2rem); min-width: 0; }
-  .p3-logo { height: clamp(12rem, 34vh, 21rem); aspect-ratio: 1; max-width: 100%; align-self: flex-start; }
+  .p3-logo { position: relative; height: clamp(12rem, 34vh, 21rem); aspect-ratio: 1; max-width: 100%; align-self: flex-start; }
+  .p3-logo .corner { position: absolute; } .p3-logo .tl { top: 0; left: 0; } .p3-logo .br { bottom: 0; right: 0; }
   .slot3 { width: 100%; height: 100%; display: block; }
   .p3-info { display: flex; flex-direction: column; gap: .6rem; max-width: 24rem; transition: opacity .35s, transform .35s; }
   .p3-info.swap { opacity: 0; transform: translateY(8px); }
@@ -334,15 +335,29 @@
   .p3-name { margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; line-height: 1.05; font-size: clamp(1.8rem, 2.4vw + .5rem, 3rem); }
   .p3-desc { margin: 0; font-size: var(--body); line-height: 1.6; color: var(--gray-600); }
   .p3-stack { margin: 0; font-size: var(--micro); letter-spacing: .16em; text-transform: uppercase; color: var(--gray-500); }
-  .p3-open { align-self: flex-start; margin-top: .4rem; display: inline-flex; align-items: center; gap: .5rem; color: var(--ink); text-decoration: none; font-size: var(--body); font-weight: 600; letter-spacing: .18em; text-transform: uppercase; border-bottom: 1px solid var(--ink); padding-bottom: .2rem; }
-  .p3-open .icon { width: 1em; height: 1em; transition: transform .25s; }
-  .p3-open:hover .icon { transform: translate(2px, -2px); }
-  .p3-right { display: flex; flex-direction: column; align-items: center; gap: 1rem; min-width: 0; }
+  .p3-open { margin-top: .5rem; }
+  .p3-right { display: flex; align-items: center; gap: 1.1rem; min-width: 0; }
+  .car-frame { position: relative; flex: 1; min-width: 0; padding: 1rem; }
+  .car-frame .corner { position: absolute; } .car-frame .vtl { top: 0; left: 0; } .car-frame .vtr { top: 0; right: 0; } .car-frame .vbl { bottom: 0; left: 0; } .car-frame .vbr { bottom: 0; right: 0; }
+  .carousel { cursor: grab; touch-action: pan-y; user-select: none; }
+  .carousel.dragging { cursor: grabbing; }
+  .ccard { -webkit-user-drag: none; }
+  .car-side { display: flex; flex-direction: column; align-items: center; gap: .7rem; }
+  .car-side > button { width: 2.2rem; height: 2.2rem; display: grid; place-items: center; border: 1px solid var(--gray-300); border-radius: 50%; background: var(--white); color: var(--ink); transition: border-color .2s, background .2s, color .2s; }
+  .car-side > button:hover { border-color: var(--ink); background: var(--ink); color: var(--white); }
+  .car-side .icon { width: 1rem; height: 1rem; }
+  .ticks { display: flex; flex-direction: column; align-items: center; gap: .45rem; }
+  .ticks button { width: 1rem; height: .7rem; display: grid; place-items: center; }
+  .ticks button i { width: 1px; height: .7rem; background: var(--gray-300); transition: height .3s, background .3s, width .3s; }
+  .ticks button[aria-current="true"] i { width: 2px; height: 1.6rem; background: var(--ink); }
+  .ticks button[aria-current="true"] { height: 1.6rem; }
+  .car-hint { writing-mode: vertical-rl; transform: rotate(180deg); margin-top: .4rem; font-family: 'Michroma', ui-monospace, monospace; font-size: .5rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gray-400); }
+  .p3-numeral { display: none; }
   .carousel { position: relative; width: 100%; height: 26rem; overflow: hidden;
     -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); }
   .ccard { position: absolute; left: 50%; top: 50%; width: min(100%, 22rem); aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;
     background: var(--white); border: 1px solid var(--gray-200); color: inherit; text-decoration: none;
-    transition: transform .7s cubic-bezier(.2,.75,.2,1), opacity .5s, filter .5s; will-change: transform; }
+    will-change: transform, opacity; }
   .ccard.on { box-shadow: 0 24px 50px -30px rgba(0,0,0,.35); }
   .chrome { display: flex; align-items: center; gap: .3rem; padding: .5rem .7rem; border-bottom: 1px solid var(--gray-200); }
   .chrome i { width: 6px; height: 6px; border-radius: 50%; background: var(--gray-300); }
@@ -352,18 +367,18 @@
   .mock .h { height: 1rem; width: 80%; background: var(--ink); }
   .mock .l { height: .32rem; width: 66%; } .mock .l.s { width: 44%; }
   .mock .v { grid-column: 2; grid-row: 1 / 4; border-radius: 6px; background: radial-gradient(circle at 35% 35%, var(--acc), transparent 62%), #f1f2f4; }
-  .car-nav { display: flex; gap: .5rem; }
-  .car-nav button { width: 2rem; height: 2rem; display: grid; place-items: center; color: var(--gray-500); transition: color .2s; }
-  .car-nav button:hover { color: var(--ink); }
-  .car-nav .icon { width: 1.1rem; height: 1.1rem; }
   @media (min-width: 1024px) {
     .p3 { position: fixed; inset: 0; padding-top: calc(var(--header-pt) + 3.75rem);
-      grid-template-columns: minmax(18rem, 1fr) minmax(20rem, 28rem); align-items: center;
+      grid-template-columns: minmax(18rem, 25rem) 1fr minmax(22rem, 30rem); align-items: center;
       opacity: 0; pointer-events: none; visibility: hidden; }
     .p3.live > * { pointer-events: auto; }
     .p3.live > .p3-left { pointer-events: none; }
     .p3.live .p3-info { pointer-events: auto; }
-    .carousel { height: min(36rem, calc(100vh - var(--header-pt) - 9rem)); }
+    .carousel { height: min(36rem, calc(100vh - var(--header-pt) - 11rem)); touch-action: none; }
+    .p3-numeral { display: flex; flex-direction: column; align-items: center; gap: .6rem; pointer-events: none; }
+    .p3.live > .p3-numeral { pointer-events: none; }
+    .p3-numeral span { font-family: 'Orbitron', ui-sans-serif, system-ui, sans-serif; font-weight: 800; font-size: clamp(7rem, 15vw, 15rem); line-height: .9; color: transparent; -webkit-text-stroke: 1px var(--gray-300); font-variant-numeric: tabular-nums; transition: opacity .3s; }
+    .p3-numeral small { font-family: 'Michroma', ui-monospace, monospace; font-size: .55rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gray-400); }
     .snap-c { top: 320vh; }
   }
   @media (prefers-reduced-motion: reduce) { .ccard, .p3-info { transition: none; } }
@@ -534,20 +549,32 @@
 <section class="p3" id="p3" aria-labelledby="p3-eyebrow">
   <div class="p3-left">
     <p class="eyebrow" id="p3-eyebrow">03 / Deployed</p>
-    <div class="p3-logo" id="p3-logo"><canvas class="slot3" data-logo="vercel" aria-hidden="true"></canvas></div>
+    <div class="p3-logo" id="p3-logo">
+      <svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
+      <svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
+      <canvas class="slot3" data-logo="vercel" aria-hidden="true"></canvas>
+    </div>
     <div class="p3-info" id="p3-info" aria-live="polite">
+      <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
       <span class="p3-num" id="p3-num">01 / 05</span>
       <h2 class="p3-name font-orbitron" id="p3-name">Lex.ai</h2>
       <p class="p3-desc" id="p3-desc"></p>
       <p class="p3-stack" id="p3-stack"></p>
-      <a class="p3-open" id="p3-open" href="#" target="_blank" rel="noopener">Open site <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+      <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg>
+      <a class="cta p3-open" id="p3-open" href="#" target="_blank" rel="noopener">Open site <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
     </div>
   </div>
+  <div class="p3-numeral" aria-hidden="true"><span id="p3-big">01</span><small>Deployed on Vercel</small></div>
   <div class="p3-right">
-    <div class="carousel" id="carousel" aria-roledescription="carousel" aria-label="Deployed sites"></div>
-    <div class="car-nav">
+    <div class="car-frame">
+      <svg class="corner vtl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg><svg class="corner vtr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg><svg class="corner vbl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg><svg class="corner vbr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
+      <div class="carousel" id="carousel" aria-roledescription="carousel" aria-label="Deployed sites"></div>
+    </div>
+    <div class="car-side">
       <button id="c-prev" aria-label="Previous site"><svg class="icon" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg></button>
+      <div class="ticks" id="ticks"></div>
       <button id="c-next" aria-label="Next site"><svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+      <span class="car-hint">Scroll · drag</span>
     </div>
   </div>
 </section>
@@ -1556,55 +1583,114 @@ renderer.setAnimationLoop(() => {
       { name: 'This site', url: 'vatsal.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#ffd21e',
         desc: 'Astra, a hanging ball and this page, in one file of WebGL.', stack: 'three.js · WebGL' },
     ];
-    const car = $('carousel'), info = $('p3-info');
-    let active = 0;
+    const car = $('carousel'), info = $('p3-info'), ticks = $('ticks'), n = SITES.length;
+    let pos = 0, target = 0, active = 0, raf = 0;
     car.innerHTML = SITES.map((s, i) => `
-      <a class="ccard" data-i="${i}" href="${esc(s.href)}" target="_blank" rel="noopener" style="--acc:${s.acc}" aria-label="${esc(s.name)}">
+      <a class="ccard" data-i="${i}" href="${esc(s.href)}" target="_blank" rel="noopener" draggable="false" style="--acc:${s.acc}" aria-label="${esc(s.name)}">
         <div class="chrome"><i></i><i></i><i></i><span>${esc(s.url)}</span></div>
         <div class="mock" aria-hidden="true"><b class="h"></b><b class="l"></b><b class="l s"></b><b class="v"></b></div>
       </a>`).join('');
+    ticks.innerHTML = SITES.map((s, i) => `<button data-i="${i}" aria-label="${esc(s.name)}"><i></i></button>`).join('');
     const cards = [...car.querySelectorAll('.ccard')];
+    const wrap = (k) => { k = ((k % n) + n) % n; return k > n / 2 ? k - n : k; };
     function layout() {
       const ch = cards[0].offsetHeight || 240;
       cards.forEach((c, i) => {
-        let k = i - active;
-        if (k > SITES.length / 2) k -= SITES.length;
-        if (k < -SITES.length / 2) k += SITES.length;
-        const a = Math.abs(k);
-        c.style.transform = `translate(-50%, -50%) translate(${a * 14}px, ${k * ch * 0.8}px) rotate(${-k * 6}deg) scale(${1 - a * 0.12})`;
-        c.style.opacity = a > 1 ? 0 : a ? 0.35 : 1;
-        c.style.filter = a ? 'blur(1.5px)' : 'none';
-        c.style.zIndex = 10 - a;
-        c.style.pointerEvents = a > 1 ? 'none' : '';
-        c.classList.toggle('on', a === 0);
-        c.tabIndex = a === 0 ? 0 : -1;
+        const k = wrap(i - pos), a = Math.abs(k);
+        c.style.transform = `translate(-50%, -50%) translate(${a * 14}px, ${k * ch * 0.8}px) rotate(${-k * 6}deg) scale(${1 - Math.min(a, 2) * 0.12})`;
+        c.style.opacity = a <= 1 ? 1 - a * 0.65 : Math.max(0, (1.6 - a) / 0.6) * 0.35;
+        c.style.filter = a > 0.05 ? `blur(${Math.min(a, 1.5) * 1.5}px)` : 'none';
+        c.style.zIndex = String(10 - Math.round(a * 2));
+        c.style.pointerEvents = a > 1.4 ? 'none' : '';
+        c.classList.toggle('on', a < 0.5);
+        c.tabIndex = a < 0.5 ? 0 : -1;
       });
     }
     function fill() {
       const s = SITES[active];
-      $('p3-num').textContent = String(active + 1).padStart(2, '0') + ' / ' + String(SITES.length).padStart(2, '0');
+      $('p3-num').textContent = String(active + 1).padStart(2, '0') + ' / ' + String(n).padStart(2, '0');
+      $('p3-big').textContent = String(active + 1).padStart(2, '0');
       $('p3-name').textContent = s.name;
       $('p3-desc').textContent = s.desc;
       $('p3-stack').textContent = s.stack;
       $('p3-open').href = s.href;
+      ticks.querySelectorAll('button').forEach((b, i) => b.setAttribute('aria-current', String(i === active)));
     }
     let swapT = 0;
-    function go(i) {
-      active = (i + SITES.length) % SITES.length;
-      layout();
+    function setActive(i) {
+      if (i === active) return;
+      active = i;
       info.classList.add('swap');
-      clearTimeout(swapT); swapT = setTimeout(() => { fill(); info.classList.remove('swap'); }, 220);
+      clearTimeout(swapT); swapT = setTimeout(() => { fill(); info.classList.remove('swap'); }, 200);
     }
+    function animate() {
+      pos += (target - pos) * (drag ? 1 : 0.14);
+      if (Math.abs(target - pos) < 0.001) pos = target;
+      setActive(((Math.round(pos) % n) + n) % n);
+      layout();
+      raf = pos !== target || drag ? requestAnimationFrame(animate) : 0;
+    }
+    const kick = () => { if (!raf) raf = requestAnimationFrame(animate); };
+    const go = (step) => { target = Math.round(target) + step; kick(); };
+    const goTo = (i) => { target = Math.round(target) + wrap(i - Math.round(target)); kick(); };
+
+    // wheel / trackpad: move freely, then settle on the nearest card
+    let snapT = 0, wheelBase = null, lastNotch = 0;
+    car.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const d = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+      const px = e.deltaMode === 1 ? d * 33 : d;
+      if (Math.abs(px) >= 50) {                       // a mouse-wheel notch: one card per notch
+        const now = performance.now();
+        if (now - lastNotch > 220) { lastNotch = now; go(Math.sign(px)); }
+        return;
+      }
+      if (wheelBase === null) wheelBase = Math.round(target);   // trackpad: glide, then settle in the direction of travel
+      target += Math.max(-0.5, Math.min(0.5, px * 0.0045));
+      kick();
+      clearTimeout(snapT);
+      snapT = setTimeout(() => {
+        const delta = target - wheelBase;
+        target = wheelBase + (Math.abs(delta) > 0.18 ? Math.sign(delta) * Math.max(1, Math.round(Math.abs(delta))) : 0);
+        wheelBase = null; kick();
+      }, 140);
+    }, { passive: false });
+
+    // drag (mouse anywhere; touch only on desktop layouts, so phones can still scroll the page)
+    let drag = null, moved = false;
+    car.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'touch' && !desk.matches) return;
+      drag = { y: e.clientY, t0: target, ly: e.clientY, lt: performance.now(), v: 0 }; moved = false;
+      car.setPointerCapture(e.pointerId); car.classList.add('dragging'); kick();
+    });
+    car.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      const ch = cards[0].offsetHeight * 0.8 || 200, dy = e.clientY - drag.y;
+      if (Math.abs(dy) > 6) moved = true;
+      const now = performance.now();
+      drag.v = (e.clientY - drag.ly) / Math.max(1, now - drag.lt); drag.ly = e.clientY; drag.lt = now;
+      target = drag.t0 - dy / ch;
+    });
+    const endDrag = () => {
+      if (!drag) return;
+      const ch = cards[0].offsetHeight * 0.8 || 200;
+      target = Math.round(target - (drag.v * 180) / ch);    // a quick flick carries on
+      drag = null; car.classList.remove('dragging'); kick();
+    };
+    car.addEventListener('pointerup', endDrag);
+    car.addEventListener('pointercancel', endDrag);
     car.addEventListener('click', (e) => {
       const c = e.target.closest('.ccard'); if (!c) return;
-      if (+c.dataset.i !== active) { e.preventDefault(); go(+c.dataset.i); }
+      if (moved) { e.preventDefault(); moved = false; return; }
+      if (+c.dataset.i !== active) { e.preventDefault(); goTo(+c.dataset.i); }
     });
-    $('c-prev').addEventListener('click', () => go(active - 1));
-    $('c-next').addEventListener('click', () => go(active + 1));
+    ticks.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) goTo(+b.dataset.i); });
+    $('c-prev').addEventListener('click', () => go(-1));
+    $('c-next').addEventListener('click', () => go(1));
     addEventListener('keydown', (e) => {
       if (!$('p3').classList.contains('live')) return;
-      if (e.key === 'ArrowDown') { e.preventDefault(); go(active + 1); }
-      if (e.key === 'ArrowUp') { e.preventDefault(); go(active - 1); }
+      if (e.key === 'ArrowDown') { e.preventDefault(); go(1); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); go(-1); }
     });
     addEventListener('resize', layout);
     fill(); layout();
