@@ -96,7 +96,8 @@ async function loadAssets() {
   // Pistol with arms. Centimetres; the eye sits about 20 cm above and 30 cm behind its origin.
   const root = new THREE.Group();
   pg.scene.scale.setScalar(0.01);
-  pg.scene.position.set(0.06, -0.27, -0.46);   // eye behind and above: gun low and to the right
+  pg.scene.rotation.y = Math.PI;                 // the rig faces +Z; turn it to face forward (-Z)
+  pg.scene.position.set(0.14, -0.26, -0.38);     // eye behind the shoulder: gun low and to the right
   root.add(pg.scene);
   pg.scene.traverse((o) => { if (o.isMesh) { o.frustumCulled = false; o.castShadow = false; if (o.material) o.material.fog = false; } });
   const mixer = new THREE.AnimationMixer(pg.scene);
@@ -106,7 +107,7 @@ async function loadAssets() {
   const slide = pg.scene.getObjectByName('slide');
   const muzzle = new THREE.Object3D();
   const mb = pg.scene.getObjectByName('muzzlebreak') || slide;
-  mb.add(muzzle); muzzle.position.set(0, 0, -12);
+  mb.add(muzzle); muzzle.position.set(0, 0, 4);
   const flash = new THREE.Mesh(new THREE.IcosahedronGeometry(0.035, 0), new THREE.MeshBasicMaterial({ color: 0xffd27a, fog: false }));
   flash.visible = false; scene.add(flash);
   const flashLight = new THREE.PointLight(0xffb45a, 0, 6); scene.add(flashLight);
