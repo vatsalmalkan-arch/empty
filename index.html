@@ -371,6 +371,9 @@
   @media (prefers-reduced-motion: reduce) { .sw-body, .pn-stats, .pst .bt i { transition: none; } }
   /* ---- page four: GitHub skyline ---- */
   .p4-stage { aspect-ratio: 16 / 10; }
+  .cap-btns { display: flex; gap: .6rem; flex-wrap: wrap; }
+  .cta-solid { background: var(--ink); color: var(--white); border-color: var(--ink); }
+  .cta-solid:hover { background: var(--white); color: var(--ink); }
   #p4-canvas { width: 100%; height: 100%; display: block; }
   .seg button[data-year] { padding: .4rem .7rem; }
   .langs { display: flex; flex-direction: column; gap: .55rem; }
@@ -390,6 +393,107 @@
     .snap-d { top: 480vh; }
   }
   @media (prefers-reduced-motion: reduce) { .lang-bar i { transition: none; } }
+  /* ---- projects view: editorial spreads ---- */
+  .projects { position: fixed; inset: 0; z-index: 60; background: var(--white); overflow-y: auto; overscroll-behavior: contain; scroll-snap-type: y mandatory; scroll-padding-top: 3.6rem; clip-path: inset(0 100% 0 0); }
+  html.pj-lock, html.pj-lock body { overflow: hidden; }
+  .curtain-edge { position: fixed; top: 0; bottom: 0; left: 0; width: 1px; background: var(--ink); z-index: 61; opacity: 0; pointer-events: none; }
+  .pj-bar { position: sticky; top: 0; z-index: 2; height: 3.6rem; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem var(--pad-x); background: rgba(255,255,255,.92); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border-bottom: 1px solid var(--gray-200); }
+  .pj-brand { margin: 0; font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); letter-spacing: .16em; text-transform: uppercase; color: var(--gray-500); }
+  .pj-brand b { color: var(--ink); font-weight: 900; letter-spacing: .15em; margin-right: .3rem; }
+  .pj-dots { display: flex; gap: .3rem; border: 1px solid var(--gray-300); border-radius: 999px; padding: 2px; }
+  .pj-dots button { padding: .35rem .7rem; border-radius: 999px; font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); letter-spacing: .12em; text-transform: uppercase; color: var(--gray-500); transition: background .2s, color .2s; }
+  .pj-dots button[aria-current="true"] { background: var(--ink); color: var(--white); }
+  .pj-close { display: inline-flex; align-items: center; gap: .45rem; border: 1px solid var(--gray-400); border-radius: .375rem; padding: .45rem .8rem; font-size: var(--micro); font-weight: 600; letter-spacing: .18em; text-transform: uppercase; transition: background .2s, color .2s, border-color .2s; }
+  .pj-close:hover { background: var(--ink); color: var(--white); border-color: var(--ink); }
+  .pj-close .icon { width: .9rem; height: .9rem; }
+
+  .spread { position: relative; scroll-snap-align: start; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: clamp(1.25rem, 2.5vw, 2.75rem); padding: clamp(1.25rem, 3vh, 2.25rem) var(--pad-x); border-bottom: 1px solid var(--gray-200); }
+  .spread::after { content: attr(id); position: absolute; right: var(--pad-x); bottom: .8rem; font-family: 'Michroma', ui-monospace, monospace; font-size: .5rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gray-300); }
+  .vtitle { margin: 0; writing-mode: vertical-rl; transform: rotate(180deg); align-self: end; font-weight: 800; text-transform: uppercase; line-height: .82; letter-spacing: .02em; font-size: clamp(2.6rem, 9vh, 7.25rem); white-space: nowrap; }
+  .vtitle b { color: transparent; -webkit-text-stroke: 1.5px var(--ink); }
+  .sp-body { display: grid; gap: clamp(.9rem, 1.6vw, 1.6rem); min-width: 0; min-height: 0; }
+  .fig { position: relative; margin: 0; min-height: 9rem; background: #f3f4f6; overflow: hidden; }
+  .fig canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .fig .corner { position: absolute; z-index: 1; }
+  .fig .tl { top: .5rem; left: .5rem; } .fig .tr { top: .5rem; right: .5rem; } .fig .bl { bottom: .5rem; left: .5rem; } .fig .br { bottom: .5rem; right: .5rem; }
+  .fig figcaption { position: absolute; left: 1.4rem; bottom: 1.1rem; z-index: 1; display: flex; gap: .6rem; align-items: baseline; font-size: var(--micro); letter-spacing: .08em; color: var(--gray-600); background: rgba(243,244,246,.85); padding: .15rem .35rem; }
+  .fig figcaption span { font-family: 'Michroma', ui-monospace, monospace; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); }
+  .tx { display: flex; flex-direction: column; gap: .6rem; }
+  .kicker { margin: 0; font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); letter-spacing: .16em; text-transform: uppercase; color: var(--gray-500); }
+  .tx h3, .index-side h3 { margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; line-height: 1.08; font-size: clamp(1.3rem, 1.4vw + .6rem, 2.2rem); }
+  .tx p:not(.kicker):not(.stackline), .index-side > p:not(.kicker), .b-note p:not(.kicker) { margin: 0; font-size: var(--body); line-height: 1.65; color: var(--gray-600); max-width: 46ch; }
+  .stackline { margin: 0; font-size: var(--micro); letter-spacing: .16em; text-transform: uppercase; color: var(--gray-500); }
+  .tx .cta { align-self: flex-start; margin-top: .3rem; }
+  .nums { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.5rem; }
+  .nums dt, .numlist dt { font-family: 'Orbitron', ui-sans-serif, system-ui, sans-serif; font-weight: 800; font-size: clamp(1.35rem, 1.3vw + .6rem, 2.1rem); line-height: 1; font-variant-numeric: tabular-nums; }
+  .nums dt small, .numlist dt small { font-size: .5em; margin-left: .12em; color: var(--gray-500); }
+  .nums dd, .numlist dd { margin: .35rem 0 0; font-size: var(--micro); letter-spacing: .14em; text-transform: uppercase; color: var(--gray-500); }
+  .nums > div { border-top: 1px solid var(--gray-200); padding-top: .6rem; }
+  .numlist { margin: 0; display: grid; align-content: start; }
+  .numlist > div { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: .55rem 0; border-top: 1px solid var(--gray-200); }
+  .numlist > div:last-child { border-bottom: 1px solid var(--gray-200); }
+  .numlist dd { margin: 0; text-align: right; }
+  .findings ul { list-style: none; margin: .5rem 0 0; padding: 0; display: grid; }
+  .findings li { display: flex; justify-content: space-between; gap: 1rem; padding: .45rem 0; border-top: 1px solid var(--gray-200); font-size: var(--body); color: var(--gray-600); }
+  .findings li b { font-family: 'Michroma', ui-monospace, monospace; font-weight: 400; font-size: var(--micro); letter-spacing: .1em; text-transform: uppercase; color: var(--ink); }
+  .arrow-line { height: 1px; background: var(--ink); position: relative; width: 4.5rem; }
+  .arrow-line::after { content: ""; position: absolute; right: -1px; top: -3px; border: solid var(--ink); border-width: 1px 1px 0 0; width: 6px; height: 6px; transform: rotate(45deg); }
+  .bars-list { display: grid; gap: .55rem; }
+  .bl { display: grid; grid-template-columns: 7.5rem 1fr 3rem; align-items: center; gap: .7rem; font-size: var(--micro); letter-spacing: .12em; text-transform: uppercase; color: var(--gray-500); }
+  .bl .bt { display: block; height: 6px; }
+  .bl .bt i { width: var(--w); background: repeating-linear-gradient(90deg, var(--gray-400) 0 3px, transparent 3px 5px); }
+  .bl b { text-align: right; font-family: 'Michroma', ui-monospace, monospace; font-weight: 400; color: var(--gray-600); }
+
+  /* index spread */
+  .s-index { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; }
+  .wordmark { position: relative; display: grid; }
+  .wordmark .ghost, .wordmark .solid { grid-area: 1 / 1; font-weight: 900; line-height: .86; letter-spacing: -.01em; font-size: clamp(4rem, 13vw, 13rem); }
+  .wordmark .ghost { color: transparent; -webkit-text-stroke: 1px var(--gray-300); transform: translate(-.08em, -.12em); }
+  .wordmark small { margin-top: 1rem; font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); letter-spacing: .3em; text-transform: uppercase; color: var(--gray-500); }
+  .index-side { display: flex; flex-direction: column; gap: .9rem; max-width: 30rem; justify-self: end; }
+  .toc { list-style: none; margin: .4rem 0 0; padding: 0; border-top: 1px solid var(--gray-200); }
+  .toc button { width: 100%; display: grid; grid-template-columns: 2.4rem auto 1fr auto; align-items: center; gap: .7rem; padding: .8rem 0; border-bottom: 1px solid var(--gray-200); text-align: left; }
+  .toc span { font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); color: var(--gray-500); }
+  .toc b { font-size: var(--body); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+  .toc i { height: 0; border-top: 1px dotted var(--gray-300); }
+  .toc em { font-style: normal; font-size: var(--micro); letter-spacing: .12em; text-transform: uppercase; color: var(--gray-500); }
+  .toc button:hover b { text-decoration: underline; text-underline-offset: 4px; }
+  .colophon { display: flex; align-items: flex-end; gap: 1rem; margin-top: .6rem; }
+  .barcode { width: 5rem; height: 2.2rem; fill: var(--ink); }
+  .colophon p { margin: 0; font-family: 'Michroma', ui-monospace, monospace; font-size: .55rem; letter-spacing: .14em; text-transform: uppercase; color: var(--gray-500); line-height: 1.7; }
+
+  @media (min-width: 1024px) {
+    .spread { height: calc(100vh - 3.6rem); }
+    .s-index { height: calc(100vh - 3.6rem); }
+    /* A: big figure left; side figure + text right */
+    .layout-a { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); grid-template-rows: minmax(0, .9fr) auto; }
+    .layout-a .f-big { grid-row: 1 / 3; } .layout-a .a-text { display: grid; gap: 1.2rem; }
+    /* B: wide figure + track on top; three columns below */
+    .layout-b { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, .85fr); grid-template-rows: minmax(0, 1fr) auto; }
+    .layout-b .f-wide { grid-column: 1 / 3; } .layout-b .f-track { grid-column: 3; }
+    .layout-b .numlist { grid-column: 3; }
+    /* C: two small figures stacked, main figure, text under it */
+    .layout-c { grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+    .c-figs { display: grid; grid-template-rows: 1fr 1fr; gap: inherit; min-height: 0; }
+    .layout-c .c-text { display: flex; flex-direction: column; justify-content: flex-end; gap: 1.2rem; }
+    /* D: wide figure on top; small figure + text below */
+    .layout-d { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); grid-template-rows: minmax(0, 1fr) auto; }
+    .layout-d .f-wide { grid-column: 1 / 3; } .layout-d .f-small { grid-row: 2; }
+    .layout-d .d-text { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .9fr); gap: 1rem 1.6rem; align-items: start; }
+    .layout-d .arrow-line { grid-column: 1 / 3; }
+    .layout-d .f-small { min-height: 14rem; }
+  }
+  @media (max-width: 1023.98px) {
+    .spread { grid-template-columns: 1fr; padding-block: 1.75rem 2.75rem; }
+    .vtitle { writing-mode: horizontal-tb; transform: none; align-self: start; font-size: clamp(2.2rem, 11vw, 3.4rem); }
+    .sp-body, .c-figs { display: grid; grid-template-columns: 1fr; }
+    .fig { aspect-ratio: 4 / 3; }
+    .s-index { grid-template-columns: 1fr; }
+    .index-side { justify-self: start; }
+    .pj-dots button { padding: .3rem .45rem; }
+    .pj-brand b + * { display: none; }
+  }
+  @media (max-width: 560px) { .pj-brand { display: none; } }
   @media (min-width: 1024px) { .hud { display: flex; } .rail { display: block; } }
   @media (max-width: 1023.98px) { .stat { flex: 1 1 9rem; } }
   @media (max-width: 480px) {
@@ -410,7 +514,7 @@
       <span>IST <b id="clock">--:--:--</b></span>
     </div>
     <nav class="pill" aria-label="Main">
-      <button data-open="work">Work</button>
+      <button data-projects="0">Work</button>
       <button data-open="about">About</button>
       <button class="pill-cta" data-open="contact">Contact <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>
     </nav>
@@ -425,7 +529,7 @@
         <span>Malkan<svg class="checker" id="checker" viewBox="0 0 36 18" aria-hidden="true"></svg></span>
       </h1>
       <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg>
-      <button class="cta" data-open="work">View work
+      <button class="cta" data-projects="0">View work
         <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
       </button>
     </div>
@@ -616,13 +720,85 @@
     <div class="p3-stage p4-stage" id="p4-stage" aria-hidden="true"><canvas id="p4-canvas"></canvas></div>
     <div class="p3-caption">
       <h2 class="p3-title font-orbitron" id="p4-title">Committed daily</h2>
+      <div class="cap-btns">
+      <button class="cta cta-solid" data-projects="0">Explore projects <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
       <a class="cta" href="https://github.com/Zephyr4772" target="_blank" rel="noopener">View GitHub <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+      </div>
     </div>
   </div>
   <div class="p4-tip" id="p4-tip" hidden></div>
 </section>
 <div class="snap snap-a" aria-hidden="true"></div><div class="snap snap-b" aria-hidden="true"></div><div class="snap snap-c" aria-hidden="true"></div><div class="snap snap-d" aria-hidden="true"></div>
 
+<div class="projects" id="projects" role="dialog" aria-modal="true" aria-label="Projects" hidden>
+  <div class="pj-bar">
+    <p class="pj-brand"><b class="font-orbitron">VATSAL<sup>˚</sup></b> / Projects</p>
+    <nav class="pj-dots" id="pj-dots" aria-label="Spreads">
+      <button data-go="0">Index</button><button data-go="1">01</button><button data-go="2">02</button><button data-go="3">03</button><button data-go="4">04</button>
+    </nav>
+    <button class="pj-close" id="pj-close">Back <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+  </div>
+
+  <section class="spread s-index" id="pj-0">
+    <div class="wordmark" aria-hidden="true"><span class="ghost font-orbitron">PROJ<br>ECTS</span><span class="solid font-orbitron">PROJ<br>ECTS</span><small>Selected work · Vol. 01</small></div>
+    <div class="index-side">
+      <p class="kicker">Index</p>
+      <h3 class="font-orbitron">Four things I built end to end</h3>
+      <p>Data pipelines, corpora and tools, each with what went in, what came out, and what it can and can't answer. Figures and images on these pages are placeholders.</p>
+      <ol class="toc"><li><button data-go="1"><span>01</span><b>Indian Pharma Graph</b><i></i><em>Linked market data</em></button></li><li><button data-go="2"><span>02</span><b>Formula 1 Corpus</b><i></i><em>77 seasons, one corpus</em></button></li><li><button data-go="3"><span>03</span><b>Dr.Data</b><i></i><em>Audit before you train</em></button></li><li><button data-go="4"><span>04</span><b>Factory-Sim</b><i></i><em>Discrete-event C++20</em></button></li></ol>
+      <div class="colophon"><svg class="barcode" viewBox="0 0 77 40" aria-hidden="true"><rect x="0" y="0" width="2" height="40"/><rect x="4" y="0" width="1" height="40"/><rect x="7" y="0" width="3" height="40"/><rect x="12" y="0" width="1" height="40"/><rect x="15" y="0" width="2" height="40"/><rect x="19" y="0" width="1" height="40"/><rect x="22" y="0" width="4" height="40"/><rect x="28" y="0" width="1" height="40"/><rect x="31" y="0" width="2" height="40"/><rect x="35" y="0" width="1" height="40"/><rect x="38" y="0" width="3" height="40"/><rect x="43" y="0" width="1" height="40"/><rect x="46" y="0" width="2" height="40"/><rect x="50" y="0" width="1" height="40"/><rect x="53" y="0" width="3" height="40"/><rect x="58" y="0" width="2" height="40"/><rect x="62" y="0" width="1" height="40"/><rect x="65" y="0" width="4" height="40"/><rect x="71" y="0" width="1" height="40"/><rect x="74" y="0" width="2" height="40"/></svg><p>Vatsal Malkan<br>Rajkot · 2026</p></div>
+    </div>
+  </section>
+
+  <section class="spread s-a" id="pj-1" aria-label="Project 01: Indian Pharma Graph">
+    <h2 class="vtitle font-orbitron"><span>Project</span> <b>01</b></h2>
+    <div class="sp-body layout-a">
+      <figure class="fig f-big" data-fig="graph"><svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg><svg class="corner tr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg><svg class="corner bl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg><svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg><canvas aria-hidden="true"></canvas><figcaption><span>Fig 01.1</span>Products, molecules and makers as one graph</figcaption></figure>
+      <figure class="fig f-side" data-fig="coverage"><svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg><svg class="corner tr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg><svg class="corner bl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg><svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg><canvas aria-hidden="true"></canvas><figcaption><span>Fig 01.2</span>Link coverage between entities</figcaption></figure>
+      <div class="a-text">
+        <div class="tx"><p class="kicker">Data engineering · 2026</p><h3 class="font-orbitron">Indian Pharma Graph</h3><p>A linked database of the Indian drug market: every product, molecule, maker and regulatory record, joined so any fact can be reached from any other.</p><p>An audit traced five real questions hop by hop and ranked the ten links that unlock the most paths.</p><p class="stackline">PostgreSQL · Python · FastAPI</p><a class="cta" href="https://github.com/Zephyr4772" target="_blank" rel="noopener">View repo <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></div>
+        <dl class="nums"><div><dt>543K<small></small></dt><dd>Products</dd></div><div><dt>5,006<small></small></dt><dd>Molecules</dd></div><div><dt>15.7K<small></small></dt><dd>Companies</dd></div><div><dt>89.5<small>%</small></dt><dd>Product → molecule</dd></div></dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="spread s-b" id="pj-2" aria-label="Project 02: Formula 1 Corpus">
+    <h2 class="vtitle font-orbitron"><span>Project</span> <b>02</b></h2>
+    <div class="sp-body layout-b">
+      <figure class="fig f-wide" data-fig="trace"><svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg><svg class="corner tr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg><svg class="corner bl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg><svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg><canvas aria-hidden="true"></canvas><figcaption><span>Fig 02.1</span>Speed trace, three laps, one circuit</figcaption></figure>
+      <figure class="fig f-track" data-fig="track"><svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg><svg class="corner tr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg><svg class="corner bl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg><svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg><canvas aria-hidden="true"></canvas><figcaption><span>Fig 02.2</span>Circuit outline from position data</figcaption></figure>
+      <div class="b-col"><div class="tx"><p class="kicker">Data corpus · 77 seasons</p><h3 class="font-orbitron">Formula 1 Corpus</h3><p>Every Grand Prix since 1950 in one corpus: results, timing and car telemetry from 2018, FIA documents, team radio and the people involved.</p><p class="stackline">Python · Parquet · DuckDB</p><a class="cta" href="https://github.com/Zephyr4772" target="_blank" rel="noopener">View repo <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></div></div>
+      <div class="b-col b-note"><p class="kicker">What it can't answer yet</p><p>No telemetry before 2018 and no lap times before 1982. Team radio is audio only, not yet transcribed. 2026 FIA PDFs sit behind a bot check, so penalties that year are mostly titles.</p></div>
+      <dl class="numlist"><div><dt>1,172<small></small></dt><dd>Grands Prix</dd></div><div><dt>570.6<small>M</small></dt><dd>Telemetry samples</dd></div><div><dt>8.7<small>M</small></dt><dd>Corner-speed rows</dd></div><div><dt>9,588<small></small></dt><dd>FIA documents</dd></div><div><dt>20,371<small></small></dt><dd>Radio clips</dd></div><div><dt>19.1<small>GB</small></dt><dd>On disk, 36 layers</dd></div></dl>
+    </div>
+  </section>
+
+  <section class="spread s-c" id="pj-3" aria-label="Project 03: Dr.Data">
+    <h2 class="vtitle font-orbitron"><span>Project</span> <b>03</b></h2>
+    <div class="sp-body layout-c">
+      <div class="c-figs"><figure class="fig " data-fig="matrix"><svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg><svg class="corner tr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg><svg class="corner bl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg><svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg><canvas aria-hidden="true"></canvas><figcaption><span>Fig 03.1</span>Leak check: one column predicts the label</figcaption></figure><figure class="fig " data-fig="models"><svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg><svg class="corner tr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg><svg class="corner bl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg><svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg><canvas aria-hidden="true"></canvas><figcaption><span>Fig 03.2</span>Six-model bake-off vs shuffled labels</figcaption></figure></div>
+      <figure class="fig f-main" data-fig="scatter"><svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg><svg class="corner tr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg><svg class="corner bl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg><svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg><canvas aria-hidden="true"></canvas><figcaption><span>Fig 03.3</span>Sabotage test: planted flaws, flagged</figcaption></figure>
+      <div class="c-text">
+        <div class="tx"><p class="kicker">Tooling · FastAPI + scikit-learn</p><h3 class="font-orbitron">Dr.Data</h3><p>Decides whether a tabular dataset can support a stated use case before any training starts: profiling, leakage, signal against shuffled labels, and realistic validation.</p><p class="stackline">FastAPI · scikit-learn · React</p><a class="cta" href="https://github.com/Zephyr4772/Dr.Data" target="_blank" rel="noopener">View repo <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></div>
+        <div class="findings"><p class="kicker">Validated by sabotage</p><ul><li>Leaky column <b>found</b></li><li>9% duplicate rows <b>found</b></li><li>Constant column <b>found</b></li><li>ID column <b>found</b></li><li>Label noise <b>6.5% est. vs 6.0% true</b></li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="spread s-d" id="pj-4" aria-label="Project 04: Factory-Sim">
+    <h2 class="vtitle font-orbitron"><span>Project</span> <b>04</b></h2>
+    <div class="sp-body layout-d">
+      <figure class="fig f-wide" data-fig="line"><svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg><svg class="corner tr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg><svg class="corner bl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg><svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg><canvas aria-hidden="true"></canvas><figcaption><span>Fig 04.1</span>A six-station line with buffers; the bottleneck fills up</figcaption></figure>
+      <figure class="fig f-small" data-fig="gantt"><svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg><svg class="corner tr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg><svg class="corner bl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg><svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg><canvas aria-hidden="true"></canvas><figcaption><span>Fig 04.2</span>Machine timeline with breakdowns</figcaption></figure>
+      <div class="d-text">
+        <div class="arrow-line" aria-hidden="true"></div>
+        <div class="tx"><p class="kicker">Simulation · C++20</p><h3 class="font-orbitron">Factory-Sim</h3><p>A discrete-event simulator for production lines: stations, buffers and breakdowns, fast enough to sweep thousands of line layouts and find the bottleneck before anything is built.</p><p class="stackline">C++20 · CMake · Python bindings</p><a class="cta" href="https://github.com/Zephyr4772" target="_blank" rel="noopener">View repo <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></div>
+        <div class="bars-list"><p class="kicker">Placeholder figures</p><div class="bl"><span>Events / s</span><span class="bt"><i style="--w:92%"></i></span><b>1.2M</b></div><div class="bl"><span>Stations</span><span class="bt"><i style="--w:60%"></i></span><b>12</b></div><div class="bl"><span>Buffer policies</span><span class="bt"><i style="--w:40%"></i></span><b>4</b></div><div class="bl"><span>Layouts swept</span><span class="bt"><i style="--w:78%"></i></span><b>10K</b></div></div>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="curtain-edge" id="curtain-edge" aria-hidden="true"></div>
 <div class="backdrop" id="backdrop"></div>
 <aside class="drawer" id="drawer" aria-hidden="true" aria-labelledby="drawer-title">
   <div class="drawer-head">
@@ -779,6 +955,118 @@ window.sampleSky = function (counts, n) {
     out[k * 4 + 3] = Math.min(counts[lo], 12) / 12;
   }
   return out;
+};
+// Placeholder figures for the project spreads, drawn in grains on a canvas.
+window.drawFig = function (cv, kind) {
+  const W = cv.clientWidth, H = cv.clientHeight;
+  if (!W || !H) return;
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  cv.width = W * dpr; cv.height = H * dpr;
+  const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  let seed = [...kind].reduce((a, ch) => a * 31 + ch.charCodeAt(0), 7) >>> 0;
+  const R = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+  const INK = '#111113', MID = '#6b7280', LIGHT = '#c4c8ce';
+  c.fillStyle = '#f3f4f6'; c.fillRect(0, 0, W, H);
+  const dot = (x, y, s = 1.3, col = INK) => { c.fillStyle = col; c.fillRect(x, y, s, s); };
+  const blob = (x, y, r, n, col = INK, s = 1.3) => { for (let i = 0; i < n; i++) { const a = R() * 6.283, d = r * Math.sqrt(R()); dot(x + Math.cos(a) * d, y + Math.sin(a) * d, s, col); } };
+  const seg = (x1, y1, x2, y2, per, col = INK, j = 0.6, s = 1.2) => {
+    const n = Math.max(2, Math.hypot(x2 - x1, y2 - y1) * per);
+    for (let i = 0; i < n; i++) { const t = R(); dot(x1 + (x2 - x1) * t + (R() - .5) * j, y1 + (y2 - y1) * t + (R() - .5) * j, s, col); }
+  };
+  const label = (txt, x, y, col = MID, align = 'left') => { c.fillStyle = col; c.font = '600 9px "Michroma", ui-monospace, monospace'; c.textAlign = align; c.textBaseline = 'middle'; c.fillText(txt, x, y); };
+  const P = Math.min(W, H) * 0.1, X0 = P, Y0 = P, X1 = W - P, Y1 = H - P - 18;
+  switch (kind) {
+    case 'graph': {
+      const centers = Array.from({ length: 6 }, (_, i) => [X0 + (X1 - X0) * (0.15 + 0.7 * R()), Y0 + (Y1 - Y0) * (0.15 + 0.7 * R())]);
+      const nodes = [];
+      centers.forEach(([cx, cy], k) => { const m = 8 + (R() * 10 | 0); for (let i = 0; i < m; i++) nodes.push([cx + (R() - .5) * (X1 - X0) * 0.22, cy + (R() - .5) * (Y1 - Y0) * 0.26, k, 1.5 + R() * 4.5]); });
+      nodes.forEach((a, i) => nodes.forEach((b, j) => { if (j <= i) return; const same = a[2] === b[2]; if ((same && R() < 0.22) || (!same && R() < 0.006)) seg(a[0], a[1], b[0], b[1], same ? 0.55 : 0.25, same ? MID : LIGHT); }));
+      nodes.forEach(([x, y, k, r]) => blob(x, y, r, r * r * 7, r > 4.5 ? INK : '#374151', 1.4));
+      break;
+    }
+    case 'coverage': {
+      const rows = [['Product > molecule', 89.5], ['NSQ > molecule', 90.4], ['Product > company', 82.1], ['Product > group', 14.4], ['Approval > company', 3.3], ['Anything > plant', 0]];
+      const rh = (Y1 - Y0) / rows.length;
+      rows.forEach(([l, v], i) => {
+        const y = Y0 + i * rh + rh * 0.3, bx = X0, bw = X1 - X0;
+        label(l.toUpperCase(), bx, y - 2);
+        label(v.toFixed(1) + '%', X1, y - 2, INK, 'right');
+        for (let x = 0; x < bw; x += 3) for (let k = 0; k < 3; k++) dot(bx + x + R() * 2, y + 7 + R() * 6, 1.2, x < bw * v / 100 ? INK : LIGHT);
+      });
+      break;
+    }
+    case 'trace': {
+      const zones = [0.08, 0.27, 0.41, 0.63, 0.78, 0.92];
+      const sp = (t, k) => { let v = 0.85; zones.forEach((z, i) => { const d = Math.abs(t - z); v -= (0.38 + 0.18 * Math.sin(i * 2.1 + k)) * Math.exp(-(d * d) / 0.0012); }); return v + Math.sin(t * 40 + k) * 0.01; };
+      for (let gx = X0; gx <= X1; gx += (X1 - X0) / 10) seg(gx, Y0, gx, Y1, 0.12, LIGHT, 0.3, 1);
+      [[0, INK, 1.6], [0.6, MID, 1.2], [1.3, LIGHT, 1.2]].forEach(([k, col, s]) => {
+        for (let i = 0; i < 2400; i++) { const t = i / 2400; dot(X0 + t * (X1 - X0), Y1 - sp(t, k) * (Y1 - Y0) + (R() - .5), s, col); }
+      });
+      label('KM/H', X0, Y0 - 8); label('DISTANCE', X1, Y1 + 12, MID, 'right');
+      break;
+    }
+    case 'track': {
+      const cx = (X0 + X1) / 2, cy = (Y0 + Y1) / 2, rx = (X1 - X0) * 0.42, ry = (Y1 - Y0) * 0.42;
+      const r = (a) => 1 + 0.18 * Math.sin(3 * a + 1) + 0.1 * Math.sin(5 * a + 2) + 0.06 * Math.sin(8 * a);
+      for (let i = 0; i < 3800; i++) { const a = (i / 3800) * 6.283, k = r(a); dot(cx + Math.cos(a) * rx * k / 1.2 + (R() - .5) * 2.5, cy + Math.sin(a) * ry * k / 1.2 + (R() - .5) * 2.5, 1.4, INK); }
+      const a0 = 0.3, k0 = r(a0); seg(cx + Math.cos(a0) * rx * k0 / 1.2 - 8, cy + Math.sin(a0) * ry * k0 / 1.2, cx + Math.cos(a0) * rx * k0 / 1.2 + 8, cy + Math.sin(a0) * ry * k0 / 1.2, 3, MID, 0.4, 1.6);
+      break;
+    }
+    case 'scatter': {
+      for (let i = 0; i < 1400; i++) { const g = R() < 0.55; const x = (g ? 0.35 : 0.65) + (R() + R() + R() - 1.5) * 0.16, y = (g ? 0.6 : 0.38) + (R() + R() + R() - 1.5) * 0.16; dot(X0 + x * (X1 - X0), Y0 + y * (Y1 - Y0), 1.6, g ? INK : MID); }
+      [[0.12, 0.18, 'Leak'], [0.86, 0.82, 'Dupes'], [0.9, 0.2, 'ID col'], [0.1, 0.85, 'Const']].forEach(([x, y, l]) => {
+        const px = X0 + x * (X1 - X0), py = Y0 + y * (Y1 - Y0);
+        blob(px, py, 3, 30, INK, 1.4);
+        c.strokeStyle = INK; c.lineWidth = 1; c.beginPath(); c.arc(px, py, 11, 0, 6.283); c.stroke();
+        label(l.toUpperCase(), px + 16, py, INK);
+      });
+      break;
+    }
+    case 'matrix': {
+      const n = 9, cs = Math.min((X1 - X0), (Y1 - Y0)) / n, ox = (W - cs * n) / 2, oy = Y0;
+      for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+        const v = i === j ? 1 : (j === 6 || i === 6) && (i === n - 1 || j === n - 1) ? 0.97 : Math.abs(Math.sin(i * 3.1 + j * 1.7)) * 0.45;
+        const m = (v * 60) | 0; for (let k = 0; k < m; k++) dot(ox + i * cs + R() * (cs - 2), oy + j * cs + R() * (cs - 2), 1.2, v > 0.9 ? INK : MID);
+      }
+      c.strokeStyle = INK; c.lineWidth = 1; c.strokeRect(ox + 6 * cs - 1, oy - 1, cs + 2, cs * n + 2);
+      break;
+    }
+    case 'models': {
+      const vals = [0.81, 0.78, 0.86, 0.74, 0.69, 0.83], bw = (X1 - X0) / vals.length;
+      vals.forEach((v, i) => { const h = v * (Y1 - Y0); for (let k = 0; k < h * bw * 0.12; k++) dot(X0 + i * bw + bw * 0.2 + R() * bw * 0.6, Y1 - R() * h, 1.3, INK); });
+      const by = Y1 - 0.5 * (Y1 - Y0); for (let x = X0; x < X1; x += 6) seg(x, by, x + 3, by, 1.5, MID, 0.2, 1.2);
+      label('- - -  SHUFFLED-LABEL BASELINE (0.50)', X1, Y0 - 10, MID, 'right');
+      break;
+    }
+    case 'line': {
+      const n = 6, sw = (X1 - X0) / (n * 1.6), gap = (X1 - X0 - sw * n) / (n - 1), y = (Y0 + Y1) / 2;
+      for (let i = 0; i < n; i++) {
+        const x = X0 + i * (sw + gap), hot = i === 3;
+        for (let k = 0; k < 4 * sw; k++) { dot(x + R() * sw, y - sw / 2 + (R() < .5 ? 0 : sw), 1.3, INK); dot(x + (R() < .5 ? 0 : sw), y - sw / 2 + R() * sw, 1.3, INK); }
+        label('S' + (i + 1), x + sw / 2, y - sw / 2 - 10, MID, 'center');
+        if (i < n - 1) {
+          seg(x + sw + 4, y, x + sw + gap - 4, y, 0.5, MID, 0.4, 1.2);
+          const pile = i === 2 ? 1 : 0.15 + R() * 0.2;   // the buffer before the bottleneck fills up
+          blob(x + sw + gap / 2, y + sw * 0.9, gap * 0.28 * Math.sqrt(pile), 260 * pile, i === 2 ? INK : MID, 1.4);
+        }
+        if (hot) label('BOTTLENECK', x + sw / 2, y + sw / 2 + 14, INK, 'center');
+      }
+      break;
+    }
+    case 'gantt': {
+      const rows = 6, rh = (Y1 - Y0) / rows;
+      for (let r = 0; r < rows; r++) {
+        let x = X0 + R() * 10;
+        label('M' + (r + 1), X0 - 4, Y0 + r * rh + rh / 2, MID, 'right');
+        while (x < X1) {
+          const w = 20 + R() * 60, down = R() < 0.18;
+          for (let k = 0; k < w * 2.2; k++) dot(x + R() * Math.min(w, X1 - x), Y0 + r * rh + rh * 0.25 + R() * rh * 0.5, 1.2, down ? LIGHT : INK);
+          x += w + 4;
+        }
+      }
+      break;
+    }
+  }
 };
 window.drawTorchLogo = function (ctx, S) {
   const k = S / 512;
@@ -1041,6 +1329,8 @@ function makeMaterial() {
       uStage:   { value: new THREE.Vector4(0, 0, 1, 1) },   // top-left x, y, width, height (world)
       uSw:      { value: 1 },
       uMorph3:  { value: 0 },
+      uMorph4:  { value: 0 },
+      uBand:    { value: new THREE.Vector4(0, 0, 0.1, 1) },
       uKs:      { value: 1 },
       uSky:     { value: new THREE.Matrix4() },
       uHov:     { value: new THREE.Vector2(9, 9) },
@@ -1063,7 +1353,9 @@ function makeMaterial() {
       uniform float uBlobR;
       uniform mat3 uBlobRot;
       uniform vec4 uSpikes[24];
-      uniform float uMorph2, uSw, uMorph3, uKs;
+      uniform float uMorph2, uSw, uMorph3, uKs, uMorph4;
+      uniform vec4 uBand;
+      varying float vT4;
       uniform mat4 uSky;
       uniform vec2 uHov;
       attribute vec4 aKA, aKB;
@@ -1160,6 +1452,19 @@ function makeMaterial() {
             vT3 = t3; vLvl = gk.w; vHov = hov;
           }
         }
+        vT4 = 0.0;
+        if (uMorph4 > 0.0) {
+          // projects: every grain gathers into a ragged vertical wall that sweeps across
+          float d4 = aRnd * 0.35;
+          float t4 = smoothstep(d4, d4 + 0.65, uMorph4);
+          float bx = fract(aRnd * 91.7 + aBlob.x * 3.1), by = fract(aRnd * 517.3 + aBlob.y * 7.7);
+          vec3 B = vec3(uBand.x + bx * uBand.z * (0.25 + 0.75 * bx), uBand.y - by * uBand.w, (fract(aRnd * 33.3) - 0.5) * uBand.z * 0.3);
+          B.x += snoise(vec3(by * 5.0, uTime * 0.6, 0.0)) * uBand.z * 0.35;
+          float u4 = t4 * t4 * (3.0 - 2.0 * t4);
+          world.xyz = mix(world.xyz, B, u4);
+          blobN = normalize(mix(blobN, vec3(0.0, 0.0, 1.0), t4));
+          vT4 = t4;
+        }
         vMorph = tm;
         vec4 mv = viewMatrix * world;
         vNormalV = normalize(mix(normalize(normalMatrix * nrm), blobN, tm));
@@ -1172,7 +1477,7 @@ function makeMaterial() {
       uniform float uResolve, uFeather;
       uniform vec4 uMasks[5];
       varying vec3 vNormalV;
-      varying float vDent, vY, vRnd, vMorph, vT2, vT3, vLvl, vHov;
+      varying float vDent, vY, vRnd, vMorph, vT2, vT3, vLvl, vHov, vT4;
       varying vec3 vSCol;
       void main() {
         vec2 c = gl_PointCoord * 2.0 - 1.0;
@@ -1198,7 +1503,8 @@ function makeMaterial() {
         sk = sk * (0.62 + 0.5 * bd) + vec3(spec) * 0.25;
         sk = mix(sk, vec3(0.176, 0.643, 0.306) * 1.15, vHov * 0.7);
         col = mix(col, sk, vT3);
-        float fadeIn = mix(smoothstep(0.0, 0.14, vY), 1.0, vMorph);
+        col = mix(col, vec3(0.07, 0.07, 0.08) + vec3(spec) * 0.5 + vec3(0.25) * rim, vT4);
+        float fadeIn = mix(smoothstep(0.0, 0.14, vY), 1.0, max(vMorph, vT4));
         if (fadeIn < 0.999 && vRnd > fadeIn) discard;
         // thin out behind text blocks: fully clear inside, dithered edge outside
         float outside = 1e5;
@@ -1426,6 +1732,12 @@ function updatePageTwo(dt, t) {
     }
     u.uHov.value.set(hov ? hov.x : 9, hov ? hov.z : 9);
     window.p4Tip?.(hov);
+  }
+  {
+    const m4 = window.__m4 || 0, sw = window.__sweep || 0, bandPx = VIEW.W * 0.06;
+    u.uMorph4.value = m4;
+    pxToWorld(sw * (VIEW.W + bandPx * 1.5), 0, tmpV);
+    u.uBand.value.set(tmpV.x, tmpV.y, bandPx * wpp, VIEW.H * wpp);
   }
   const op = THREE.MathUtils.smoothstep(morph, 0.75, 1.0) * (1 - THREE.MathUtils.smoothstep(morph2, 0.0, 0.25));
   thread.visible = op > 0.01; thread.material.opacity = op;
@@ -1683,7 +1995,7 @@ renderer.setAnimationLoop(() => {
         const br = el.getBoundingClientRect();
         const x0 = (br.left - cr.left) * pr, x1 = (br.right - cr.left) * pr;
         const y0 = (cr.bottom - br.bottom) * pr, y1 = (cr.bottom - br.top) * pr;
-        const hit = morph < 0.15 && br.width > 0 && x1 > 0 && y1 > 0 && x0 < cr.width * pr && y0 < cr.height * pr;
+        const hit = morph < 0.15 && !(window.__m4 > 0.01) && br.width > 0 && x1 > 0 && y1 > 0 && x0 < cr.width * pr && y0 < cr.height * pr;
         points.material.uniforms.uMasks.value[i].set(hit ? x0 : -1, hit ? y0 : -1, hit ? x1 : -1, hit ? y1 : -1);
       });
       points.material.uniforms.uFeather.value = 60 * pr;
@@ -1980,6 +2292,69 @@ renderer.setAnimationLoop(() => {
     addEventListener('resize', paint);
     fill(); paint(); count();
     return { replay: count, get year() { return year; } };
+  })();
+
+  // ---------- projects view: grain curtain + editorial spreads ----------
+  const projects = (() => {
+    const ov = $('projects'), edge = $('curtain-edge'), dots = $('pj-dots');
+    const spreads = [...ov.querySelectorAll('.spread')];
+    let state = 'closed', raf = 0;
+    const ease = (x) => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+    function drawFigs() { ov.querySelectorAll('.fig').forEach((f) => window.drawFig(f.querySelector('canvas'), f.dataset.fig)); }
+    function setSweep(s) {
+      window.__sweep = s;
+      ov.style.clipPath = `inset(0 ${(100 - s * 100).toFixed(3)}% 0 0)`;
+      edge.style.left = (s * innerWidth).toFixed(1) + 'px';
+      edge.style.opacity = s > 0.001 && s < 0.999 ? 1 : 0;
+    }
+    function tween(ms, fn) {
+      return new Promise((res) => {
+        const t0 = performance.now();
+        cancelAnimationFrame(raf);
+        const step = (now) => { const k = Math.min(1, (now - t0) / ms); fn(ease(k)); if (k < 1) raf = requestAnimationFrame(step); else res(); };
+        raf = requestAnimationFrame(step);
+      });
+    }
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function goTo(i, smooth = true) { spreads[i]?.scrollIntoView({ behavior: smooth && !reduce ? 'smooth' : 'auto', block: 'start' }); }
+    async function open(i = 0) {
+      if (state === 'open') { goTo(i); return; }
+      if (state !== 'closed') return;
+      state = 'opening';
+      document.getElementById('drawer')?.classList.remove('open'); document.getElementById('backdrop')?.classList.remove('open');
+      ov.hidden = false; setSweep(0); drawFigs(); goTo(i, false);
+      document.documentElement.classList.add('pj-lock');
+      if (!reduce) {
+        if (desk.matches) await tween(750, (k) => { window.__m4 = k; });   // grains gather into a wall at the left edge
+        await tween(desk.matches ? 900 : 650, setSweep);                  // the wall sweeps across, the spreads behind it
+      } else { window.__m4 = desk.matches ? 1 : 0; setSweep(1); }
+      ov.style.clipPath = 'none'; state = 'open';
+      $('pj-close').focus({ preventScroll: true });
+    }
+    async function close() {
+      if (state !== 'open') return;
+      state = 'closing';
+      if (!reduce) {
+        await tween(desk.matches ? 800 : 550, (k) => setSweep(1 - k));
+        if (desk.matches) await tween(700, (k) => { window.__m4 = 1 - k; });
+      } else setSweep(0);
+      window.__m4 = 0; ov.hidden = true; state = 'closed';
+      document.documentElement.classList.remove('pj-lock');
+    }
+    // active spread in the top bar
+    const io = new IntersectionObserver((es) => es.forEach((e) => {
+      if (e.isIntersecting) { const i = spreads.indexOf(e.target); dots.querySelectorAll('button').forEach((b) => b.setAttribute('aria-current', String(+b.dataset.go === i))); }
+    }), { root: ov, threshold: 0.55 });
+    spreads.forEach((s) => io.observe(s));
+    ov.addEventListener('click', (e) => { const b = e.target.closest('[data-go]'); if (b) goTo(+b.dataset.go); });
+    $('pj-close').addEventListener('click', close);
+    document.querySelectorAll('[data-projects]').forEach((b) => b.addEventListener('click', () => open(+(b.dataset.projects || 0))));
+    addEventListener('keydown', (e) => {
+      if (state !== 'open') return;
+      if (e.key === 'Escape') { e.preventDefault(); close(); }
+    });
+    addEventListener('resize', () => { if (state === 'open') drawFigs(); });
+    return { open, close, get state() { return state; } };
   })();
 
   // the stats viewer: Models / Datasets toggle, arrows, bars and a line that fill on arrival
