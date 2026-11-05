@@ -205,6 +205,8 @@
   #say::placeholder { color: var(--gray-400); text-transform: uppercase; letter-spacing: .18em; }
   .send .icon { width: 1.1rem; height: 1.1rem; }
   .row a.small-btn { color: inherit; text-decoration: none; display: inline-block; }
+  .row-text a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--gray-300); }
+  .row-text a:hover { text-decoration-color: var(--ink); }
   .para { margin: 0 0 1rem; font-size: var(--body); line-height: 1.65; color: var(--gray-600); }
 
   /* ---- cyber-minimal details ---- */
@@ -545,6 +547,8 @@
   .c-time b { font-weight: 400; color: var(--ink); }
   .p6-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .6rem 1.5rem; padding-top: .9rem; border-top: 1px solid var(--gray-200); font-size: var(--micro); letter-spacing: .1em; text-transform: uppercase; color: var(--gray-500); }
   .p6-space { display: none; }
+  .foot-link { font-size: var(--micro); letter-spacing: .14em; text-transform: uppercase; color: var(--gray-500); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--gray-300); }
+  .foot-link:hover { color: var(--ink); }
   @media (min-width: 1024px) {
     .p6 { grid-template-columns: minmax(20rem, 27rem) 1fr; grid-template-rows: minmax(0, 1fr) auto; padding-top: calc(var(--header-pt) + 4rem); }
     .p6 .p3-panel { grid-row: 1; justify-content: space-between; gap: clamp(.7rem, 1.8vh, 1.2rem); }
@@ -575,7 +579,7 @@
     <nav class="pill" aria-label="Main">
       <button data-projects="0">Work</button>
       <button data-open="about">About</button>
-      <button class="pill-cta" data-open="contact">Contact <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>
+      <button class="pill-cta" id="nav-contact">Contact <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>
     </nav>
   </header>
 
@@ -655,11 +659,6 @@
   </ul>
   <p class="rail p1-fade" aria-hidden="true">Astra.sys — 100,000 grains — hover · drag · pinch — scroll for more</p>
 
-  <div class="credit p1-fade">
-    Astra's shape: <a href="https://sketchfab.com/3d-models/stargazing-through-the-attic-window-6b3e2a011f024ac6a6b123ed33d0ec28" target="_blank" rel="noopener">"Stargazing through the attic window"</a>
-    by <a href="https://sketchfab.com/Moon_solstice" target="_blank" rel="noopener">Moon</a>,
-    <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
-  </div>
 </div>
 
 <section class="p2" id="p2" aria-labelledby="p2-title">
@@ -851,7 +850,7 @@
   <div class="p6-space" aria-hidden="true"></div>
   <footer class="p6-foot" id="p6-foot">
     <span>© 2026 Vatsal Malkan</span>
-    <span>Astra's shape: “Stargazing through the attic window” by Moon, CC BY 4.0</span>
+    <button class="foot-link" data-open="credits">Credits</button>
     <button class="cta" id="to-top">Back to top <svg class="icon" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="m6 11 6-6 6 6"/></svg></button>
   </footer>
 </section>
@@ -2397,7 +2396,10 @@ renderer.setAnimationLoop(() => {
       body.innerHTML = WORK.map(row).join('');
     } else if (kind === 'about') {
       $('drawer-title').textContent = 'Profile'; $('drawer-sub').textContent = 'AI/ML Engineer';
-      body.innerHTML = `<p class="para">I build LLM systems and the evaluations that say whether they actually work: benchmarks with baselines, bootstrapped confidence intervals and contamination controls. I ship models and datasets on Hugging Face and care about what runs on a laptop CPU as much as on a GPU cluster.</p>` + ABOUT_ROWS.map(row).join('');
+      body.innerHTML = `<p class="para">I build LLM systems and the evaluations that say whether they actually work: benchmarks with baselines, bootstrapped confidence intervals and contamination controls. I ship models and datasets on Hugging Face and care about what runs on a laptop CPU as much as on a GPU cluster.</p>` + ABOUT_ROWS.map(row).join('') + `<p class="para" style="margin-top:1rem">Astra's shape is adapted from a CC BY 4.0 model by Moon. <button class="foot-link" data-open="credits">Credits</button></p>`;
+    } else if (kind === 'credits') {
+      $('drawer-title').textContent = 'Credits'; $('drawer-sub').textContent = 'Work this site builds on';
+      body.innerHTML = `<div class="row"><div class="meta"><span class="tag">3D model · CC BY 4.0</span><span class="row-title">Astra's shape</span><span class="row-text">Adapted from <a href="https://sketchfab.com/3d-models/stargazing-through-the-attic-window-6b3e2a011f024ac6a6b123ed33d0ec28" target="_blank" rel="noopener">“Stargazing through the attic window”</a> by <a href="https://sketchfab.com/Moon_solstice" target="_blank" rel="noopener">Moon</a>, licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. Only the geometry is used: it was re-sampled into particles, reposed and animated.</span></div></div>` + row({ tag: 'Libraries', title: 'three.js', text: 'Rendering, MIT licence.', link: ['Open', 'https://threejs.org'] }) + row({ tag: 'Type', title: 'Google Fonts', text: 'Orbitron, Michroma and Plus Jakarta Sans, SIL Open Font Licence.' });
     } else if (kind === 'contact') {
       $('drawer-title').textContent = 'Contact'; $('drawer-sub').textContent = 'Find me here';
       body.innerHTML = CONTACT.map(row).join('');
@@ -2411,6 +2413,7 @@ renderer.setAnimationLoop(() => {
   function close() { drawer.classList.remove('open'); backdrop.classList.remove('open'); drawer.setAttribute('aria-hidden', 'true'); }
   window.portfolioOpen = open;
   document.querySelectorAll('[data-open]').forEach((b) => b.addEventListener('click', () => open(b.dataset.open)));
+  drawer.addEventListener('click', (e) => { const b = e.target.closest('[data-open]'); if (b) open(b.dataset.open); });
   $('logo').addEventListener('click', close);
   $('drawer-close').addEventListener('click', close);
   backdrop.addEventListener('click', close);
@@ -2492,6 +2495,11 @@ renderer.setAnimationLoop(() => {
     }
   }
   $('logo').addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
+  $('nav-contact').addEventListener('click', () => {
+    const smooth = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    if (desk.matches) scrollTo({ top: innerHeight * 8, behavior: smooth });     // page six sits at q = 5 (5 × 1.6 screens)
+    else $('p6').scrollIntoView({ behavior: smooth, block: 'start' });
+  });
 
   // phones: page two is a normal section; the logo boxes get still grain drawings
   (function paintSlots() {
