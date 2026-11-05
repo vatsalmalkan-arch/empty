@@ -323,65 +323,41 @@
     .p2.live > .p2-mid { pointer-events: none; }
   }
   @media (prefers-reduced-motion: reduce) { .bt i, .spark .line, .spark .area, .spark .end { transition: none; } }
-  /* ---- page three: Vercel (minimal) ---- */
-  .p3 { position: relative; z-index: 15; display: grid; gap: 2rem 4rem; padding: calc(var(--main-py) * 2) var(--pad-x) var(--main-py); }
-  .p3-left { display: flex; flex-direction: column; gap: clamp(1rem, 3vh, 2rem); min-width: 0; }
-  .p3-logo { position: relative; height: clamp(12rem, 34vh, 21rem); aspect-ratio: 1; max-width: 100%; align-self: flex-start; }
-  .p3-logo .corner { position: absolute; } .p3-logo .tl { top: 0; left: 0; } .p3-logo .br { bottom: 0; right: 0; }
-  .slot3 { width: 100%; height: 100%; display: block; }
-  .p3-info { display: flex; flex-direction: column; gap: .6rem; max-width: 24rem; transition: opacity .35s, transform .35s; }
-  .p3-info.swap { opacity: 0; transform: translateY(8px); }
-  .p3-num { font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); letter-spacing: .14em; color: var(--gray-500); }
-  .p3-name { margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; line-height: 1.05; font-size: clamp(1.8rem, 2.4vw + .5rem, 3rem); }
-  .p3-desc { margin: 0; font-size: var(--body); line-height: 1.6; color: var(--gray-600); }
-  .p3-stack { margin: 0; font-size: var(--micro); letter-spacing: .16em; text-transform: uppercase; color: var(--gray-500); }
-  .p3-open { margin-top: .5rem; }
-  .p3-right { display: flex; align-items: center; gap: 1.1rem; min-width: 0; }
-  .car-frame { position: relative; flex: 1; min-width: 0; padding: 1rem; }
-  .car-frame .corner { position: absolute; } .car-frame .vtl { top: 0; left: 0; } .car-frame .vtr { top: 0; right: 0; } .car-frame .vbl { bottom: 0; left: 0; } .car-frame .vbr { bottom: 0; right: 0; }
-  .carousel { cursor: grab; touch-action: pan-y; user-select: none; }
-  .carousel.dragging { cursor: grabbing; }
-  .ccard { -webkit-user-drag: none; }
-  .car-side { display: flex; flex-direction: column; align-items: center; gap: .7rem; }
-  .car-side > button { width: 2.2rem; height: 2.2rem; display: grid; place-items: center; border: 1px solid var(--gray-300); border-radius: 50%; background: var(--white); color: var(--ink); transition: border-color .2s, background .2s, color .2s; }
-  .car-side > button:hover { border-color: var(--ink); background: var(--ink); color: var(--white); }
-  .car-side .icon { width: 1rem; height: 1rem; }
-  .ticks { display: flex; flex-direction: column; align-items: center; gap: .45rem; }
-  .ticks button { width: 1rem; height: .7rem; display: grid; place-items: center; }
-  .ticks button i { width: 1px; height: .7rem; background: var(--gray-300); transition: height .3s, background .3s, width .3s; }
-  .ticks button[aria-current="true"] i { width: 2px; height: 1.6rem; background: var(--ink); }
-  .ticks button[aria-current="true"] { height: 1.6rem; }
-  .car-hint { writing-mode: vertical-rl; transform: rotate(180deg); margin-top: .4rem; font-family: 'Michroma', ui-monospace, monospace; font-size: .5rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gray-400); }
-  .p3-numeral { display: none; }
-  .carousel { position: relative; width: 100%; height: 26rem; overflow: hidden;
-    -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); }
-  .ccard { position: absolute; left: 50%; top: 50%; width: min(100%, 22rem); aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;
-    background: var(--white); border: 1px solid var(--gray-200); color: inherit; text-decoration: none;
-    will-change: transform, opacity; }
-  .ccard.on { box-shadow: 0 24px 50px -30px rgba(0,0,0,.35); }
-  .chrome { display: flex; align-items: center; gap: .3rem; padding: .5rem .7rem; border-bottom: 1px solid var(--gray-200); }
-  .chrome i { width: 6px; height: 6px; border-radius: 50%; background: var(--gray-300); }
-  .chrome span { margin-left: .5rem; font-family: 'Michroma', ui-monospace, monospace; font-size: .5rem; letter-spacing: .08em; color: var(--gray-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .mock { flex: 1; padding: 1rem; display: grid; grid-template-columns: 1.2fr 1fr; grid-template-rows: auto auto 1fr; gap: .45rem .8rem; }
-  .mock b { display: block; border-radius: 3px; background: var(--gray-200); }
-  .mock .h { height: 1rem; width: 80%; background: var(--ink); }
-  .mock .l { height: .32rem; width: 66%; } .mock .l.s { width: 44%; }
-  .mock .v { grid-column: 2; grid-row: 1 / 4; border-radius: 6px; background: radial-gradient(circle at 35% 35%, var(--acc), transparent 62%), #f1f2f4; }
+  /* ---- page three: the grains build the website ---- */
+  .p3 { position: relative; z-index: 15; display: grid; gap: var(--section-gap) 2.5rem; padding: calc(var(--main-py) * 2) var(--pad-x) var(--main-py); }
+  .p3-lead { display: flex; flex-direction: column; gap: var(--section-gap); }
+  .p3-title { margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; line-height: 1.05; font-size: clamp(2rem, 3.4vw + .5rem, 4.4rem); }
+  .p3-title span { display: block; }
+  .p3-lead .cta { align-self: flex-start; }
+  .p3-stage { width: 100%; aspect-ratio: 4 / 3; max-width: 100%; }
+  #p3-canvas { width: 100%; height: 100%; display: block; }
+  .p3-statblock { display: flex; }
+  .switcher { width: clamp(14rem, 18vw, 17rem); max-width: 100%; gap: .7rem; padding: clamp(.9rem, 1.2vw, 1.25rem); }
+  .sw-head { display: flex; justify-content: space-between; align-items: center; }
+  .p3-num { font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); letter-spacing: .14em; color: var(--gray-500); font-variant-numeric: tabular-nums; }
+  .sw-arrows { display: flex; gap: .4rem; }
+  .sw-arrows button { width: 2rem; height: 2rem; border: 1px solid var(--gray-300); border-radius: 50%; display: grid; place-items: center; transition: border-color .2s, background .2s, color .2s; }
+  .sw-arrows button:hover { border-color: var(--ink); background: var(--ink); color: var(--white); }
+  .sw-arrows .icon { width: .95rem; height: .95rem; }
+  .sw-body { display: flex; flex-direction: column; gap: .4rem; transition: opacity .3s, transform .3s; }
+  .sw-body.swap { opacity: 0; transform: translateY(6px); }
+  .sw-name { margin: 0; font-weight: 700; font-size: clamp(1rem, .8vw + .55rem, 1.35rem); letter-spacing: .06em; text-transform: uppercase; }
+  .sw-desc { margin: 0; font-size: var(--body); line-height: 1.5; color: var(--gray-600); }
+  .sw-stack { margin: 0; font-size: var(--micro); letter-spacing: .16em; text-transform: uppercase; color: var(--gray-500); }
   @media (min-width: 1024px) {
-    .p3 { position: fixed; inset: 0; padding-top: calc(var(--header-pt) + 3.75rem);
-      grid-template-columns: minmax(18rem, 25rem) 1fr minmax(22rem, 30rem); align-items: center;
+    .p3 { position: fixed; inset: 0; padding-top: calc(var(--header-pt) + 4.5rem); padding-bottom: calc(var(--main-py) + .5rem);
+      grid-template-columns: minmax(14rem, 20rem) minmax(0, 1fr) minmax(13rem, 16rem); grid-template-rows: minmax(0, 1fr) auto; column-gap: 2rem;
       opacity: 0; pointer-events: none; visibility: hidden; }
     .p3.live > * { pointer-events: auto; }
-    .p3.live > .p3-left { pointer-events: none; }
-    .p3.live .p3-info { pointer-events: auto; }
-    .carousel { height: min(36rem, calc(100vh - var(--header-pt) - 11rem)); touch-action: none; }
-    .p3-numeral { display: flex; flex-direction: column; align-items: center; gap: .6rem; pointer-events: none; }
-    .p3.live > .p3-numeral { pointer-events: none; }
-    .p3-numeral span { font-family: 'Orbitron', ui-sans-serif, system-ui, sans-serif; font-weight: 800; font-size: clamp(7rem, 15vw, 15rem); line-height: .9; color: transparent; -webkit-text-stroke: 1px var(--gray-300); font-variant-numeric: tabular-nums; transition: opacity .3s; }
-    .p3-numeral small { font-family: 'Michroma', ui-monospace, monospace; font-size: .55rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gray-400); }
+    .p3.live > .p3-stage { pointer-events: none; }
+    .p3-lead { grid-column: 1; grid-row: 1 / 3; align-self: center; }
+    .p3-stage { grid-column: 2; grid-row: 1 / 3; align-self: center; justify-self: center; width: min(100%, calc((100vh - 12rem) * 4 / 3)); }
+    .p3-statblock { grid-column: 3; grid-row: 1; justify-self: end; align-self: start; text-align: right; }
+    .p3-statblock .stat { display: flex; flex-direction: column; align-items: flex-end; }
+    .switcher { grid-column: 3; grid-row: 2; justify-self: end; align-self: end; }
     .snap-c { top: 320vh; }
   }
-  @media (prefers-reduced-motion: reduce) { .ccard, .p3-info { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .sw-body { transition: none; } }
   @media (min-width: 1024px) { .hud { display: flex; } .rail { display: block; } }
   @media (max-width: 1023.98px) { .stat { flex: 1 1 9rem; } }
   @media (max-width: 480px) {
@@ -546,35 +522,34 @@
     </a>
   </div>
 </section>
-<section class="p3" id="p3" aria-labelledby="p3-eyebrow">
-  <div class="p3-left">
-    <p class="eyebrow" id="p3-eyebrow">03 / Deployed</p>
-    <div class="p3-logo" id="p3-logo">
-      <svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
-      <svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
-      <canvas class="slot3" data-logo="vercel" aria-hidden="true"></canvas>
-    </div>
-    <div class="p3-info" id="p3-info" aria-live="polite">
-      <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
-      <span class="p3-num" id="p3-num">01 / 05</span>
-      <h2 class="p3-name font-orbitron" id="p3-name">Lex.ai</h2>
-      <p class="p3-desc" id="p3-desc"></p>
-      <p class="p3-stack" id="p3-stack"></p>
-      <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg>
-      <a class="cta p3-open" id="p3-open" href="#" target="_blank" rel="noopener">Open site <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-    </div>
+<section class="p3" id="p3" aria-labelledby="p3-title">
+  <div class="p3-lead">
+    <p class="eyebrow">03 / Deployed</p>
+    <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
+    <h2 class="p3-title font-orbitron" id="p3-title"><span>Live on</span><span>the edge</span></h2>
+    <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg>
+    <a class="cta" id="p3-open" href="#" target="_blank" rel="noopener">Open site <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
   </div>
-  <div class="p3-numeral" aria-hidden="true"><span id="p3-big">01</span><small>Deployed on Vercel</small></div>
-  <div class="p3-right">
-    <div class="car-frame">
-      <svg class="corner vtl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg><svg class="corner vtr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg><svg class="corner vbl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg><svg class="corner vbr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
-      <div class="carousel" id="carousel" aria-roledescription="carousel" aria-label="Deployed sites"></div>
+  <div class="p3-stage" id="p3-stage" aria-hidden="true"><canvas id="p3-canvas"></canvas></div>
+  <div class="p3-statblock">
+    <div class="stat"><small>Live sites</small><b>05</b><span>Sites shipped on Vercel. Previews are placeholders for now.</span></div>
+  </div>
+  <div class="feature switcher" id="p3-switch">
+    <svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
+    <svg class="corner tr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg>
+    <svg class="corner bl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg>
+    <svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
+    <div class="sw-head">
+      <span class="p3-num" id="p3-num">01 / 05</span>
+      <div class="sw-arrows">
+        <button id="c-prev" aria-label="Previous site"><svg class="icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+        <button id="c-next" aria-label="Next site"><svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+      </div>
     </div>
-    <div class="car-side">
-      <button id="c-prev" aria-label="Previous site"><svg class="icon" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg></button>
-      <div class="ticks" id="ticks"></div>
-      <button id="c-next" aria-label="Next site"><svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
-      <span class="car-hint">Scroll · drag</span>
+    <div class="sw-body" id="sw-body" aria-live="polite">
+      <p class="sw-name font-orbitron" id="p3-name">Lex.ai</p>
+      <p class="sw-desc" id="p3-desc"></p>
+      <p class="sw-stack" id="p3-stack"></p>
     </div>
   </div>
 </section>
@@ -627,6 +602,67 @@ window.drawVercelLogo = function (ctx, S) {
   ctx.fillStyle = '#111113'; ctx.beginPath(); ctx.moveTo(256, 56); ctx.lineTo(476, 437); ctx.lineTo(36, 437); ctx.closePath(); ctx.fill();
   ctx.restore();
 };
+// Page three sites (placeholders until real screenshots and URLs arrive). To use a real
+// screenshot, set img to a loaded Image of a file published with the page.
+window.P3_SITES = [
+  { name: 'Lex.ai', url: 'lex-ai.vercel.app', href: 'https://github.com/Zephyr4772/lex-ai', acc: '#2b59ff', flip: false,
+    desc: 'RAG over 41,876 Supreme Court judgments, every claim a traceable case card.', stack: 'React · FastAPI · ChromaDB · Ollama' },
+  { name: 'PharmaScope', url: 'pharmascope.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#18a058', flip: true,
+    desc: 'Drug-shortage tracking over 120,000+ Indian drug records.', stack: 'React · FastAPI · PostgreSQL' },
+  { name: 'Dr.Data', url: 'dr-data.vercel.app', href: 'https://github.com/Zephyr4772/Dr.Data', acc: '#ff6a3d', flip: false,
+    desc: 'Checks whether a dataset can support a use case before training starts.', stack: 'FastAPI · scikit-learn' },
+  { name: 'ShipScript', url: 'shipscript.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#111113', flip: true,
+    desc: 'An MCP server that reads a repo, screenshots its deployment and drafts docs.', stack: 'TypeScript · MCP' },
+  { name: 'This site', url: 'vatsal.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#e0b400', flip: false,
+    desc: 'Astra, a hanging ball and this page, in one file of WebGL.', stack: 'three.js · WebGL' },
+];
+// A browser window with the site's preview, drawn on a 400×300 canvas.
+window.drawSitePreview = function (ctx, s) {
+  const W = 400, H = 300, bar = 24;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H);
+  if (s.img && s.img.complete && s.img.naturalWidth) ctx.drawImage(s.img, 0, bar, W, H - bar);
+  else {
+    const L = s.flip ? 222 : 20, R = s.flip ? 20 : 212;
+    ctx.fillStyle = '#111113'; ctx.fillRect(20, 38, 34, 7);
+    ctx.fillStyle = '#c5c9cf'; for (let i = 0; i < 3; i++) ctx.fillRect(W - 120 + i * 34, 39, 24, 4);
+    ctx.fillStyle = '#111113'; ctx.fillRect(L, 70, 150, 15); ctx.fillRect(L, 91, 118, 15);
+    ctx.fillStyle = '#b8bcc3'; ctx.fillRect(L, 118, 142, 4); ctx.fillRect(L, 128, 112, 4);
+    ctx.fillStyle = s.acc; ctx.fillRect(L, 146, 64, 16);
+    ctx.fillStyle = '#eef0f3'; ctx.fillRect(R, 58, 168, 120);
+    const g = ctx.createRadialGradient(R + 70, 112, 4, R + 70, 112, 78);
+    g.addColorStop(0, s.acc); g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g; ctx.fillRect(R, 58, 168, 120);
+    for (let i = 0; i < 3; i++) {
+      ctx.fillStyle = '#eef0f3'; ctx.fillRect(20 + i * 122, 200, 112, 76);
+      ctx.fillStyle = i === 0 ? s.acc : '#c5c9cf'; ctx.fillRect(28 + i * 122, 210, 40, 5);
+      ctx.fillStyle = '#d3d6db'; ctx.fillRect(28 + i * 122, 224, 80, 3); ctx.fillRect(28 + i * 122, 232, 62, 3);
+    }
+  }
+  ctx.fillStyle = '#eceef1'; ctx.fillRect(0, 0, W, bar);
+  ctx.fillStyle = '#c3c7cd'; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(14 + i * 12, 12, 3.4, 0, Math.PI * 2); ctx.fill(); }
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(56, 4, 132, 20);
+  ctx.fillStyle = '#6b7280'; ctx.font = '600 9px Arial, sans-serif'; ctx.textBaseline = 'middle'; ctx.fillText(s.url, 82, 14);
+  ctx.strokeStyle = '#c9ccd2'; ctx.lineWidth = 3; ctx.strokeRect(1.5, 1.5, W - 3, H - 3);
+  ctx.fillStyle = '#d6d9de'; ctx.fillRect(0, bar, W, 1.5);
+};
+// Sample n grains from a site's preview, denser where there is ink or colour.
+window.sampleSite = function (s, n) {
+  const W = 400, H = 300, c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d', { willReadFrequently: true }); window.drawSitePreview(x, s);
+  const d = x.getImageData(0, 0, W, H).data, pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
+  let k = 0, guard = 0;
+  while (k < n && guard++ < n * 60) {
+    const px = (Math.random() * W) | 0, py = (Math.random() * H) | 0, i = (py * W + px) * 4;
+    const r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255;
+    const lum = 0.3 * r + 0.59 * g + 0.11 * b, sat = Math.max(r, g, b) - Math.min(r, g, b);
+    const w = 0.07 + 0.9 * Math.pow(1 - lum, 0.7) + sat * 0.8;
+    if (Math.random() > Math.min(1, w)) continue;
+    pos[k * 3] = (px + Math.random()) / W; pos[k * 3 + 1] = (py + Math.random()) / H; pos[k * 3 + 2] = (Math.random() - 0.5) * 0.015;
+    col[k * 3] = r; col[k * 3 + 1] = g; col[k * 3 + 2] = b; k++;
+  }
+  return { pos, col };
+};
 window.drawTorchLogo = function (ctx, S) {
   const k = S / 512;
   ctx.save(); ctx.scale(k, k); ctx.clearRect(0, 0, 512, 512);
@@ -663,6 +699,7 @@ const POINT_SIZE = 5.2;   // bigger, overlapping beads: dense but not solid
 // ---------- renderer / scene ----------
 const canvas = document.getElementById('stage');
 let morph = 0;
+let siteGeo = null, siteK = 0, swT0 = -10;
 const VIEW = { camX: 0, lookY: 0, halfW: 1, halfH: 1, W: 1, H: 1 };
 const pxToWorld = (x, y, out) => out.set(VIEW.camX + (x / VIEW.W * 2 - 1) * VIEW.halfW, VIEW.lookY + (1 - y / VIEW.H * 2) * VIEW.halfH, 0);
 const ptrPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), ptrHit = new THREE.Vector3();
@@ -800,15 +837,13 @@ loader.load(MODEL_URL, (gltf) => {
       dir[i * 3] = r * Math.cos(a); dir[i * 3 + 1] = z; dir[i * 3 + 2] = r * Math.sin(a);
     }
     geo.setAttribute('aBlob', new THREE.BufferAttribute(dir, 3));
-    // Page three: a spot inside a thick equilateral triangle, centred on its centroid
-    const tri = new Float32Array(k * 3), hw = 1 / Math.sqrt(3);
-    for (let i = 0; i < k; i++) {
-      let a = Math.random(), b = Math.random(); if (a + b > 1) { a = 1 - a; b = 1 - b; }
-      tri[i * 3] = -hw + a * 2 * hw + b * hw;          // vertices: (-hw,-1/3) (hw,-1/3) (0,2/3)
-      tri[i * 3 + 1] = -1 / 3 + b;
-      tri[i * 3 + 2] = (Math.random() - 0.5) * 0.12;
-    }
-    geo.setAttribute('aTri', new THREE.BufferAttribute(tri, 3));
+    // Page three: every grain gets a spot on the current site's preview (A = from, B = to)
+    const s0 = window.sampleSite(window.P3_SITES[0], k);
+    geo.setAttribute('aSA', new THREE.BufferAttribute(s0.pos.slice(), 3));
+    geo.setAttribute('aSB', new THREE.BufferAttribute(s0.pos, 3));
+    geo.setAttribute('aCA', new THREE.BufferAttribute(s0.col.slice(), 3));
+    geo.setAttribute('aCB', new THREE.BufferAttribute(s0.col, 3));
+    siteGeo = geo; siteK = k;
   }
   NECK.set(neckY - bounds.h * 0.03, neckY + bounds.h * 0.07, neckZ);
   geo.setAttribute('aDent', new THREE.BufferAttribute(new Float32Array(k), 1).setUsage(THREE.DynamicDrawUsage));
@@ -870,8 +905,8 @@ function makeMaterial() {
       uBlobRot: { value: new THREE.Matrix3() },
       uSpikes:  { value: Array.from({ length: 24 }, () => new THREE.Vector4(0, 1, 0, 0)) },
       uMorph2:  { value: 0 },
-      uTriM:    { value: new THREE.Matrix4() },
-      uTriN:    { value: new THREE.Vector3(0, 0, 1) },
+      uStage:   { value: new THREE.Vector4(0, 0, 1, 1) },   // top-left x, y, width, height (world)
+      uSw:      { value: 1 },
       uFloorY:  { value: 0 },
       uSpread:  { value: 1 },
       uPtr:     { value: new THREE.Vector3(99, 99, 0) },
@@ -891,11 +926,12 @@ function makeMaterial() {
       uniform float uBlobR;
       uniform mat3 uBlobRot;
       uniform vec4 uSpikes[24];
-      uniform float uMorph2;
-      uniform mat4 uTriM;
-      uniform vec3 uTriN;
+      uniform float uMorph2, uSw;
+      uniform vec4 uStage;
       attribute float aRnd, aDent, aHead;
-      attribute vec3 aBlob, aTri;
+      attribute vec3 aBlob, aSA, aSB, aCA, aCB;
+      varying float vT2;
+      varying vec3 vSCol;
       varying float vMorph;
       mat3 rotXYZ(vec3 a) {
         float cx = cos(a.x), sx = sin(a.x), cy = cos(a.y), sy = sin(a.y), cz = cos(a.z), sz = sin(a.z);
@@ -924,6 +960,7 @@ function makeMaterial() {
         vec4 world = modelMatrix * vec4(p, 1.0);
         float tm = 0.0;
         vec3 blobN = vec3(0.0, 0.0, 1.0);
+        vT2 = 0.0; vSCol = vec3(0.0);
         if (uMorph > 0.0) {
           // drip: lower grains go first, everyone sinks toward the floor, then
           // sweeps across and settles into the logo
@@ -946,16 +983,21 @@ function makeMaterial() {
           w3.xy += vec2(snoise(vec3(aBlob.xy * 4.0, uTime * 0.5)), snoise(vec3(aBlob.yz * 4.0, uTime * 0.5 + 9.0))) * mid * uSpread * 0.05;
           world.xyz = w3;
           if (uMorph2 > 0.0) {
-            // the ball bursts outward and the grains settle into a spinning Vercel triangle
+            // the ball bursts, and its grains build a browser window showing the site
             float d2 = aRnd * 0.4;
             float t2 = smoothstep(d2, d2 + 0.6, uMorph2);
-            vec3 V = (uTriM * vec4(aTri, 1.0)).xyz;
+            float ds = aSB.x * 0.4 + aRnd * 0.2;                 // switching sites sweeps left to right
+            float s = smoothstep(ds, ds + 0.4, uSw), se = s * s * (3.0 - 2.0 * s);
+            vec3 st = mix(aSA, aSB, se);
+            vec3 V = vec3(uStage.x + st.x * uStage.z, uStage.y - st.y * uStage.w, st.z * uStage.w);
+            V.xy += vec2(snoise(vec3(aSB.xy * 7.0, uTime * 0.8)), snoise(vec3(aSB.yx * 7.0, uTime * 0.8 + 3.0))) * sin(3.14159 * s) * uStage.w * 0.06;
             vec2 dq = V.xy - uPtr.xy; float dlq = length(dq);
             V.xy += dq / max(dlq, 1e-4) * smoothstep(uPtrR, 0.0, dlq) * uPtrR * 0.3 * (0.6 + aRnd);
             vec3 C2 = world.xyz + dw * uBlobR * (1.2 + aRnd * 1.6);
             float u2 = t2 * t2 * (3.0 - 2.0 * t2);
             world.xyz = mix(mix(world.xyz, C2, u2), mix(C2, V, u2), u2);
-            blobN = normalize(mix(blobN, normalize(mat3(viewMatrix) * uTriN), t2));
+            blobN = normalize(mix(blobN, vec3(0.0, 0.0, 1.0), t2));
+            vT2 = t2; vSCol = mix(aCA, aCB, se);
           }
         }
         vMorph = tm;
@@ -970,7 +1012,8 @@ function makeMaterial() {
       uniform float uResolve, uFeather;
       uniform vec4 uMasks[5];
       varying vec3 vNormalV;
-      varying float vDent, vY, vRnd, vMorph;
+      varying float vDent, vY, vRnd, vMorph, vT2;
+      varying vec3 vSCol;
       void main() {
         vec2 c = gl_PointCoord * 2.0 - 1.0;
         float r2 = dot(c, c);
@@ -987,6 +1030,9 @@ function makeMaterial() {
         vec3 col = ink + sheen * (diff * 0.34 + rim * 0.6) + vec3(spec) * mix(1.1, 0.5, r);
         // freshly worked sand looks a little lighter, then settles
         col = mix(col, uHot, clamp(vDent, 0.0, 1.0) * 0.35);
+        // on the browser: the preview's own colours, as glossy beads
+        float bd = max(dot(normalize(bead + vec3(0.0, 0.0, 0.8)), L), 0.0);
+        col = mix(col, vSCol * (0.74 + 0.38 * bd) + vec3(spec) * 0.22, vT2);
         float fadeIn = mix(smoothstep(0.0, 0.14, vY), 1.0, vMorph);
         if (fadeIn < 0.999 && vRnd > fadeIn) discard;
         // thin out behind text blocks: fully clear inside, dithered edge outside
@@ -1073,6 +1119,19 @@ const thread = new THREE.Line(threadGeo, new THREE.LineBasicMaterial({ color: 0x
 thread.frustumCulled = false; thread.visible = false;
 scene.add(thread);
 
+// page three: rebuild the browser from the current picture to the next site
+window.p3Scene = {
+  show(i) {
+    if (!siteGeo) return;
+    const a = siteGeo.attributes;
+    a.aSA.array.set(a.aSB.array); a.aCA.array.set(a.aCB.array);
+    const nx = window.sampleSite(window.P3_SITES[i], siteK);
+    a.aSB.array.set(nx.pos); a.aCB.array.set(nx.col);
+    for (const k of ['aSA', 'aSB', 'aCA', 'aCB']) a[k].needsUpdate = true;
+    swT0 = performance.now() / 1000;
+  },
+};
+
 // three small grain logos that spin inside the right-hand boxes
 const LOGO_DRAW = { hf: 'drawHFLogo', kaggle: 'drawKaggleLogo', torch: 'drawTorchLogo' };
 const logoSlots = [...document.querySelectorAll('.slot')];
@@ -1114,6 +1173,25 @@ const logos = logoSlots.map((slot) => {
 });
 
 const triQ = new THREE.Quaternion();
+const faviconMat = logoMat.clone();
+const favicon = (() => {
+  const S = 128, c = document.createElement('canvas'); c.width = c.height = S;
+  const x = c.getContext('2d'); window.drawVercelLogo(x, S);
+  const d = x.getImageData(0, 0, S, S).data, filled = [];
+  for (let i = 0; i < S * S; i++) if (d[i * 4 + 3] > 200) filled.push(i);
+  const n = 1800, pos = new Float32Array(n * 3), col = new Float32Array(n * 3), rr = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const id = filled[(Math.random() * filled.length) | 0];
+    pos[i * 3] = (id % S + Math.random()) / S - 0.5; pos[i * 3 + 1] = 0.5 - (Math.floor(id / S) + Math.random()) / S; pos[i * 3 + 2] = (Math.random() - 0.5) * 0.12;
+    col[i * 3] = col[i * 3 + 1] = col[i * 3 + 2] = 0.07; rr[i] = Math.random();
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('aCol', new THREE.BufferAttribute(col, 3));
+  g.setAttribute('aR', new THREE.BufferAttribute(rr, 1));
+  const p = new THREE.Points(g, faviconMat); p.frustumCulled = false; p.visible = false; p.renderOrder = 3;
+  scene.add(p); return p;
+})();
 const tmpV = new THREE.Vector3(), tmpA = new THREE.Vector3(), rotM4 = new THREE.Matrix4(), rotE = new THREE.Euler();
 let spin = 0, roll = 0;
 function updatePageTwo(dt, t) {
@@ -1139,15 +1217,20 @@ function updatePageTwo(dt, t) {
   const morph2 = window.__morph2 || 0;
   u.uMorph2.value = morph2;
   {
-    const r = document.getElementById('p3-logo').getBoundingClientRect();
+    const r = document.getElementById('p3-stage').getBoundingClientRect();
     if (r.width > 0) {
-      pxToWorld(r.left + r.width / 2, r.top + r.height / 2, tmpV);
-      const sc = r.height * wpp * 0.82;
-      const w = t * 0.6;   // spin that lingers face-on and hurries through edge-on
-      triQ.setFromEuler(rotE.set(0, w - 0.45 * Math.sin(2 * w), 0));
-      u.uTriM.value.compose(tmpV, triQ, tmpA.set(sc, sc, sc));
-      u.uTriN.value.set(0, 0, 1).applyQuaternion(triQ);
+      pxToWorld(r.left, r.top, tmpV);
+      u.uStage.value.set(tmpV.x, tmpV.y, r.width * wpp, r.height * wpp);
+      // spinning grain Vercel mark as the tab's icon
+      const fs = r.height * 0.06;
+      pxToWorld(r.left + r.width * (68 / 400), r.top + r.height * (14 / 300), favicon.position);
+      favicon.scale.setScalar(fs * wpp * 1.4);
+      favicon.rotation.y = t * 1.6;
     }
+    favicon.visible = (window.__p3in || 0) > 0.01 && r.width > 0;
+    faviconMat.uniforms.uOpacity.value = window.__p3in || 0;
+    faviconMat.uniforms.uSize.value = baseSize * 0.45;
+    u.uSw.value = Math.min(1, (performance.now() / 1000 - swT0) / 1.3);
   }
   const op = THREE.MathUtils.smoothstep(morph, 0.75, 1.0) * (1 - THREE.MathUtils.smoothstep(morph2, 0.0, 0.25));
   thread.visible = op > 0.01; thread.material.opacity = op;
@@ -1568,133 +1651,44 @@ renderer.setAnimationLoop(() => {
     paint(); addEventListener('resize', paint);
   })();
 
-  // ---------- page three: deployed sites ----------
+  // ---------- page three: the switcher ----------
   const sites = (() => {
-    // Placeholder URLs and previews; replace with real screenshots and links.
-    const SITES = [
-      { name: 'Lex.ai', url: 'lex-ai.vercel.app', href: 'https://github.com/Zephyr4772/lex-ai', acc: '#2b59ff',
-        desc: 'RAG over 41,876 Supreme Court judgments, every claim a traceable case card.', stack: 'React · FastAPI · ChromaDB · Ollama' },
-      { name: 'PharmaScope', url: 'pharmascope.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#18a058',
-        desc: 'Drug-shortage tracking over 120,000+ Indian drug records.', stack: 'React · FastAPI · PostgreSQL' },
-      { name: 'Dr.Data', url: 'dr-data.vercel.app', href: 'https://github.com/Zephyr4772/Dr.Data', acc: '#ff6a3d',
-        desc: 'Checks whether a dataset can support a use case before training starts.', stack: 'FastAPI · scikit-learn' },
-      { name: 'ShipScript', url: 'shipscript.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#111113',
-        desc: 'An MCP server that reads a repo, screenshots its deployment and drafts docs.', stack: 'TypeScript · MCP' },
-      { name: 'This site', url: 'vatsal.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#ffd21e',
-        desc: 'Astra, a hanging ball and this page, in one file of WebGL.', stack: 'three.js · WebGL' },
-    ];
-    const car = $('carousel'), info = $('p3-info'), ticks = $('ticks'), n = SITES.length;
-    let pos = 0, target = 0, active = 0, raf = 0;
-    car.innerHTML = SITES.map((s, i) => `
-      <a class="ccard" data-i="${i}" href="${esc(s.href)}" target="_blank" rel="noopener" draggable="false" style="--acc:${s.acc}" aria-label="${esc(s.name)}">
-        <div class="chrome"><i></i><i></i><i></i><span>${esc(s.url)}</span></div>
-        <div class="mock" aria-hidden="true"><b class="h"></b><b class="l"></b><b class="l s"></b><b class="v"></b></div>
-      </a>`).join('');
-    ticks.innerHTML = SITES.map((s, i) => `<button data-i="${i}" aria-label="${esc(s.name)}"><i></i></button>`).join('');
-    const cards = [...car.querySelectorAll('.ccard')];
-    const wrap = (k) => { k = ((k % n) + n) % n; return k > n / 2 ? k - n : k; };
-    function layout() {
-      const ch = cards[0].offsetHeight || 240;
-      cards.forEach((c, i) => {
-        const k = wrap(i - pos), a = Math.abs(k);
-        c.style.transform = `translate(-50%, -50%) translate(${a * 14}px, ${k * ch * 0.8}px) rotate(${-k * 6}deg) scale(${1 - Math.min(a, 2) * 0.12})`;
-        c.style.opacity = a <= 1 ? 1 - a * 0.65 : Math.max(0, (1.6 - a) / 0.6) * 0.35;
-        c.style.filter = a > 0.05 ? `blur(${Math.min(a, 1.5) * 1.5}px)` : 'none';
-        c.style.zIndex = String(10 - Math.round(a * 2));
-        c.style.pointerEvents = a > 1.4 ? 'none' : '';
-        c.classList.toggle('on', a < 0.5);
-        c.tabIndex = a < 0.5 ? 0 : -1;
-      });
-    }
+    const SITES = window.P3_SITES, n = SITES.length, sw = $('sw-body'), cv = $('p3-canvas');
+    let active = 0, swapT = 0;
     function fill() {
       const s = SITES[active];
       $('p3-num').textContent = String(active + 1).padStart(2, '0') + ' / ' + String(n).padStart(2, '0');
-      $('p3-big').textContent = String(active + 1).padStart(2, '0');
-      $('p3-name').textContent = s.name;
-      $('p3-desc').textContent = s.desc;
-      $('p3-stack').textContent = s.stack;
+      $('p3-name').textContent = s.name; $('p3-desc').textContent = s.desc; $('p3-stack').textContent = s.stack;
       $('p3-open').href = s.href;
-      ticks.querySelectorAll('button').forEach((b, i) => b.setAttribute('aria-current', String(i === active)));
     }
-    let swapT = 0;
-    function setActive(i) {
-      if (i === active) return;
-      active = i;
-      info.classList.add('swap');
-      clearTimeout(swapT); swapT = setTimeout(() => { fill(); info.classList.remove('swap'); }, 200);
-    }
-    function animate() {
-      pos += (target - pos) * (drag ? 1 : 0.14);
-      if (Math.abs(target - pos) < 0.001) pos = target;
-      setActive(((Math.round(pos) % n) + n) % n);
-      layout();
-      raf = pos !== target || drag ? requestAnimationFrame(animate) : 0;
-    }
-    const kick = () => { if (!raf) raf = requestAnimationFrame(animate); };
-    const go = (step) => { target = Math.round(target) + step; kick(); };
-    const goTo = (i) => { target = Math.round(target) + wrap(i - Math.round(target)); kick(); };
-
-    // wheel / trackpad: move freely, then settle on the nearest card
-    let snapT = 0, wheelBase = null, lastNotch = 0;
-    car.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      const d = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-      const px = e.deltaMode === 1 ? d * 33 : d;
-      if (Math.abs(px) >= 50) {                       // a mouse-wheel notch: one card per notch
-        const now = performance.now();
-        if (now - lastNotch > 220) { lastNotch = now; go(Math.sign(px)); }
-        return;
+    // phones: a still grain picture of the preview
+    function paint() {
+      const W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(devicePixelRatio || 1, 2);
+      cv.width = W * dpr; cv.height = H * dpr;
+      const c = cv.getContext('2d'); c.scale(dpr, dpr);
+      if (desk.matches || !W) return;
+      const { pos, col } = window.sampleSite(SITES[active], 16000);
+      for (let i = 0; i < 16000; i++) {
+        c.fillStyle = `rgb(${col[i * 3] * 255 | 0},${col[i * 3 + 1] * 255 | 0},${col[i * 3 + 2] * 255 | 0})`;
+        c.fillRect(pos[i * 3] * W, pos[i * 3 + 1] * H, 1.5, 1.5);
       }
-      if (wheelBase === null) wheelBase = Math.round(target);   // trackpad: glide, then settle in the direction of travel
-      target += Math.max(-0.5, Math.min(0.5, px * 0.0045));
-      kick();
-      clearTimeout(snapT);
-      snapT = setTimeout(() => {
-        const delta = target - wheelBase;
-        target = wheelBase + (Math.abs(delta) > 0.18 ? Math.sign(delta) * Math.max(1, Math.round(Math.abs(delta))) : 0);
-        wheelBase = null; kick();
-      }, 140);
-    }, { passive: false });
-
-    // drag (mouse anywhere; touch only on desktop layouts, so phones can still scroll the page)
-    let drag = null, moved = false;
-    car.addEventListener('pointerdown', (e) => {
-      if (e.pointerType === 'touch' && !desk.matches) return;
-      drag = { y: e.clientY, t0: target, ly: e.clientY, lt: performance.now(), v: 0 }; moved = false;
-      car.setPointerCapture(e.pointerId); car.classList.add('dragging'); kick();
-    });
-    car.addEventListener('pointermove', (e) => {
-      if (!drag) return;
-      const ch = cards[0].offsetHeight * 0.8 || 200, dy = e.clientY - drag.y;
-      if (Math.abs(dy) > 6) moved = true;
-      const now = performance.now();
-      drag.v = (e.clientY - drag.ly) / Math.max(1, now - drag.lt); drag.ly = e.clientY; drag.lt = now;
-      target = drag.t0 - dy / ch;
-    });
-    const endDrag = () => {
-      if (!drag) return;
-      const ch = cards[0].offsetHeight * 0.8 || 200;
-      target = Math.round(target - (drag.v * 180) / ch);    // a quick flick carries on
-      drag = null; car.classList.remove('dragging'); kick();
-    };
-    car.addEventListener('pointerup', endDrag);
-    car.addEventListener('pointercancel', endDrag);
-    car.addEventListener('click', (e) => {
-      const c = e.target.closest('.ccard'); if (!c) return;
-      if (moved) { e.preventDefault(); moved = false; return; }
-      if (+c.dataset.i !== active) { e.preventDefault(); goTo(+c.dataset.i); }
-    });
-    ticks.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) goTo(+b.dataset.i); });
+    }
+    function go(step) {
+      active = (active + step + n) % n;
+      window.p3Scene?.show(active);
+      sw.classList.add('swap');
+      clearTimeout(swapT); swapT = setTimeout(() => { fill(); paint(); sw.classList.remove('swap'); }, 220);
+    }
     $('c-prev').addEventListener('click', () => go(-1));
     $('c-next').addEventListener('click', () => go(1));
     addEventListener('keydown', (e) => {
       if (!$('p3').classList.contains('live')) return;
-      if (e.key === 'ArrowDown') { e.preventDefault(); go(1); }
-      if (e.key === 'ArrowUp') { e.preventDefault(); go(-1); }
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); go(1); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); go(-1); }
     });
-    addEventListener('resize', layout);
-    fill(); layout();
-    return { replay() { info.classList.add('swap'); requestAnimationFrame(() => requestAnimationFrame(() => info.classList.remove('swap'))); } };
+    addEventListener('resize', paint);
+    fill(); paint();
+    return { replay() { sw.classList.add('swap'); requestAnimationFrame(() => requestAnimationFrame(() => sw.classList.remove('swap'))); } };
   })();
 
   // the stats viewer: Models / Datasets toggle, arrows, bars and a line that fill on arrival
