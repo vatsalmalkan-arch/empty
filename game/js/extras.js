@@ -160,13 +160,13 @@ export function createPhone(camera, model) {
   screen.position.z = thick / 2 + 0.002; root.add(screen);
   const glow = new THREE.PointLight(0x9fc3ff, 0, 0.6); glow.position.z = 0.08; root.add(glow);
   let raise = 0, scroll = 0, lastPinch = null;
-  const DOWN = new THREE.Vector3(-0.2, -0.42, -0.34), UP = new THREE.Vector3(-0.07, -0.12, -0.3);
+  const DOWN = new THREE.Vector3(0.24, -0.44, -0.34), UP = new THREE.Vector3(0.1, -0.11, -0.3);   // right hand
   root.position.copy(DOWN); root.visible = false;
   function update(dt, active, pinchY) {
     raise += ((active ? 1 : 0) - raise) * Math.min(1, dt * 7);
     root.visible = raise > 0.02;
     root.position.lerpVectors(DOWN, UP, raise);
-    root.rotation.set(-0.25 + raise * 0.12, 0.35 - raise * 0.3, -0.12);
+    root.rotation.set(-0.25 + raise * 0.12, -0.35 + raise * 0.3, 0.12);
     glow.intensity = raise * 0.6;
     if (raise > 0.3) {
       if (pinchY != null && lastPinch != null) scroll += (lastPinch - pinchY) * 900;

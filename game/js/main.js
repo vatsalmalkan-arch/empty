@@ -97,12 +97,12 @@ async function loadAssets() {
   const root = new THREE.Group();
   pg.scene.scale.setScalar(0.01);
   pg.scene.rotation.y = Math.PI;                 // the rig faces +Z; turn it to face forward (-Z)
-  pg.scene.position.set(0.14, -0.26, -0.38);     // eye behind the shoulder: gun low and to the right
+  pg.scene.position.set(0.03, -0.25, -0.42);     // eye behind both arms: a two-handed hold, low centre
   root.add(pg.scene);
   pg.scene.traverse((o) => { if (o.isMesh) { o.frustumCulled = false; o.castShadow = false; if (o.material) o.material.fog = false; } });
   const mixer = new THREE.AnimationMixer(pg.scene);
   const base = pg.animations[0];
-  const idle = mixer.clipAction(base.clone()); idle.play(); idle.time = 5.85; idle.timeScale = 0;
+  const idle = mixer.clipAction(base.clone()); idle.play(); idle.time = 5.4; idle.timeScale = 0;   // both hands on the gun
   const reload = mixer.clipAction(THREE.AnimationUtils.subclip(base, 'reload', 6, 57, 30)); reload.setLoop(THREE.LoopOnce, 1); reload.clampWhenFinished = true;
   const slide = pg.scene.getObjectByName('slide');
   const muzzle = new THREE.Object3D();
@@ -113,7 +113,8 @@ async function loadAssets() {
   const flashLight = new THREE.PointLight(0xffb45a, 0, 6); scene.add(flashLight);
   camera.add(root);
   mixer.update(0);
-  gun = { root, model: pg.scene, mixer, idle, reload, slide, slideRest: slide ? slide.position.z : 0, muzzle, flash, flashLight, kick: 0 };
+  gun = { root, model: pg.scene, mixer, idle, reload, slide, slideRest: 7.91,   // slide forward (the held pose has it racked)
+    muzzle, flash, flashLight, kick: 0 };
 }
 
 // ---------------------------------------------------------------- audio (synthesised)
@@ -469,11 +470,11 @@ function frame() {
   if (gun) {
     gun.mixer.update(dt);
     const tx = aimNDC.x * 0.32, ty = aimNDC.y * 0.22;
-    gun.root.rotation.y += (-tx - gun.root.rotation.y) * 0.25;
-    gun.root.rotation.x += (ty + gun.kick * 0.18 - gun.root.rotation.x) * 0.35;
     const dip = phone ? phone.raise : 0;
-    gun.root.position.set(aimNDC.x * 0.05 + dip * 0.06, aimNDC.y * 0.03 + Math.sin(player.bob * 2) * 0.006 - dip * 0.22, gun.kick * 0.035);
-    gun.root.rotation.x -= dip * 0.5;
+    gun.root.rotation.y += (-tx - gun.root.rotation.y) * 0.25;
+    gun.root.rotation.x += (ty + gun.kick * 0.18 - dip * 0.12 - gun.root.rotation.x) * 0.35;
+    // with the phone out the gun stays in view, just lowered a little and pulled left
+    gun.root.position.set(aimNDC.x * 0.05 - dip * 0.04, aimNDC.y * 0.03 + Math.sin(player.bob * 2) * 0.006 - dip * 0.035, gun.kick * 0.035);
     if (gun.slide) gun.slide.position.z = gun.slideRest - gun.kick * 5.5;
     gun.kick = Math.max(0, gun.kick - dt * 9);
     if (gun.flash.visible) { gun.flashLight.intensity *= 0.6; if (gun.flashLight.intensity < 0.2) { gun.flash.visible = false; gun.flashLight.intensity = 0; } }
@@ -547,7 +548,13 @@ $('play-hands').addEventListener('click', async () => {
   if (!window.isSecureContext) { note.innerHTML = '<span class="err">The camera only works on https:// or localhost. Open the game over HTTPS, or play with the keyboard.</span>'; return; }
   note.textContent = 'Starting the camera and loading hand tracking…';
   try { if (!hands) hands = await startHands($('video')); }
-  catch (e) { note.innerHTML = '<span class="err">Could not start the camera (' + (e.name || e.message) + '). Allow camera access and try again, or play with the keyboard.</span>'; return; }
+  catch (e) {
+    const blocked = e.name === 'NotAllowedError' || e.name === 'SecurityError';
+    note.innerHTML = '<span class="err">' + (blocked && location.hostname.endsWith('claudeusercontent.com')
+      ? 'This claude.ai preview is not allowed to use the camera. Hand controls work when the game runs on your own server over HTTPS (or on localhost). Play with the keyboard here.'
+      : 'Could not start the camera (' + (e.name || e.message) + '). Allow camera access and try again, or play with the keyboard.') + '</span>';
+    return;
+  }
   if (!(await ready)) return;
   note.textContent = '';
   state = 'calib'; show('calib');
