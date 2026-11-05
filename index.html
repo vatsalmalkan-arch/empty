@@ -394,9 +394,9 @@
   }
   @media (prefers-reduced-motion: reduce) { .lang-bar i { transition: none; } }
   /* ---- projects view: editorial spreads ---- */
-  .projects { position: fixed; inset: 0; z-index: 60; background: var(--white); overflow-y: auto; overscroll-behavior: contain; scroll-snap-type: y mandatory; scroll-padding-top: 3.6rem; clip-path: inset(0 100% 0 0); }
+  .projects { position: fixed; inset: 0; z-index: 60; background: var(--white); overflow-y: auto; overscroll-behavior: contain; scroll-snap-type: y mandatory; scroll-padding-top: 3.6rem; opacity: 0; transition: opacity .45s; }
+  .projects.shown { opacity: 1; }
   html.pj-lock, html.pj-lock body { overflow: hidden; }
-  .curtain-edge { position: fixed; top: 0; bottom: 0; left: 0; width: 1px; background: var(--ink); z-index: 61; opacity: 0; pointer-events: none; }
   .pj-bar { position: sticky; top: 0; z-index: 2; height: 3.6rem; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem var(--pad-x); background: rgba(255,255,255,.92); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border-bottom: 1px solid var(--gray-200); }
   .pj-brand { margin: 0; font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); letter-spacing: .16em; text-transform: uppercase; color: var(--gray-500); }
   .pj-brand b { color: var(--ink); font-weight: 900; letter-spacing: .15em; margin-right: .3rem; }
@@ -408,7 +408,6 @@
   .pj-close .icon { width: .9rem; height: .9rem; }
 
   .spread { position: relative; scroll-snap-align: start; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: clamp(1.25rem, 2.5vw, 2.75rem); padding: clamp(1.25rem, 3vh, 2.25rem) var(--pad-x); border-bottom: 1px solid var(--gray-200); }
-  .spread::after { content: attr(id); position: absolute; right: var(--pad-x); bottom: .8rem; font-family: 'Michroma', ui-monospace, monospace; font-size: .5rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gray-300); }
   .vtitle { margin: 0; writing-mode: vertical-rl; transform: rotate(180deg); align-self: end; font-weight: 800; text-transform: uppercase; line-height: .82; letter-spacing: .02em; font-size: clamp(2.6rem, 9vh, 7.25rem); white-space: nowrap; }
   .vtitle b { color: transparent; -webkit-text-stroke: 1.5px var(--ink); }
   .sp-body { display: grid; gap: clamp(.9rem, 1.6vw, 1.6rem); min-width: 0; min-height: 0; }
@@ -445,26 +444,34 @@
   .bl b { text-align: right; font-family: 'Michroma', ui-monospace, monospace; font-weight: 400; color: var(--gray-600); }
 
   /* index spread */
-  .s-index { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; }
-  .wordmark { position: relative; display: grid; }
-  .wordmark .ghost, .wordmark .solid { grid-area: 1 / 1; font-weight: 900; line-height: .86; letter-spacing: -.01em; font-size: clamp(4rem, 13vw, 13rem); }
-  .wordmark .ghost { color: transparent; -webkit-text-stroke: 1px var(--gray-300); transform: translate(-.08em, -.12em); }
-  .wordmark small { margin-top: 1rem; font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); letter-spacing: .3em; text-transform: uppercase; color: var(--gray-500); }
-  .index-side { display: flex; flex-direction: column; gap: .9rem; max-width: 30rem; justify-self: end; }
-  .toc { list-style: none; margin: .4rem 0 0; padding: 0; border-top: 1px solid var(--gray-200); }
-  .toc button { width: 100%; display: grid; grid-template-columns: 2.4rem auto 1fr auto; align-items: center; gap: .7rem; padding: .8rem 0; border-bottom: 1px solid var(--gray-200); text-align: left; }
+  .s-index { grid-template-columns: minmax(0, .9fr) minmax(0, 1.2fr); align-items: center; }
+  .ix-lead { display: flex; flex-direction: column; gap: var(--section-gap); }
+  .ix-title { margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; line-height: 1.05; font-size: var(--headline); }
+  .ix-title span { display: block; }
+  .ix-intro { margin: 0; font-size: var(--body); line-height: 1.6; color: var(--gray-600); max-width: 36ch; }
+  .toc { list-style: none; margin: .4rem 0 0; padding: 0; border-top: 1px solid var(--gray-200); max-width: 30rem; }
+  .toc button { width: 100%; display: grid; grid-template-columns: 2.4rem 1fr auto; align-items: center; gap: .7rem; padding: .75rem 0; border-bottom: 1px solid var(--gray-200); text-align: left; }
   .toc span { font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); color: var(--gray-500); }
-  .toc b { font-size: var(--body); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
-  .toc i { height: 0; border-top: 1px dotted var(--gray-300); }
+  .toc b { font-size: var(--body); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; transition: letter-spacing .25s; }
   .toc em { font-style: normal; font-size: var(--micro); letter-spacing: .12em; text-transform: uppercase; color: var(--gray-500); }
-  .toc button:hover b { text-decoration: underline; text-underline-offset: 4px; }
-  .colophon { display: flex; align-items: flex-end; gap: 1rem; margin-top: .6rem; }
-  .barcode { width: 5rem; height: 2.2rem; fill: var(--ink); }
-  .colophon p { margin: 0; font-family: 'Michroma', ui-monospace, monospace; font-size: .55rem; letter-spacing: .14em; text-transform: uppercase; color: var(--gray-500); line-height: 1.7; }
+  .toc button:hover b { letter-spacing: .16em; }
+  .ix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(.8rem, 1.4vw, 1.4rem); }
+  .ix-card { display: flex; flex-direction: column; gap: .55rem; color: inherit; text-decoration: none; }
+  .ix-card .fig { display: block; aspect-ratio: 4 / 3; min-height: 0; }
+  .ix-cap { display: flex; gap: .7rem; align-items: baseline; font-size: var(--micro); font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+  .ix-cap span { font-family: 'Michroma', ui-monospace, monospace; font-weight: 400; color: var(--gray-500); }
+  .ix-card:hover .ix-cap { text-decoration: underline; text-underline-offset: 4px; }
 
   @media (min-width: 1024px) {
-    .spread { height: calc(100vh - 3.6rem); }
-    .s-index { height: calc(100vh - 3.6rem); }
+    /* desktop: a deck of spreads in one place; the site's grains draw the figures */
+    .projects { background: transparent; overflow: hidden; scroll-snap-type: none; }
+    .spread { position: absolute; left: 0; right: 0; top: 3.6rem; bottom: 0; border-bottom: 0; opacity: 0; visibility: hidden; transform: translateY(10px);
+      transition: opacity .45s, visibility .45s, transform .45s; }
+    .spread.on { opacity: 1; visibility: visible; transform: none; transition-delay: .45s; }
+    .fig { background: transparent; overflow: visible; }
+    .fig canvas { display: none; }
+    .fig figcaption { background: transparent; }
+    .ix-card .fig { aspect-ratio: auto; height: calc((100vh - 3.6rem - 10rem) / 2); }
     /* A: big figure left; side figure + text right */
     .layout-a { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); grid-template-rows: minmax(0, .9fr) auto; }
     .layout-a .f-big { grid-row: 1 / 3; } .layout-a .a-text { display: grid; gap: 1.2rem; }
@@ -739,14 +746,17 @@
     <button class="pj-close" id="pj-close">Back <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
   </div>
 
-  <section class="spread s-index" id="pj-0">
-    <div class="wordmark" aria-hidden="true"><span class="ghost font-orbitron">PROJ<br>ECTS</span><span class="solid font-orbitron">PROJ<br>ECTS</span><small>Selected work · Vol. 01</small></div>
-    <div class="index-side">
-      <p class="kicker">Index</p>
-      <h3 class="font-orbitron">Four things I built end to end</h3>
-      <p>Data pipelines, corpora and tools, each with what went in, what came out, and what it can and can't answer. Figures and images on these pages are placeholders.</p>
-      <ol class="toc"><li><button data-go="1"><span>01</span><b>Indian Pharma Graph</b><i></i><em>Linked market data</em></button></li><li><button data-go="2"><span>02</span><b>Formula 1 Corpus</b><i></i><em>77 seasons, one corpus</em></button></li><li><button data-go="3"><span>03</span><b>Dr.Data</b><i></i><em>Audit before you train</em></button></li><li><button data-go="4"><span>04</span><b>Factory-Sim</b><i></i><em>Discrete-event C++20</em></button></li></ol>
-      <div class="colophon"><svg class="barcode" viewBox="0 0 77 40" aria-hidden="true"><rect x="0" y="0" width="2" height="40"/><rect x="4" y="0" width="1" height="40"/><rect x="7" y="0" width="3" height="40"/><rect x="12" y="0" width="1" height="40"/><rect x="15" y="0" width="2" height="40"/><rect x="19" y="0" width="1" height="40"/><rect x="22" y="0" width="4" height="40"/><rect x="28" y="0" width="1" height="40"/><rect x="31" y="0" width="2" height="40"/><rect x="35" y="0" width="1" height="40"/><rect x="38" y="0" width="3" height="40"/><rect x="43" y="0" width="1" height="40"/><rect x="46" y="0" width="2" height="40"/><rect x="50" y="0" width="1" height="40"/><rect x="53" y="0" width="3" height="40"/><rect x="58" y="0" width="2" height="40"/><rect x="62" y="0" width="1" height="40"/><rect x="65" y="0" width="4" height="40"/><rect x="71" y="0" width="1" height="40"/><rect x="74" y="0" width="2" height="40"/></svg><p>Vatsal Malkan<br>Rajkot · 2026</p></div>
+  <section class="spread s-index" id="pj-0" aria-label="Projects index">
+    <div class="ix-lead">
+      <p class="eyebrow">05 / Projects</p>
+      <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
+      <h2 class="ix-title font-orbitron"><span>Selected</span><span>projects</span></h2>
+      <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg>
+      <p class="ix-intro">Four things I built end to end: what went in, what came out, and what each one can and can't answer.</p>
+      <ol class="toc"><li><button data-go="1"><span>01</span><b>Indian Pharma Graph</b><em>Linked market data</em></button></li><li><button data-go="2"><span>02</span><b>Formula 1 Corpus</b><em>77 seasons</em></button></li><li><button data-go="3"><span>03</span><b>Dr.Data</b><em>Audit before training</em></button></li><li><button data-go="4"><span>04</span><b>Factory-Sim</b><em>Discrete-event C++20</em></button></li></ol>
+    </div>
+    <div class="ix-grid">
+      <a class="ix-card" href="#pj-1" data-go="1" aria-label="Indian Pharma Graph"><span class="fig" data-fig="graph"><svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg><svg class="corner tr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg><svg class="corner bl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg><svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg><canvas aria-hidden="true"></canvas></span><span class="ix-cap"><span>01</span>Indian Pharma Graph</span></a><a class="ix-card" href="#pj-2" data-go="2" aria-label="Formula 1 Corpus"><span class="fig" data-fig="trace"><svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg><svg class="corner tr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg><svg class="corner bl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg><svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg><canvas aria-hidden="true"></canvas></span><span class="ix-cap"><span>02</span>Formula 1 Corpus</span></a><a class="ix-card" href="#pj-3" data-go="3" aria-label="Dr.Data"><span class="fig" data-fig="scatter"><svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg><svg class="corner tr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg><svg class="corner bl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg><svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg><canvas aria-hidden="true"></canvas></span><span class="ix-cap"><span>03</span>Dr.Data</span></a><a class="ix-card" href="#pj-4" data-go="4" aria-label="Factory-Sim"><span class="fig" data-fig="line"><svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg><svg class="corner tr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg><svg class="corner bl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg><svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg><canvas aria-hidden="true"></canvas></span><span class="ix-cap"><span>04</span>Factory-Sim</span></a>
     </div>
   </section>
 
@@ -798,7 +808,6 @@
     </div>
   </section>
 </div>
-<div class="curtain-edge" id="curtain-edge" aria-hidden="true"></div>
 <div class="backdrop" id="backdrop"></div>
 <aside class="drawer" id="drawer" aria-hidden="true" aria-labelledby="drawer-title">
   <div class="drawer-head">
@@ -957,10 +966,10 @@ window.sampleSky = function (counts, n) {
   return out;
 };
 // Placeholder figures for the project spreads, drawn in grains on a canvas.
-window.drawFig = function (cv, kind) {
-  const W = cv.clientWidth, H = cv.clientHeight;
+window.drawFig = function (cv, kind, w, h) {
+  const W = w || cv.clientWidth, H = h || cv.clientHeight;
   if (!W || !H) return;
-  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const dpr = w ? 1 : Math.min(devicePixelRatio || 1, 2);
   cv.width = W * dpr; cv.height = H * dpr;
   const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0);
   let seed = [...kind].reduce((a, ch) => a * 31 + ch.charCodeAt(0), 7) >>> 0;
@@ -1107,6 +1116,17 @@ let morph = 0;
 let siteGeo = null, siteK = 0, swT0 = -10;
 let ksT0 = -10, skyDrag = null, skyTouch = -10;
 const skyTilt = { x: 0, y: 0 }, skyQ = new THREE.Quaternion(), skyE = new THREE.Euler(), skyPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+window.pjScene = {
+  get count() { return siteGeo ? siteK : 0; },
+  // jump: put every grain straight onto these spots; otherwise flow from the current spots
+  show(pos, jump) {
+    if (!siteGeo) return;
+    const a = siteGeo.attributes;
+    a.aPA.array.set(jump ? pos : a.aPB.array);
+    a.aPB.array.set(pos);
+    a.aPA.needsUpdate = a.aPB.needsUpdate = true;
+  },
+};
 window.p4Scene = {
   show(counts) {
     if (!siteGeo) return;
@@ -1265,6 +1285,8 @@ loader.load(MODEL_URL, (gltf) => {
     const g0 = window.sampleSky(window.GH.years[window.GH.list[window.GH.list.length - 1]].counts, k);
     geo.setAttribute('aKA', new THREE.BufferAttribute(g0.slice(), 4));
     geo.setAttribute('aKB', new THREE.BufferAttribute(g0, 4));
+    // Projects: screen-space spots (u, v, depth jitter) and colours, filled in when the view opens
+    for (const nm of ['aPA', 'aPB']) geo.setAttribute(nm, new THREE.BufferAttribute(new Float32Array(k * 4), 4));   // u, v, depth, shade
   }
   NECK.set(neckY - bounds.h * 0.03, neckY + bounds.h * 0.07, neckZ);
   geo.setAttribute('aDent', new THREE.BufferAttribute(new Float32Array(k), 1).setUsage(THREE.DynamicDrawUsage));
@@ -1330,7 +1352,8 @@ function makeMaterial() {
       uSw:      { value: 1 },
       uMorph3:  { value: 0 },
       uMorph4:  { value: 0 },
-      uBand:    { value: new THREE.Vector4(0, 0, 0.1, 1) },
+      uPs:      { value: 1 },
+      uPV:      { value: new THREE.Vector4(0, 0, 1, 1) },
       uKs:      { value: 1 },
       uSky:     { value: new THREE.Matrix4() },
       uHov:     { value: new THREE.Vector2(9, 9) },
@@ -1354,8 +1377,11 @@ function makeMaterial() {
       uniform mat3 uBlobRot;
       uniform vec4 uSpikes[24];
       uniform float uMorph2, uSw, uMorph3, uKs, uMorph4;
-      uniform vec4 uBand;
+      uniform float uPs;
+      uniform vec4 uPV;
+      attribute vec4 aPA, aPB;
       varying float vT4;
+      varying vec3 vPCol;
       uniform mat4 uSky;
       uniform vec2 uHov;
       attribute vec4 aKA, aKB;
@@ -1452,24 +1478,29 @@ function makeMaterial() {
             vT3 = t3; vLvl = gk.w; vHov = hov;
           }
         }
-        vT4 = 0.0;
+        vT4 = 0.0; vPCol = vec3(0.0);
         if (uMorph4 > 0.0) {
-          // projects: every grain gathers into a ragged vertical wall that sweeps across
+          // projects: the grains flow into the figures of the current spread, and from
+          // one spread's figures into the next
           float d4 = aRnd * 0.35;
           float t4 = smoothstep(d4, d4 + 0.65, uMorph4);
-          float bx = fract(aRnd * 91.7 + aBlob.x * 3.1), by = fract(aRnd * 517.3 + aBlob.y * 7.7);
-          vec3 B = vec3(uBand.x + bx * uBand.z * (0.25 + 0.75 * bx), uBand.y - by * uBand.w, (fract(aRnd * 33.3) - 0.5) * uBand.z * 0.3);
-          B.x += snoise(vec3(by * 5.0, uTime * 0.6, 0.0)) * uBand.z * 0.35;
-          float u4 = t4 * t4 * (3.0 - 2.0 * t4);
-          world.xyz = mix(world.xyz, B, u4);
+          float dp = aRnd * 0.3 + aPB.x * 0.15;
+          float ps = smoothstep(dp, dp + 0.55, uPs), pe = ps * ps * (3.0 - 2.0 * ps);
+          vec4 q = mix(aPA, aPB, pe);
+          vec3 T = vec3(uPV.x + (q.x * 2.0 - 1.0) * uPV.z, uPV.y + (1.0 - q.y * 2.0) * uPV.w, q.z * uPV.w * 0.02);
+          float midP = sin(3.14159 * pe);
+          T.xy += vec2(snoise(vec3(aPB.xy * 6.0, uTime * 0.6)), snoise(vec3(aPB.yx * 6.0, uTime * 0.6 + 4.0))) * midP * uPV.w * 0.07;
+          float u4 = t4 * t4 * (3.0 - 2.0 * t4), mid4 = sin(3.14159 * t4);
+          world.xyz = mix(world.xyz, T, u4);
+          world.xy += vec2(snoise(vec3(aBlob.xy * 3.0, uTime * 0.4)), snoise(vec3(aBlob.yz * 3.0, uTime * 0.4 + 2.0))) * mid4 * uPV.w * 0.08;
           blobN = normalize(mix(blobN, vec3(0.0, 0.0, 1.0), t4));
-          vT4 = t4;
+          vT4 = t4; vPCol = vec3(q.w);
         }
         vMorph = tm;
         vec4 mv = viewMatrix * world;
-        vNormalV = normalize(mix(normalize(normalMatrix * nrm), blobN, tm));
+        vNormalV = normalize(mix(normalize(normalMatrix * nrm), blobN, max(tm, vT4)));
         vDent = aDent; vY = position.y / uHeight; vRnd = aRnd;
-        gl_PointSize = uSize * (0.55 + aRnd * 0.9) / -mv.z;
+        gl_PointSize = uSize * (0.55 + aRnd * 0.9) / -mv.z * mix(1.0, 0.55, vT4);
         gl_Position = projectionMatrix * mv;
       }`,
     fragmentShader: /* glsl */`
@@ -1478,6 +1509,7 @@ function makeMaterial() {
       uniform vec4 uMasks[5];
       varying vec3 vNormalV;
       varying float vDent, vY, vRnd, vMorph, vT2, vT3, vLvl, vHov, vT4;
+      varying vec3 vPCol;
       varying vec3 vSCol;
       void main() {
         vec2 c = gl_PointCoord * 2.0 - 1.0;
@@ -1503,7 +1535,7 @@ function makeMaterial() {
         sk = sk * (0.62 + 0.5 * bd) + vec3(spec) * 0.25;
         sk = mix(sk, vec3(0.176, 0.643, 0.306) * 1.15, vHov * 0.7);
         col = mix(col, sk, vT3);
-        col = mix(col, vec3(0.07, 0.07, 0.08) + vec3(spec) * 0.5 + vec3(0.25) * rim, vT4);
+        col = mix(col, vPCol * (0.82 + 0.3 * bd) + vec3(spec) * 0.18, vT4);
         float fadeIn = mix(smoothstep(0.0, 0.14, vY), 1.0, max(vMorph, vT4));
         if (fadeIn < 0.999 && vRnd > fadeIn) discard;
         // thin out behind text blocks: fully clear inside, dithered edge outside
@@ -1718,7 +1750,7 @@ function updatePageTwo(dt, t) {
     u.uKs.value = Math.min(1, (performance.now() / 1000 - ksT0) / 1.2);
     // hover: which day is under the pointer (on the skyline's base plane)
     let hov = null;
-    if (in4 > 0.9 && sculpting && !skyDrag && window.p4Counts) {
+    if (in4 > 0.9 && sculpting && !skyDrag && window.p4Counts && !(window.__m4 > 0)) {
       // nearest column (by its mid-height point on screen) to the pointer
       const counts = window.p4Counts(), c = 1 / 52;
       let best = 0.045 * 0.045, pick = -1;
@@ -1733,12 +1765,9 @@ function updatePageTwo(dt, t) {
     u.uHov.value.set(hov ? hov.x : 9, hov ? hov.z : 9);
     window.p4Tip?.(hov);
   }
-  {
-    const m4 = window.__m4 || 0, sw = window.__sweep || 0, bandPx = VIEW.W * 0.06;
-    u.uMorph4.value = m4;
-    pxToWorld(sw * (VIEW.W + bandPx * 1.5), 0, tmpV);
-    u.uBand.value.set(tmpV.x, tmpV.y, bandPx * wpp, VIEW.H * wpp);
-  }
+  u.uMorph4.value = window.__m4 || 0;
+  u.uPs.value = window.__ps ?? 1;
+  u.uPV.value.set(VIEW.camX, VIEW.lookY, VIEW.halfW, VIEW.halfH);
   const op = THREE.MathUtils.smoothstep(morph, 0.75, 1.0) * (1 - THREE.MathUtils.smoothstep(morph2, 0.0, 0.25));
   thread.visible = op > 0.01; thread.material.opacity = op;
   if (thread.visible) {
@@ -2116,7 +2145,8 @@ renderer.setAnimationLoop(() => {
   const fades = [...document.querySelectorAll('.p1-fade')], p2 = $('p2');
   const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   let q = 0;
-  const p3 = $('p3'), p4 = $('p4');
+  const p3 = $('p3'), p4 = $('p4'), hdr = document.querySelector('header');
+  let storyDim = false;
   function applyScroll() {
     const target = desk.matches ? Math.min(3, Math.max(0, scrollY / (innerHeight * 1.6))) : 0;
     q += (target - q) * 0.12; if (Math.abs(target - q) < 1e-4) q = target;
@@ -2149,6 +2179,12 @@ renderer.setAnimationLoop(() => {
       window.__p4in = in4;
       if (in4 > 0.9 && was4 <= 0.9) gh.replay();
       if (in4 < 0.9) window.p4Tip?.(null);
+      const keep = 1 - (window.__pjf || 0);
+      if (keep < 1 || storyDim) {
+        for (const el of [...fades, p2, p3, p4]) el.style.opacity = (parseFloat(el.style.opacity || '1') * keep).toFixed(3);
+        hdr.style.opacity = keep.toFixed(3);
+        storyDim = keep < 1;
+      }
     } else {
       for (const el of [p2, p3, p4]) { el.style.opacity = ''; el.style.transform = ''; el.style.visibility = ''; }
     }
@@ -2294,66 +2330,131 @@ renderer.setAnimationLoop(() => {
     return { replay: count, get year() { return year; } };
   })();
 
-  // ---------- projects view: grain curtain + editorial spreads ----------
+  // ---------- projects view: the site's grains draw every figure ----------
   const projects = (() => {
-    const ov = $('projects'), edge = $('curtain-edge'), dots = $('pj-dots');
+    const ov = $('projects'), dots = $('pj-dots');
     const spreads = [...ov.querySelectorAll('.spread')];
-    let state = 'closed', raf = 0;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let state = 'closed', active = 0, raf = 0, cache = [], busy = 0;
     const ease = (x) => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
-    function drawFigs() { ov.querySelectorAll('.fig').forEach((f) => window.drawFig(f.querySelector('canvas'), f.dataset.fig)); }
-    function setSweep(s) {
-      window.__sweep = s;
-      ov.style.clipPath = `inset(0 ${(100 - s * 100).toFixed(3)}% 0 0)`;
-      edge.style.left = (s * innerWidth).toFixed(1) + 'px';
-      edge.style.opacity = s > 0.001 && s < 0.999 ? 1 : 0;
-    }
     function tween(ms, fn) {
       return new Promise((res) => {
+        if (reduce) { fn(1); res(); return; }
         const t0 = performance.now();
-        cancelAnimationFrame(raf);
-        const step = (now) => { const k = Math.min(1, (now - t0) / ms); fn(ease(k)); if (k < 1) raf = requestAnimationFrame(step); else res(); };
-        raf = requestAnimationFrame(step);
+        const step = (now) => { const k = Math.min(1, (now - t0) / ms); fn(ease(k)); if (k < 1) requestAnimationFrame(step); else res(); };
+        requestAnimationFrame(step);
       });
     }
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    function goTo(i, smooth = true) { spreads[i]?.scrollIntoView({ behavior: smooth && !reduce ? 'smooth' : 'auto', block: 'start' }); }
+    // grain spots for one spread: the figures are drawn offscreen, and grains are
+    // sampled from their ink at the figure boxes' places on screen
+    function sample(spread, n) {
+      const figs = [...spread.querySelectorAll('.fig')].map((f) => {
+        const r = f.getBoundingClientRect(), W = Math.round(r.width), H = Math.round(r.height);
+        if (W < 4 || H < 4) return null;
+        const c = document.createElement('canvas'); c.width = W; c.height = H;
+        window.drawFig(c, f.dataset.fig, W, H);
+        const d = c.getContext('2d').getImageData(0, 0, W, H).data, ink = [];
+        for (let i = 0; i < W * H; i++) { const lum = (d[i * 4] + d[i * 4 + 1] + d[i * 4 + 2]) / 765; if (lum < 0.84) ink.push(i); }
+        return { r, W, d, ink };
+      }).filter((x) => x && x.ink.length);
+      const total = figs.reduce((s, f) => s + f.ink.length, 0);
+      const pos = new Float32Array(n * 4);
+      let k = 0;
+      figs.forEach((f, fi) => {
+        const m = fi === figs.length - 1 ? n - k : Math.round(n * f.ink.length / total);
+        for (let j = 0; j < m && k < n; j++, k++) {
+          const id = f.ink[(Math.random() * f.ink.length) | 0], x = id % f.W, y = (id / f.W) | 0;
+          pos[k * 4] = (f.r.left + x + Math.random()) / innerWidth;
+          pos[k * 4 + 1] = (f.r.top + y + Math.random()) / innerHeight;
+          pos[k * 4 + 2] = Math.random() - 0.5;
+          pos[k * 4 + 3] = (f.d[id * 4] + f.d[id * 4 + 1] + f.d[id * 4 + 2]) / 765;
+        }
+      });
+      return pos;
+    }
+    function build() { const n = window.pjScene?.count || 0; cache = n ? spreads.map((s) => sample(s, n)) : []; }
+    function mark(i) {
+      spreads.forEach((s, j) => s.classList.toggle('on', j === i));
+      dots.querySelectorAll('button').forEach((b) => b.setAttribute('aria-current', String(+b.dataset.go === i)));
+    }
+    function goTo(i) {
+      i = Math.max(0, Math.min(spreads.length - 1, i));
+      if (!desk.matches) { spreads[i].scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); return; }
+      if (i === active || state !== 'open') return;
+      active = i; mark(i); busy = performance.now();
+      if (cache[i]) { window.pjScene.show(cache[i], false); window.__ps = 0; tween(1300, (k) => { window.__ps = k; }); }
+    }
     async function open(i = 0) {
       if (state === 'open') { goTo(i); return; }
       if (state !== 'closed') return;
       state = 'opening';
       document.getElementById('drawer')?.classList.remove('open'); document.getElementById('backdrop')?.classList.remove('open');
-      ov.hidden = false; setSweep(0); drawFigs(); goTo(i, false);
       document.documentElement.classList.add('pj-lock');
-      if (!reduce) {
-        if (desk.matches) await tween(750, (k) => { window.__m4 = k; });   // grains gather into a wall at the left edge
-        await tween(desk.matches ? 900 : 650, setSweep);                  // the wall sweeps across, the spreads behind it
-      } else { window.__m4 = desk.matches ? 1 : 0; setSweep(1); }
-      ov.style.clipPath = 'none'; state = 'open';
+      ov.hidden = false; active = i; mark(i);
+      if (desk.matches) {
+        build();
+        if (cache[i]) window.pjScene.show(cache[i], true);
+        window.__ps = 1;
+        requestAnimationFrame(() => ov.classList.add('shown'));
+        tween(500, (k) => { window.__pjf = k; });                       // the story's text steps back
+        await tween(1500, (k) => { window.__m4 = k; });                  // its grains flow into the figures
+      } else {
+        ov.querySelectorAll('.fig').forEach((f) => window.drawFig(f.querySelector('canvas'), f.dataset.fig));
+        spreads[i].scrollIntoView({ block: 'start' });
+        requestAnimationFrame(() => ov.classList.add('shown'));
+        await tween(450, () => {});
+      }
+      state = 'open';
       $('pj-close').focus({ preventScroll: true });
     }
     async function close() {
       if (state !== 'open') return;
       state = 'closing';
-      if (!reduce) {
-        await tween(desk.matches ? 800 : 550, (k) => setSweep(1 - k));
-        if (desk.matches) await tween(700, (k) => { window.__m4 = 1 - k; });
-      } else setSweep(0);
-      window.__m4 = 0; ov.hidden = true; state = 'closed';
+      ov.classList.remove('shown');
+      if (desk.matches) {
+        spreads.forEach((s) => s.classList.remove('on'));
+        await tween(1300, (k) => { window.__m4 = 1 - k; });              // grains flow back into the story
+        await tween(450, (k) => { window.__pjf = 1 - k; });
+      } else await tween(450, () => {});
+      window.__m4 = 0; window.__pjf = 0;
+      ov.hidden = true; state = 'closed';
       document.documentElement.classList.remove('pj-lock');
     }
-    // active spread in the top bar
+    // phones scroll the spreads; keep the tabs in step
     const io = new IntersectionObserver((es) => es.forEach((e) => {
-      if (e.isIntersecting) { const i = spreads.indexOf(e.target); dots.querySelectorAll('button').forEach((b) => b.setAttribute('aria-current', String(+b.dataset.go === i))); }
-    }), { root: ov, threshold: 0.55 });
+      if (desk.matches || !e.isIntersecting) return;
+      const i = spreads.indexOf(e.target);
+      dots.querySelectorAll('button').forEach((b) => b.setAttribute('aria-current', String(+b.dataset.go === i)));
+    }), { root: ov, threshold: 0.4 });
     spreads.forEach((s) => io.observe(s));
-    ov.addEventListener('click', (e) => { const b = e.target.closest('[data-go]'); if (b) goTo(+b.dataset.go); });
+    // desktop: wheel and keys step through the deck
+    let acc = 0, accT = 0;
+    ov.addEventListener('wheel', (e) => {
+      if (!desk.matches) return;
+      e.preventDefault();
+      if (state !== 'open' || performance.now() - busy < 1100) return;
+      acc += e.deltaY; clearTimeout(accT); accT = setTimeout(() => { acc = 0; }, 180);
+      if (Math.abs(acc) > 40) { goTo(active + Math.sign(acc)); acc = 0; }
+    }, { passive: false });
+    ov.addEventListener('click', (e) => { const b = e.target.closest('[data-go]'); if (b) { e.preventDefault(); goTo(+b.dataset.go); } });
     $('pj-close').addEventListener('click', close);
     document.querySelectorAll('[data-projects]').forEach((b) => b.addEventListener('click', () => open(+(b.dataset.projects || 0))));
     addEventListener('keydown', (e) => {
       if (state !== 'open') return;
       if (e.key === 'Escape') { e.preventDefault(); close(); }
+      if (!desk.matches) return;
+      if (['ArrowDown', 'ArrowRight', 'PageDown'].includes(e.key)) { e.preventDefault(); goTo(active + 1); }
+      if (['ArrowUp', 'ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); goTo(active - 1); }
     });
-    addEventListener('resize', () => { if (state === 'open') drawFigs(); });
+    let rt = 0;
+    addEventListener('resize', () => {
+      if (state !== 'open') return;
+      clearTimeout(rt);
+      rt = setTimeout(() => {
+        if (desk.matches) { build(); if (cache[active]) window.pjScene.show(cache[active], true); }
+        else ov.querySelectorAll('.fig').forEach((f) => window.drawFig(f.querySelector('canvas'), f.dataset.fig));
+      }, 150);
+    });
     return { open, close, get state() { return state; } };
   })();
 
