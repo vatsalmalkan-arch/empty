@@ -7,6 +7,7 @@ import { clone as cloneSkinned } from '../vendor/three/addons/utils/SkeletonUtil
 import * as G from './gestures.js';
 import { startHands, drawPreview } from './hands.js';
 import { buildWorld } from './world.js';
+import { createMusic, createDiscs, createPhone, TRACKS } from './extras.js';
 
 const $ = (id) => document.getElementById(id);
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -47,9 +48,12 @@ const loadGLB = (url) => new Promise((res, rej) => loader.load(url, res, undefin
 
 let zombieTypes = [];      // { template, clip, height, upperArms: [names], head: name }
 let gun = null;            // { root, mixer, idle, reload, slide, slideRest, muzzle }
+let phone = null, discs = null;
+const music = createMusic(() => audio());
 
 async function loadAssets() {
-  const [zg, pg] = await Promise.all([loadGLB('./assets/zombies.glb'), loadGLB('./assets/pistol.glb')]);
+  const [zg, pg, ph] = await Promise.all([loadGLB('./assets/zombies.glb'), loadGLB('./assets/pistol.glb'), loadGLB('./assets/phone.glb')]);
+  phone = createPhone(camera, ph.scene);
 
   // Zombies: ten characters share one take. Split it per character and trim the
   // trailing hold so each walk loops.
@@ -157,10 +161,10 @@ const zombies = [];
 const hitTargets = [];        // invisible hit boxes of living zombies
 const HITMAT = new THREE.MeshBasicMaterial({ visible: false });
 
-function spawnZombie(wave, dist) {
+function spawnZombie(wave, dist, opts = {}) {
   const type = zombieTypes[(Math.random() * zombieTypes.length) | 0];
   const obj = cloneSkinned(type.template);
-  const h = rand(1.66, 1.86), s = h / type.height;
+  const h = opts.alpha ? 2.35 : rand(1.66, 1.86), s = h / type.height;
   obj.scale.setScalar(s);
   const a = Math.random() * Math.PI * 2, r = dist ?? rand(24, 36);
   obj.position.set(player.pos.x + Math.cos(a) * r, 0, player.pos.z + Math.sin(a) * r);
@@ -174,12 +178,13 @@ function spawnZombie(wave, dist) {
   const head = type.head ? obj.getObjectByName(type.head) : null;
   const arms = type.upperArms.map((n) => obj.getObjectByName(n)).filter(Boolean);
   // hit boxes: a body box on the root and a head sphere on the head bone
-  const body = new THREE.Mesh(new THREE.BoxGeometry(0.55 / s, 1.35 / s, 0.4 / s), HITMAT); body.position.y = 0.72 / s; obj.add(body);
-  const hz = { obj, mixer, walk, head, arms, speed, hp: 3 + Math.floor(wave / 3), attackT: rand(0, 0.6), lunge: 0, dead: false, deadT: 0, flash: 0, groanT: rand(2, 8), meshes: [] };
+  const body = new THREE.Mesh(new THREE.BoxGeometry(0.32 * h / s, 0.8 * h / s, 0.24 * h / s), HITMAT); body.position.y = 0.42 * h / s; obj.add(body);
+  if (opts.alpha) walk.timeScale = 0;
+  const hz = { obj, mixer, walk, head, arms, speed, alpha: !!opts.alpha, hp: opts.alpha ? 24 + wave * 2 : 3 + Math.floor(wave / 3), attackT: rand(0, 0.6), lunge: 0, dead: false, deadT: 0, flash: 0, groanT: rand(2, 8), meshes: [] };
   body.userData = { z: hz, part: 'body' };
   hz.meshes.push(body);
   if (head) {
-    const hs = new THREE.Mesh(new THREE.SphereGeometry(0.17, 8, 6), HITMAT);
+    const hs = new THREE.Mesh(new THREE.SphereGeometry(0.1 * h, 8, 6), HITMAT);
     head.updateMatrixWorld(true);
     const ws = new THREE.Vector3(); head.getWorldScale(ws); hs.scale.setScalar(1 / ws.x);
     head.add(hs); hs.position.set(0, 0, 0);
@@ -187,6 +192,16 @@ function spawnZombie(wave, dist) {
   }
   hitTargets.push(...hz.meshes);
   obj.traverse((o) => { if (o.isMesh && o.material && o.material.visible !== false) { o.material = o.material.clone(); o.material.emissive = new THREE.Color(0x000000); } });
+  if (opts.alpha) {
+    // a purple aura and a pulsing ring at its feet
+    obj.traverse((o) => { if (o.isSkinnedMesh) o.material.emissive.setRGB(0.12, 0.02, 0.18); });
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.9 / s, 1.25 / s, 32), new THREE.MeshBasicMaterial({ color: 0xb04cff, transparent: true, opacity: 0.6, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }));
+    ring.rotation.x = -Math.PI / 2; ring.position.y = 0.05 / s; obj.add(ring);
+    const light = new THREE.PointLight(0xb04cff, 8, 12, 1.6); light.position.y = 2 / s; obj.add(light);
+    hz.ring = ring; hz.aura = light; hz.base = 0.12;
+    alpha = hz; alphaAge = 0;
+    banner('AN ALPHA IS DANCING · FIND IT', 2600);
+  }
   zombies.push(hz);
   if (Math.random() < 0.5) sfx.groan(0.08);
 }
@@ -205,6 +220,18 @@ function updateZombies(dt) {
     }
     const dx = player.pos.x - o.position.x, dz = player.pos.z - o.position.z, d = Math.hypot(dx, dz);
     o.rotation.y = Math.atan2(dx, dz);
+    if (z.alpha) {                                     // it doesn't chase you: it dances and calls the horde
+      const tt = performance.now() / 1000;
+      o.rotation.y += Math.sin(tt * 4) * 0.6;
+      o.position.y = world.heightAt(o.position.x, o.position.z) + Math.abs(Math.sin(tt * 6.3)) * 0.18;
+      z.mixer.update(dt);
+      z.arms.forEach((a, k) => { tq.setFromAxisAngle(ax, -(2.2 + Math.sin(tt * 6.3 + k * Math.PI) * 0.7)); a.quaternion.multiply(tq); });
+      z.ring.scale.setScalar(1 + Math.abs(Math.sin(tt * 6.3)) * 0.25); z.aura.intensity = 6 + Math.abs(Math.sin(tt * 6.3)) * 6;
+      z.attackT -= dt;
+      if (d < 1.8 && z.attackT <= 0 && player.hp > 0) { z.attackT = 0.9; hurt(14 + wave); }
+      if (z.flash > 0) { z.flash -= dt; const f = Math.max(0, z.flash) * 3; o.traverse((m) => { if (m.isSkinnedMesh) m.material.emissive.setRGB(0.12 + f * 0.8, 0.02, 0.18); }); }
+      continue;
+    }
     if (d > 1.15) {
       o.position.x += dx / d * z.speed * dt; o.position.z += dz / d * z.speed * dt;
       z.walk.paused = false;
@@ -238,6 +265,13 @@ function killZombie(z) {
   z.mixer.stopAllAction();
   for (const m of z.meshes) { const k = hitTargets.indexOf(m); if (k >= 0) hitTargets.splice(k, 1); }
   stats.kills++;
+  if (z.alpha) {
+    alpha = null; alphaTimer = rand(40, 70);
+    if (z.ring) z.obj.remove(z.ring); if (z.aura) z.obj.remove(z.aura);
+    player.hp = Math.min(100, player.hp + 30);
+    banner('ALPHA DOWN · +30 HP', 2200);
+    $('alpha').hidden = true;
+  }
 }
 
 // ---------------------------------------------------------------- shooting
@@ -248,6 +282,7 @@ let aimNDC = new THREE.Vector2(0, 0);
 
 function shoot() {
   if (state !== 'play' || player.reloading > 0) return;
+  if (phone && phone.raise > 0.15) return;                // busy doom-scrolling
   if (player.ammo <= 0) { sfx.empty(); startReload(); return; }
   player.ammo--; stats.shots++;
   sfx.shot();
@@ -289,6 +324,7 @@ function startReload() {
 
 // ---------------------------------------------------------------- damage + waves
 let wave = 1, toSpawn = 0, spawnT = 0, breakT = 0, state = 'menu', paused = false;
+let alpha = null, alphaAge = 0, alphaTimer = 45, extraT = 3, beatT = 0;
 function hurt(n) {
   player.hp = Math.max(0, player.hp - n);
   sfx.hurt();
@@ -308,7 +344,29 @@ function updateWaves(dt) {
     breakT -= dt;
     if (breakT <= 0) startWave(wave + 1);
   }
+  // the alpha: turns up from wave 2; while it dances, extra zombies keep coming, faster and faster
+  if (!alpha && wave >= 2) { alphaTimer -= dt; if (alphaTimer <= 0) spawnZombie(wave, rand(18, 30), { alpha: true }); }
+  if (alpha) {
+    alphaAge += dt;
+    const boost = Math.min(4, 1 + alphaAge / 12);
+    extraT -= dt * boost;
+    if (extraT <= 0 && alive < 22 + wave) { spawnZombie(wave); extraT = 3.2; }
+    $('alpha').hidden = false; $('alpha').textContent = 'ALPHA DANCING · SPAWNS ×' + boost.toFixed(1);
+    // its beat: louder as you get closer, panned toward it
+    beatT -= dt;
+    if (beatT <= 0) { beatT = 0.476; beat(alpha.obj.position); }
+  }
   $('left').textContent = alive + toSpawn;
+}
+function beat(pos) {
+  const a = audio(); if (!a) return;
+  const dx = pos.x - player.pos.x, dz = pos.z - player.pos.z, d = Math.hypot(dx, dz);
+  const ang = Math.atan2(dx, dz) - Math.atan2(-Math.sin(player.yaw), -Math.cos(player.yaw));
+  const o = a.createOscillator(), g = a.createGain(), p = a.createStereoPanner ? a.createStereoPanner() : null, t = a.currentTime;
+  o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.18);
+  g.gain.setValueAtTime(Math.max(0.03, 0.5 * (1 - d / 60)), t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+  if (p) { p.pan.value = Math.max(-1, Math.min(1, -Math.sin(ang))); o.connect(g).connect(p).connect(a.destination); } else o.connect(g).connect(a.destination);
+  o.start(t); o.stop(t + 0.25);
 }
 
 // ---------------------------------------------------------------- input
@@ -350,7 +408,9 @@ function readHands(t) {
 // ---------------------------------------------------------------- loop
 const clock = new THREE.Clock();
 const fwd = new THREE.Vector3(), right = new THREE.Vector3();
+let frameCount = 0;
 function frame() {
+  frameCount++;
   const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
   const fresh = inputMode === 'hands' ? readHands(t) : null;
   if (state === 'calib') updateCalib();
@@ -376,6 +436,15 @@ function frame() {
       moveF = (keys.has('KeyW') || keys.has('ArrowUp') ? 1 : 0) - (keys.has('KeyS') || keys.has('ArrowDown') ? 1 : 0);
       moveS = (keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0);
     }
+    // phone: hold Q, or make an OK sign with the move hand
+    const m = gesture.move, wantPhone = keys.has('KeyQ') || (inputMode === 'hands' && m && m.state === 'phone');
+    const raise = phone ? phone.update(dt, wantPhone, inputMode === 'hands' && m ? m.pinchY : null) : 0;
+    if (raise > 0.85) player.hp = Math.min(100, player.hp + 7 * dt);
+    if (raise > 0.15) { moveF *= 0.4; moveS *= 0.4; }
+    $('scrolling').hidden = raise < 0.5;
+    // music discs
+    const got = discs ? discs.update(t, player.pos) : -1;
+    if (got >= 0) { music.play(got); banner('♪ ' + TRACKS[got].name, 2200); $('np').textContent = '♪ ' + TRACKS[got].name; $('discs').textContent = discs.found + '/' + TRACKS.length; }
     fwd.set(-Math.sin(player.yaw), 0, -Math.cos(player.yaw)); right.set(-fwd.z, 0, fwd.x);
     const len = Math.hypot(moveF, moveS) || 1, sp = SPEED * Math.min(1, Math.hypot(moveF, moveS));
     player.pos.addScaledVector(fwd, moveF / len * sp * dt).addScaledVector(right, moveS / len * sp * dt);
@@ -401,7 +470,9 @@ function frame() {
     const tx = aimNDC.x * 0.32, ty = aimNDC.y * 0.22;
     gun.root.rotation.y += (-tx - gun.root.rotation.y) * 0.25;
     gun.root.rotation.x += (ty + gun.kick * 0.18 - gun.root.rotation.x) * 0.35;
-    gun.root.position.set(aimNDC.x * 0.05, aimNDC.y * 0.03 + Math.sin(player.bob * 2) * 0.006, gun.kick * 0.035);
+    const dip = phone ? phone.raise : 0;
+    gun.root.position.set(aimNDC.x * 0.05 + dip * 0.06, aimNDC.y * 0.03 + Math.sin(player.bob * 2) * 0.006 - dip * 0.22, gun.kick * 0.035);
+    gun.root.rotation.x -= dip * 0.5;
     if (gun.slide) gun.slide.position.z = gun.slideRest - gun.kick * 5.5;
     gun.kick = Math.max(0, gun.kick - dt * 9);
     if (gun.flash.visible) { gun.flashLight.intensity *= 0.6; if (gun.flashLight.intensity < 0.2) { gun.flash.visible = false; gun.flashLight.intensity = 0; } }
@@ -446,6 +517,8 @@ function resetGame() {
   Object.assign(player, { hp: 100, ammo: 12, reloading: 0, vy: 0, yaw: 0, pitch: 0 }); player.pos.set(0, world.heightAt(0, 0), 0);
   Object.assign(stats, { kills: 0, shots: 0, hits: 0 });
   breakT = 0; $('reloading').hidden = true;
+  alpha = null; alphaAge = 0; alphaTimer = rand(35, 60); $('alpha').hidden = true;
+  if (discs) discs.reset(); music.stop(); $('discs').textContent = '0/' + TRACKS.length; $('np').textContent = '';
   if (gun) { gun.reload.stop(); gun.idle.weight = 1; }
 }
 function begin() {
@@ -485,6 +558,7 @@ $('to-menu').addEventListener('click', () => { state = 'menu'; resetGame(); show
 
 // ---------------------------------------------------------------- boot
 world = buildWorld(scene, { ARENA }); colliders = world.colliders; solids = world.solids;
+discs = createDiscs(scene, world.heightAt, colliders);
 const ready = loadAssets().then(() => true).catch((e) => { console.error(e); $('menu-note').innerHTML = '<span class="err">Could not load the game models (' + e.message + ').</span>'; return false; });
 requestAnimationFrame(frame);
-window.__game = { renderer, player, zombies, stats, get state() { return state; }, spawnZombie, shoot, setAim: (x, y) => aimNDC.set(x, y), begin: () => { inputMode = 'keys'; return ready.then(begin); } };
+window.__game = { get frames() { return frameCount; }, renderer, player, zombies, stats, get discs() { return discs; }, get phone() { return phone; }, get alpha() { return alpha; }, keys, get state() { return state; }, spawnZombie, shoot, setAim: (x, y) => aimNDC.set(x, y), begin: () => { inputMode = 'keys'; return ready.then(begin); } };

@@ -109,11 +109,23 @@ export function createMove(opts = {}) {
   };
 }
 
-// Returns { visible, state: 'none'|'open'|'fist'|'other', forward, strafe (-1..1), jump }
+// The OK sign (thumb and index tips touching, other three fingers up) takes out
+// the phone. Moving the pinch up or down scrolls.
+export function isOk(lm) {
+  const f = fingers(lm), size = handSize(lm);
+  return dist(pt(lm, L.THUMB_TIP), pt(lm, L.INDEX_TIP)) / size < 0.38 && f.middle && f.ring && f.pinky;
+}
+
+// Returns { visible, state: 'none'|'open'|'fist'|'phone'|'other', forward, strafe (-1..1), jump, pinchY }
 export function updateMove(m, lm, t) {
   if (!lm) { m.lastY = null; m.state = 'none'; return { visible: false, state: 'none', forward: 0, strafe: 0, jump: false }; }
   const f = fingers(lm), size = handSize(lm), c = palmCenter(lm);
   const n = (f.index ? 1 : 0) + (f.middle ? 1 : 0) + (f.ring ? 1 : 0) + (f.pinky ? 1 : 0);
+  if (isOk(lm)) {
+    m.state = 'phone'; m.neutral = null; m.lastY = null;
+    const tip = pt(lm, L.INDEX_TIP);
+    return { visible: true, state: 'phone', forward: 0, strafe: 0, jump: false, pinchY: tip.y / size };
+  }
   const state = n >= 3 ? 'open' : n <= 1 ? 'fist' : 'other';
   m.state = state;
 

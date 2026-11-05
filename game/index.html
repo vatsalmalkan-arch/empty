@@ -42,6 +42,11 @@
   #banner { position: fixed; left: 0; right: 0; top: 30%; text-align: center; font-family: var(--display); font-weight: 900; font-size: clamp(36px, 7vw, 84px); letter-spacing: .08em; text-shadow: 0 4px 30px rgba(0,0,0,.6); opacity: 0; transition: opacity .4s; }
   #banner.show { opacity: 1; }
   #hurt { position: fixed; inset: 0; background: radial-gradient(ellipse at center, transparent 45%, rgba(200,30,20,.55)); opacity: 0; transition: opacity .35s; }
+  .np { position: fixed; left: 24px; top: 74px; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; color: var(--muted); }
+  .alpha-warn { position: fixed; left: 50%; top: 18px; transform: translateX(-50%); font-family: var(--mono); font-size: 11px; letter-spacing: .18em; color: #d79bff; background: rgba(40,10,60,.55); border: 1px solid rgba(176,76,255,.5); padding: 7px 12px; animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .55; } }
+  .scrolling { position: fixed; left: 50%; top: 62px; transform: translateX(-50%); font-family: var(--mono); font-size: 11px; letter-spacing: .18em; color: var(--toxic); }
+  @media (prefers-reduced-motion: reduce) { .alpha-warn { animation: none; } }
   #reloading { position: fixed; left: 50%; top: calc(50% + 34px); transform: translateX(-50%); font-family: var(--mono); font-size: 11px; letter-spacing: .2em; color: var(--toxic); }
 
   /* webcam preview + gesture readout */
@@ -94,7 +99,11 @@
     <div><span class="label">Wave</span><b id="wave">1</b></div>
     <div><span class="label">Kills</span><b id="kills">0</b></div>
     <div><span class="label">Left</span><b id="left">0</b></div>
+    <div><span class="label">Discs</span><b id="discs">0/6</b></div>
   </div>
+  <div id="np" class="np"></div>
+  <div id="alpha" class="alpha-warn" hidden></div>
+  <div id="scrolling" class="scrolling" hidden>DOOM-SCROLLING · +HP · CAN'T SHOOT</div>
   <div id="crosshair"></div>
   <div id="reloading" hidden>RELOADING</div>
   <div id="banner"></div>
@@ -113,6 +122,8 @@
     <div class="guide">
       <div><h3>Gun hand</h3><p>Make a finger gun and point to aim. Lift your thumb, then drop it onto your index finger to fire. Make a fist to reload. Aim at the screen edges to turn.</p></div>
       <div><h3>Move hand</h3><p>Open your palm: where you open it is the centre. Move it up to walk forward, down to back off, sideways to strafe. Fist to stop. Flick it up quickly to jump.</p></div>
+      <div><h3>Phone</h3><p>Make an OK sign with your move hand (or hold Q) to doom-scroll: you heal, but you can't shoot. Move the pinch to scroll.</p></div>
+      <div><h3>Find</h3><p>Six music discs glow in the fog: walk over one to play its track. From wave 2 an alpha may start dancing somewhere. Follow its beat and put it down before the horde grows.</p></div>
     </div>
     <div class="row" style="justify-content: space-between">
       <div class="row"><span class="label">Gun hand</span>
@@ -120,7 +131,8 @@
       </div>
       <div class="row"><button class="btn ghost" id="play-keys">Play with keyboard</button><button class="btn" id="play-hands">Play with hands</button></div>
     </div>
-    <p class="note" id="menu-note">The camera feed stays on your device; hand tracking runs in your browser. Keyboard: WASD, mouse to aim, click to shoot, Space to jump, R to reload.</p>
+    <p class="note" id="menu-note">The camera feed stays on your device; hand tracking runs in your browser. Keyboard: WASD, mouse to aim, click to shoot, Space to jump, R to reload, hold Q for the phone.</p>
+    <p class="note">Credits: "fps pistol Animated" by DJMaesen and "Cat S41" by MrFacysus (CC BY 4.0) · "Polyart Zombies" by Denys Almaral (Sketchfab Standard) · trees by EZ-Tree, Dan Greenheck (MIT) · hand tracking by MediaPipe (Apache 2.0).</p>
   </div>
 </section>
 
