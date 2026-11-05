@@ -323,41 +323,52 @@
     .p2.live > .p2-mid { pointer-events: none; }
   }
   @media (prefers-reduced-motion: reduce) { .bt i, .spark .line, .spark .area, .spark .end { transition: none; } }
-  /* ---- page three: the grains build the website ---- */
-  .p3 { position: relative; z-index: 15; display: grid; gap: var(--section-gap) 2.5rem; padding: calc(var(--main-py) * 2) var(--pad-x) var(--main-py); }
-  .p3-lead { display: flex; flex-direction: column; gap: var(--section-gap); }
-  .p3-title { margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; line-height: 1.05; font-size: clamp(2rem, 3.4vw + .5rem, 4.4rem); }
-  .p3-title span { display: block; }
-  .p3-lead .cta { align-self: flex-start; }
-  .p3-stage { width: 100%; aspect-ratio: 4 / 3; max-width: 100%; }
-  #p3-canvas { width: 100%; height: 100%; display: block; }
-  .p3-statblock { display: flex; }
-  .switcher { width: clamp(14rem, 18vw, 17rem); max-width: 100%; gap: .7rem; padding: clamp(.9rem, 1.2vw, 1.25rem); }
+  /* ---- page three: stat panel + the grains build the website ---- */
+  .p3 { position: relative; z-index: 15; display: grid; gap: 2rem 3rem; padding: calc(var(--main-py) * 2) var(--pad-x) var(--main-py); }
+  .p3-panel { position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: clamp(.9rem, 2.2vh, 1.5rem); padding: clamp(1.1rem, 1.6vw, 1.6rem); min-width: 0; }
+  .p3-panel .corner { position: absolute; }
+  .p3-panel .tl { top: 0; left: 0; } .p3-panel .tr { top: 0; right: 0; } .p3-panel .bl { bottom: 0; left: 0; } .p3-panel .br { bottom: 0; right: 0; }
+  .pn-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; padding-bottom: clamp(.9rem, 2.2vh, 1.4rem); border-bottom: 1px solid var(--gray-200); }
+  .pn-top .stat { text-align: right; }
+  .pn-top .stat b { font-size: clamp(1.8rem, 2vw + .6rem, 2.8rem); }
   .sw-head { display: flex; justify-content: space-between; align-items: center; }
   .p3-num { font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); letter-spacing: .14em; color: var(--gray-500); font-variant-numeric: tabular-nums; }
   .sw-arrows { display: flex; gap: .4rem; }
-  .sw-arrows button { width: 2rem; height: 2rem; border: 1px solid var(--gray-300); border-radius: 50%; display: grid; place-items: center; transition: border-color .2s, background .2s, color .2s; }
+  .sw-arrows button { width: 2.1rem; height: 2.1rem; border: 1px solid var(--gray-300); border-radius: 50%; display: grid; place-items: center; transition: border-color .2s, background .2s, color .2s; }
   .sw-arrows button:hover { border-color: var(--ink); background: var(--ink); color: var(--white); }
   .sw-arrows .icon { width: .95rem; height: .95rem; }
-  .sw-body { display: flex; flex-direction: column; gap: .4rem; transition: opacity .3s, transform .3s; }
-  .sw-body.swap { opacity: 0; transform: translateY(6px); }
-  .sw-name { margin: 0; font-weight: 700; font-size: clamp(1rem, .8vw + .55rem, 1.35rem); letter-spacing: .06em; text-transform: uppercase; }
-  .sw-desc { margin: 0; font-size: var(--body); line-height: 1.5; color: var(--gray-600); }
+  .sw-body { display: flex; flex-direction: column; gap: .45rem; transition: opacity .3s, transform .3s; }
+  .sw-body.swap, .pn-stats.swap { opacity: 0; transform: translateY(6px); }
+  .sw-name { margin: 0; font-weight: 700; font-size: clamp(1.15rem, 1vw + .6rem, 1.6rem); letter-spacing: .06em; text-transform: uppercase; }
+  .sw-desc { margin: 0; font-size: var(--body); line-height: 1.55; color: var(--gray-600); }
   .sw-stack { margin: 0; font-size: var(--micro); letter-spacing: .16em; text-transform: uppercase; color: var(--gray-500); }
+  .pn-stats { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.2rem, 3.2vh, 2.2rem) 1.4rem; padding-top: clamp(.9rem, 2.2vh, 1.4rem); border-top: 1px solid var(--gray-200); transition: opacity .3s, transform .3s; }
+  .pst small { display: block; font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); letter-spacing: .14em; text-transform: uppercase; color: var(--gray-500); }
+  .pst b { display: block; margin: .35rem 0 .45rem; font-family: 'Orbitron', ui-sans-serif, system-ui, sans-serif; font-weight: 800; font-size: clamp(1.35rem, 1.3vw + .55rem, 2rem); line-height: 1; font-variant-numeric: tabular-nums; }
+  .pst b em { font-style: normal; font-size: .5em; margin-left: .1em; color: var(--gray-500); }
+  .pst .bt { display: block; height: 6px; }
+  .pst .bt i { transition: width 1s cubic-bezier(.2,.7,.2,1) var(--d, 0s); }
+  .pn-stats.in .pst .bt i { width: var(--w); }
+  .pn-note { margin: 0; }
+  .p3-show { display: flex; flex-direction: column; gap: clamp(.9rem, 2vh, 1.4rem); min-width: 0; }
+  .p3-stage { width: 100%; aspect-ratio: 4 / 3; max-width: 100%; }
+  #p3-canvas { width: 100%; height: 100%; display: block; }
+  .p3-caption { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .p3-title { margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; line-height: 1.05; font-size: clamp(1.4rem, 1.9vw + .5rem, 2.6rem); }
   @media (min-width: 1024px) {
-    .p3 { position: fixed; inset: 0; padding-top: calc(var(--header-pt) + 4.5rem); padding-bottom: calc(var(--main-py) + .5rem);
-      grid-template-columns: minmax(14rem, 20rem) minmax(0, 1fr) minmax(13rem, 16rem); grid-template-rows: minmax(0, 1fr) auto; column-gap: 2rem;
+    .p3 { position: fixed; inset: 0; padding-top: calc(var(--header-pt) + 4.25rem); padding-bottom: calc(var(--main-py) + .25rem);
+      grid-template-columns: minmax(18rem, 25rem) minmax(0, 1fr); align-items: stretch;
       opacity: 0; pointer-events: none; visibility: hidden; }
     .p3.live > * { pointer-events: auto; }
-    .p3.live > .p3-stage { pointer-events: none; }
-    .p3-lead { grid-column: 1; grid-row: 1 / 3; align-self: center; }
-    .p3-stage { grid-column: 2; grid-row: 1 / 3; align-self: center; justify-self: center; width: min(100%, calc((100vh - 12rem) * 4 / 3)); }
-    .p3-statblock { grid-column: 3; grid-row: 1; justify-self: end; align-self: start; text-align: right; }
-    .p3-statblock .stat { display: flex; flex-direction: column; align-items: flex-end; }
-    .switcher { grid-column: 3; grid-row: 2; justify-self: end; align-self: end; }
+    .p3.live > .p3-show { pointer-events: none; }
+    .p3.live .p3-caption { pointer-events: auto; }
+    .p3-show { justify-content: center; align-items: center; }
+    .p3-stage { width: min(100%, calc((100vh - var(--header-pt) - 13rem) * 4 / 3)); }
+    .p3-caption { width: min(100%, calc((100vh - var(--header-pt) - 13rem) * 4 / 3)); }
     .snap-c { top: 320vh; }
   }
-  @media (prefers-reduced-motion: reduce) { .sw-body { transition: none; } }
+  @media (max-width: 1023.98px) { .p3-show { order: -1; } }
+  @media (prefers-reduced-motion: reduce) { .sw-body, .pn-stats, .pst .bt i { transition: none; } }
   @media (min-width: 1024px) { .hud { display: flex; } .rail { display: block; } }
   @media (max-width: 1023.98px) { .stat { flex: 1 1 9rem; } }
   @media (max-width: 480px) {
@@ -523,22 +534,15 @@
   </div>
 </section>
 <section class="p3" id="p3" aria-labelledby="p3-title">
-  <div class="p3-lead">
-    <p class="eyebrow">03 / Deployed</p>
-    <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
-    <h2 class="p3-title font-orbitron" id="p3-title"><span>Live on</span><span>the edge</span></h2>
-    <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg>
-    <a class="cta" id="p3-open" href="#" target="_blank" rel="noopener">Open site <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-  </div>
-  <div class="p3-stage" id="p3-stage" aria-hidden="true"><canvas id="p3-canvas"></canvas></div>
-  <div class="p3-statblock">
-    <div class="stat"><small>Live sites</small><b>05</b><span>Sites shipped on Vercel. Previews are placeholders for now.</span></div>
-  </div>
-  <div class="feature switcher" id="p3-switch">
+  <div class="p3-panel" id="p3-switch">
     <svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
     <svg class="corner tr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg>
     <svg class="corner bl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg>
     <svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
+    <div class="pn-top">
+      <p class="eyebrow">03 / Deployed</p>
+      <div class="stat"><small>Live sites</small><b>05</b></div>
+    </div>
     <div class="sw-head">
       <span class="p3-num" id="p3-num">01 / 05</span>
       <div class="sw-arrows">
@@ -550,6 +554,15 @@
       <p class="sw-name font-orbitron" id="p3-name">Lex.ai</p>
       <p class="sw-desc" id="p3-desc"></p>
       <p class="sw-stack" id="p3-stack"></p>
+    </div>
+    <div class="pn-stats" id="pn-stats"></div>
+    <p class="pn-note"><span class="ph-pill">Placeholder figures</span></p>
+  </div>
+  <div class="p3-show">
+    <div class="p3-stage" id="p3-stage" aria-hidden="true"><canvas id="p3-canvas"></canvas></div>
+    <div class="p3-caption">
+      <h2 class="p3-title font-orbitron" id="p3-title">Live on the edge</h2>
+      <a class="cta" id="p3-open" href="#" target="_blank" rel="noopener">Open site <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
     </div>
   </div>
 </section>
@@ -605,15 +618,15 @@ window.drawVercelLogo = function (ctx, S) {
 // Page three sites (placeholders until real screenshots and URLs arrive). To use a real
 // screenshot, set img to a loaded Image of a file published with the page.
 window.P3_SITES = [
-  { name: 'Lex.ai', url: 'lex-ai.vercel.app', href: 'https://github.com/Zephyr4772/lex-ai', acc: '#2b59ff', flip: false,
+  { name: 'Lex.ai', stats: [['Deploys', 42, 60, ''], ['Lighthouse', 96, 100, ''], ['Build time', 38, 90, 's'], ['Pages', 12, 30, '']], url: 'lex-ai.vercel.app', href: 'https://github.com/Zephyr4772/lex-ai', acc: '#2b59ff', flip: false,
     desc: 'RAG over 41,876 Supreme Court judgments, every claim a traceable case card.', stack: 'React · FastAPI · ChromaDB · Ollama' },
-  { name: 'PharmaScope', url: 'pharmascope.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#18a058', flip: true,
+  { name: 'PharmaScope', stats: [['Deploys', 31, 60, ''], ['Lighthouse', 91, 100, ''], ['Build time', 52, 90, 's'], ['Pages', 18, 30, '']], url: 'pharmascope.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#18a058', flip: true,
     desc: 'Drug-shortage tracking over 120,000+ Indian drug records.', stack: 'React · FastAPI · PostgreSQL' },
-  { name: 'Dr.Data', url: 'dr-data.vercel.app', href: 'https://github.com/Zephyr4772/Dr.Data', acc: '#ff6a3d', flip: false,
+  { name: 'Dr.Data', stats: [['Deploys', 18, 60, ''], ['Lighthouse', 94, 100, ''], ['Build time', 27, 90, 's'], ['Pages', 6, 30, '']], url: 'dr-data.vercel.app', href: 'https://github.com/Zephyr4772/Dr.Data', acc: '#ff6a3d', flip: false,
     desc: 'Checks whether a dataset can support a use case before training starts.', stack: 'FastAPI · scikit-learn' },
-  { name: 'ShipScript', url: 'shipscript.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#111113', flip: true,
+  { name: 'ShipScript', stats: [['Deploys', 12, 60, ''], ['Lighthouse', 99, 100, ''], ['Build time', 19, 90, 's'], ['Pages', 4, 30, '']], url: 'shipscript.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#111113', flip: true,
     desc: 'An MCP server that reads a repo, screenshots its deployment and drafts docs.', stack: 'TypeScript · MCP' },
-  { name: 'This site', url: 'vatsal.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#e0b400', flip: false,
+  { name: 'This site', stats: [['Deploys', 24, 60, ''], ['Lighthouse', 88, 100, ''], ['Build time', 9, 90, 's'], ['Pages', 1, 30, '']], url: 'vatsal.vercel.app', href: 'https://github.com/Zephyr4772', acc: '#e0b400', flip: false,
     desc: 'Astra, a hanging ball and this page, in one file of WebGL.', stack: 'three.js · WebGL' },
 ];
 // A browser window with the site's preview, drawn on a 400×300 canvas.
@@ -1651,15 +1664,29 @@ renderer.setAnimationLoop(() => {
     paint(); addEventListener('resize', paint);
   })();
 
-  // ---------- page three: the switcher ----------
+  // ---------- page three: the stat panel ----------
   const sites = (() => {
-    const SITES = window.P3_SITES, n = SITES.length, sw = $('sw-body'), cv = $('p3-canvas');
-    let active = 0, swapT = 0;
+    const SITES = window.P3_SITES, n = SITES.length, sw = $('sw-body'), st = $('pn-stats'), cv = $('p3-canvas');
+    let active = 0, swapT = 0, raf = 0;
     function fill() {
       const s = SITES[active];
       $('p3-num').textContent = String(active + 1).padStart(2, '0') + ' / ' + String(n).padStart(2, '0');
       $('p3-name').textContent = s.name; $('p3-desc').textContent = s.desc; $('p3-stack').textContent = s.stack;
       $('p3-open').href = s.href;
+      st.innerHTML = s.stats.map(([label, val, max, unit], i) => `
+        <div class="pst"><small>${esc(label)}</small><b><span data-to="${val}">0</span>${unit ? `<em>${esc(unit)}</em>` : ''}</b>
+          <span class="bt"><i style="--w:${Math.max(4, Math.min(100, (val / max) * 100)).toFixed(1)}%;--d:${(0.08 * i).toFixed(2)}s"></i></span></div>`).join('');
+    }
+    function count() {
+      st.classList.remove('in'); void st.offsetWidth; st.classList.add('in');
+      cancelAnimationFrame(raf);
+      const nums = [...st.querySelectorAll('[data-to]')], t0 = performance.now();
+      const tick = (now) => {
+        const k = Math.min(1, (now - t0) / 1000), e = 1 - Math.pow(1 - k, 3);
+        nums.forEach((el) => { const v = +el.dataset.to * e; el.textContent = Number.isInteger(+el.dataset.to) ? Math.round(v) : v.toFixed(1); });
+        if (k < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
     }
     // phones: a still grain picture of the preview
     function paint() {
@@ -1676,8 +1703,8 @@ renderer.setAnimationLoop(() => {
     function go(step) {
       active = (active + step + n) % n;
       window.p3Scene?.show(active);
-      sw.classList.add('swap');
-      clearTimeout(swapT); swapT = setTimeout(() => { fill(); paint(); sw.classList.remove('swap'); }, 220);
+      sw.classList.add('swap'); st.classList.add('swap');
+      clearTimeout(swapT); swapT = setTimeout(() => { fill(); paint(); sw.classList.remove('swap'); st.classList.remove('swap'); count(); }, 220);
     }
     $('c-prev').addEventListener('click', () => go(-1));
     $('c-next').addEventListener('click', () => go(1));
@@ -1687,8 +1714,8 @@ renderer.setAnimationLoop(() => {
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); go(-1); }
     });
     addEventListener('resize', paint);
-    fill(); paint();
-    return { replay() { sw.classList.add('swap'); requestAnimationFrame(() => requestAnimationFrame(() => sw.classList.remove('swap'))); } };
+    fill(); paint(); count();
+    return { replay() { count(); } };
   })();
 
   // the stats viewer: Models / Datasets toggle, arrows, bars and a line that fill on arrival
