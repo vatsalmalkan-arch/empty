@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Last Hand Standing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Michroma&family=Plus+Jakarta+Sans:wght@400;600&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --ink: #f2efe9; --muted: #9aa0a8; --dim: #5d636b; --bg: #0b0c0e; --panel: rgba(12, 13, 16, .78);
+    --blood: #c8352b; --toxic: #9be15d; --line: rgba(255, 255, 255, .14);
+    --display: 'Orbitron', ui-sans-serif, system-ui, sans-serif;
+    --mono: 'Michroma', ui-monospace, monospace;
+    --body: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--ink); font-family: var(--body); }
+  [hidden] { display: none !important; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  #view { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+
+  /* HUD */
+  .hud { position: fixed; inset: 0; pointer-events: none; }
+  #crosshair { position: fixed; width: 34px; height: 34px; margin: -17px 0 0 -17px; left: 50%; top: 50%; transition: transform .08s; }
+  #crosshair::before, #crosshair::after { content: ""; position: absolute; background: var(--ink); }
+  #crosshair::before { left: 16px; top: 0; width: 2px; height: 34px; clip-path: polygon(0 0,100% 0,100% 35%,0 35%,0 65%,100% 65%,100% 100%,0 100%); }
+  #crosshair::after { top: 16px; left: 0; height: 2px; width: 34px; clip-path: polygon(0 0,35% 0,35% 100%,0 100%,65% 0,100% 0,100% 100%,65% 100%); }
+  #crosshair.cocked::before, #crosshair.cocked::after { background: var(--toxic); }
+  #crosshair.hit { transform: scale(1.35) rotate(45deg); }
+  .bar-wrap { position: fixed; left: 24px; bottom: 22px; width: min(320px, 60vw); }
+  .label { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+  .bar { height: 10px; margin-top: 6px; background: rgba(255,255,255,.08); clip-path: polygon(0 0, 100% 0, 97% 100%, 0 100%); }
+  .bar i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, var(--blood), #ff6b4a); transition: width .2s; }
+  .ammo { position: fixed; right: 24px; bottom: 18px; text-align: right; }
+  .ammo b { font-family: var(--display); font-weight: 900; font-size: 44px; line-height: 1; }
+  .ammo small { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-left: 4px; }
+  .top { position: fixed; left: 24px; top: 18px; display: flex; gap: 28px; }
+  .top b { display: block; font-family: var(--display); font-weight: 900; font-size: 24px; margin-top: 2px; }
+  #banner { position: fixed; left: 0; right: 0; top: 30%; text-align: center; font-family: var(--display); font-weight: 900; font-size: clamp(36px, 7vw, 84px); letter-spacing: .08em; text-shadow: 0 4px 30px rgba(0,0,0,.6); opacity: 0; transition: opacity .4s; }
+  #banner.show { opacity: 1; }
+  #hurt { position: fixed; inset: 0; background: radial-gradient(ellipse at center, transparent 45%, rgba(200,30,20,.55)); opacity: 0; transition: opacity .35s; }
+  #reloading { position: fixed; left: 50%; top: calc(50% + 34px); transform: translateX(-50%); font-family: var(--mono); font-size: 11px; letter-spacing: .2em; color: var(--toxic); }
+
+  /* webcam preview + gesture readout */
+  .cam { position: fixed; right: 18px; top: 18px; width: 232px; pointer-events: auto; }
+  .cam canvas { width: 232px; height: 174px; display: block; border: 1px solid var(--line); background: #000; }
+  .chips { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
+  .chip { background: var(--panel); border: 1px solid var(--line); padding: 6px 8px; font-family: var(--mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .chip b { display: block; font-family: var(--body); font-size: 12px; letter-spacing: .02em; text-transform: none; color: var(--ink); margin-top: 3px; }
+  .chip.ok b { color: var(--toxic); }
+
+  /* menus */
+  .screen { position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 40%, rgba(30,34,30,.55), rgba(5,6,8,.92)); padding: 24px; overflow-y: auto; }
+  .card { width: min(760px, 100%); background: var(--panel); border: 1px solid var(--line); padding: clamp(20px, 4vw, 40px); position: relative; }
+  .card::before, .card::after { content: ""; position: absolute; width: 14px; height: 14px; border: solid var(--ink); }
+  .card::before { left: -1px; top: -1px; border-width: 2px 0 0 2px; } .card::after { right: -1px; bottom: -1px; border-width: 0 2px 2px 0; }
+  h1 { margin: 0; font-family: var(--display); font-weight: 900; font-size: clamp(30px, 6vw, 60px); line-height: 1; letter-spacing: .04em; text-transform: uppercase; }
+  h1 em { font-style: normal; color: var(--blood); }
+  .sub { margin: 12px 0 0; color: var(--muted); max-width: 52ch; line-height: 1.6; }
+  .guide { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 24px 0; }
+  .guide div { border-top: 1px solid var(--line); padding-top: 10px; }
+  .guide h3 { margin: 0 0 6px; font-family: var(--mono); font-weight: 400; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--toxic); }
+  .guide p { margin: 0; font-size: 14px; line-height: 1.6; color: #cfd2d6; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+  .seg button { background: none; border: 0; padding: 8px 14px; border-radius: 999px; font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+  .btn { background: var(--ink); color: var(--bg); border: 0; padding: 13px 20px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; font-size: 13px; }
+  .btn.ghost { background: none; color: var(--ink); border: 1px solid var(--line); }
+  .btn:focus-visible, .seg button:focus-visible { outline: 2px solid var(--toxic); outline-offset: 2px; }
+  .note { margin: 14px 0 0; font-size: 12px; color: var(--dim); }
+  .err { color: #ff8a7a; }
+  .checks { list-style: none; margin: 18px 0; padding: 0; display: grid; gap: 8px; }
+  .checks li { display: flex; gap: 10px; align-items: center; font-size: 14px; color: var(--muted); }
+  .checks li::before { content: ""; width: 12px; height: 12px; border: 1px solid var(--dim); flex: none; }
+  .checks li.ok { color: var(--ink); } .checks li.ok::before { background: var(--toxic); border-color: var(--toxic); }
+  .calib { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: center; }
+  .calib canvas { width: 100%; aspect-ratio: 4 / 3; border: 1px solid var(--line); background: #000; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 22px 0; }
+  .stats b { display: block; font-family: var(--display); font-size: 30px; font-weight: 900; }
+  @media (max-width: 640px) { .guide, .calib { grid-template-columns: 1fr; } .cam { width: 150px; } .cam canvas { width: 150px; height: 112px; } .chips { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<canvas id="view"></canvas>
+<video id="video" playsinline muted hidden></video>
+
+<div class="hud" id="hud" hidden>
+  <div id="hurt"></div>
+  <div class="top">
+    <div><span class="label">Wave</span><b id="wave">1</b></div>
+    <div><span class="label">Kills</span><b id="kills">0</b></div>
+    <div><span class="label">Left</span><b id="left">0</b></div>
+  </div>
+  <div id="crosshair"></div>
+  <div id="reloading" hidden>RELOADING</div>
+  <div id="banner"></div>
+  <div class="bar-wrap"><span class="label">Health</span><div class="bar"><i id="hp"></i></div></div>
+  <div class="ammo"><span class="label">Ammo</span><br><b id="ammo">12</b><small>/ 12</small></div>
+  <div class="cam" id="cam" hidden>
+    <canvas id="preview" width="320" height="240"></canvas>
+    <div class="chips"><div class="chip" id="chip-gun">Gun hand<b>—</b></div><div class="chip" id="chip-move">Move hand<b>—</b></div></div>
+  </div>
+</div>
+
+<section class="screen" id="menu">
+  <div class="card">
+    <h1>Last Hand <em>Standing</em></h1>
+    <p class="sub">A low-poly zombie survival shooter you play with your hands. One hand is the gun, the other walks you around. Survive as many waves as you can.</p>
+    <div class="guide">
+      <div><h3>Gun hand</h3><p>Make a finger gun and point to aim. Lift your thumb, then drop it onto your index finger to fire. Make a fist to reload. Aim at the screen edges to turn.</p></div>
+      <div><h3>Move hand</h3><p>Open your palm: where you open it is the centre. Move it up to walk forward, down to back off, sideways to strafe. Fist to stop. Flick it up quickly to jump.</p></div>
+    </div>
+    <div class="row" style="justify-content: space-between">
+      <div class="row"><span class="label">Gun hand</span>
+        <div class="seg" role="group" aria-label="Gun hand"><button id="side-left" aria-pressed="false">Left</button><button id="side-right" aria-pressed="true">Right</button></div>
+      </div>
+      <div class="row"><button class="btn ghost" id="play-keys">Play with keyboard</button><button class="btn" id="play-hands">Play with hands</button></div>
+    </div>
+    <p class="note" id="menu-note">The camera feed stays on your device; hand tracking runs in your browser. Keyboard: WASD, mouse to aim, click to shoot, Space to jump, R to reload.</p>
+  </div>
+</section>
+
+<section class="screen" id="calib" hidden>
+  <div class="card">
+    <h1>Calibrate</h1>
+    <div class="calib">
+      <canvas id="calib-cam" width="320" height="240"></canvas>
+      <div>
+        <ul class="checks">
+          <li id="c-gun">Show your gun hand as a finger gun</li>
+          <li id="c-fire">Drop your thumb to fire once</li>
+          <li id="c-move">Show your move hand with the palm open</li>
+          <li id="c-walk">Move the open palm up to walk</li>
+        </ul>
+        <p class="sub" style="margin:0 0 16px">Hold your gun hand where it feels natural to aim straight ahead: that becomes the centre of the screen.</p>
+        <div class="row"><button class="btn" id="calib-go">Start</button><button class="btn ghost" id="calib-center">Re-centre aim</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="screen" id="over" hidden>
+  <div class="card">
+    <h1>You <em>died</em></h1>
+    <div class="stats"><div><span class="label">Wave</span><b id="o-wave">1</b></div><div><span class="label">Kills</span><b id="o-kills">0</b></div><div><span class="label">Accuracy</span><b id="o-acc">0%</b></div></div>
+    <div class="row"><button class="btn" id="again">Play again</button><button class="btn ghost" id="to-menu">Menu</button></div>
+  </div>
+</section>
+
+<script type="importmap">{ "imports": { "three": "./vendor/three/three.module.js" } }</script>
+<script type="module" src="./js/main.js"></script>
+</body>
+</html>
