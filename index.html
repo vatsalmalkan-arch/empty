@@ -268,7 +268,7 @@
 
   @media (min-width: 1024px) {
     html { height: auto; scroll-snap-type: y proximity; }
-    body { height: 580vh; }
+    body { height: 740vh; }
     .page { position: fixed; inset: 0; }
     .snap { display: block; position: absolute; left: 0; width: 1px; height: 1px; scroll-snap-align: start; }
     .snap-a { top: 0; } .snap-b { top: 160vh; }
@@ -501,6 +501,28 @@
     .pj-brand b + * { display: none; }
   }
   @media (max-width: 560px) { .pj-brand { display: none; } }
+  /* ---- page five: experience ---- */
+  .p5-stage { aspect-ratio: 16 / 10; }
+  #p5-canvas { width: 100%; height: 100%; display: block; }
+  .e-dates { margin: 0; font-family: 'Michroma', ui-monospace, monospace; font-size: var(--micro); letter-spacing: .14em; text-transform: uppercase; color: var(--gray-500); }
+  .e-points { list-style: none; margin: .3rem 0 0; padding: 0; display: grid; gap: .45rem; }
+  .e-points li { position: relative; padding-left: 1.1rem; font-size: var(--body); line-height: 1.5; color: var(--gray-600); }
+  .e-points li::before { content: ""; position: absolute; left: 0; top: .7em; width: .55rem; height: 1px; background: var(--ink); }
+  .rail-wrap { display: flex; flex-direction: column; gap: .4rem; }
+  .rail { position: relative; height: 1.4rem; }
+  .rail::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--gray-300); }
+  .rail button { position: absolute; top: 50%; height: 7px; transform: translateY(-50%); background: var(--gray-300); transition: background .25s, height .25s; min-width: 7px; }
+  .rail button:hover { background: var(--gray-500); }
+  .rail button[aria-current="true"] { background: var(--ink); height: 11px; }
+  .rail .now { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--ink); }
+  .rail .now::after { content: "Now"; position: absolute; top: -1.1rem; left: 50%; transform: translateX(-50%); font-family: 'Michroma', ui-monospace, monospace; font-size: .5rem; letter-spacing: .2em; text-transform: uppercase; color: var(--gray-500); }
+  .rail-years { display: flex; justify-content: space-between; font-family: 'Michroma', ui-monospace, monospace; font-size: .55rem; letter-spacing: .12em; color: var(--gray-400); }
+  @media (min-width: 1024px) {
+    .p5 .p3-stage, .p5 .p3-caption, .p5 .rail-wrap { width: min(100%, calc((100vh - var(--header-pt) - 17rem) * 16 / 10)); }
+    .p5.live > .p3-show { pointer-events: none; }
+    .p5.live .rail-wrap { pointer-events: auto; }
+    .snap-e { top: 640vh; }
+  }
   @media (min-width: 1024px) { .hud { display: flex; } .rail { display: block; } }
   @media (max-width: 1023.98px) { .stat { flex: 1 1 9rem; } }
   @media (max-width: 480px) {
@@ -735,7 +757,47 @@
   </div>
   <div class="p4-tip" id="p4-tip" hidden></div>
 </section>
-<div class="snap snap-a" aria-hidden="true"></div><div class="snap snap-b" aria-hidden="true"></div><div class="snap snap-c" aria-hidden="true"></div><div class="snap snap-d" aria-hidden="true"></div>
+<section class="p3 p5" id="p5" aria-labelledby="p5-title">
+  <div class="p3-panel" id="p5-panel">
+    <svg class="corner tl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
+    <svg class="corner tr" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 0.5H11.5V11.5"/></svg>
+    <svg class="corner bl" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg>
+    <svg class="corner br" viewBox="0 0 12 12" aria-hidden="true"><path d="M0.5 11.5H11.5V0.5"/></svg>
+    <div class="pn-top">
+      <p class="eyebrow">05 / Experience</p>
+      <div class="stat"><small>Building since</small><b>2023</b></div>
+    </div>
+    <div class="sw-head">
+      <span class="p3-num" id="e-num">01 / 03</span>
+      <div class="sw-arrows">
+        <button id="e-prev" aria-label="Previous role"><svg class="icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+        <button id="e-next" aria-label="Next role"><svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+      </div>
+    </div>
+    <div class="sw-body" id="e-body" aria-live="polite">
+      <p class="e-dates" id="e-dates"></p>
+      <p class="sw-name font-orbitron" id="e-role"></p>
+      <p class="sw-stack" id="e-org"></p>
+      <ul class="e-points" id="e-points"></ul>
+    </div>
+    <div class="pn-stats" id="e-stats"></div>
+  </div>
+  <div class="p3-show">
+    <div class="p3-stage p5-stage" id="p5-stage" aria-hidden="true"><canvas id="p5-canvas"></canvas></div>
+    <div class="rail-wrap">
+      <div class="rail" id="e-rail" aria-label="Timeline"></div>
+      <div class="rail-years" aria-hidden="true"><span>2023</span><span>2024</span><span>2025</span><span>2026</span><span>2027</span><span>2028</span><span>2029</span></div>
+    </div>
+    <div class="p3-caption">
+      <h2 class="p3-title font-orbitron" id="p5-title">Where I've worked</h2>
+      <div class="cap-btns">
+        <button class="cta cta-solid" data-projects="0">Explore projects <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
+        <a class="cta" href="https://github.com/Zephyr4772" target="_blank" rel="noopener" title="Placeholder link until the CV PDF is hosted">View CV <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="snap snap-a" aria-hidden="true"></div><div class="snap snap-b" aria-hidden="true"></div><div class="snap snap-c" aria-hidden="true"></div><div class="snap snap-d" aria-hidden="true"></div><div class="snap snap-e" aria-hidden="true"></div>
 
 <div class="projects" id="projects" role="dialog" aria-modal="true" aria-label="Projects" hidden>
   <div class="pj-bar">
@@ -1077,6 +1139,91 @@ window.drawFig = function (cv, kind, w, h) {
     }
   }
 };
+// Page five: roles and their grain objects (shapes in a unit box, height 1).
+window.ROLES = [
+  { role: 'IT Intern', org: 'Kashiv Biosciences LLC · Ahmedabad', dates: 'Jun – Aug 2026', shape: 'helix', from: 2026.42, to: 2026.67,
+    points: ['Built local-LLM automations for scientists: Excel report summaries and protein-binding success / failure analysis.',
+             'Prototyped a pipeline that summarises legacy instrument output, with a local-first path to an internal AI server.',
+             'Ran a 4-hour applied AI session for the IT Head.'],
+    stats: [['Workflows built', 2, 4, ''], ['Session', 4, 6, 'h'], ['Recommendations', 2, 3, ''], ['Duration', 3, 6, 'mo']] },
+  { role: 'Lead Software Developer', org: 'Blitz Innovation · Rajkot', dates: 'Dec 2025 – Apr 2026', shape: 'phone', from: 2025.92, to: 2026.33,
+    points: ['Led front-end on two production Flutter apps for a live home-services platform.',
+             'Built 40+ responsive screens and WebSocket real-time features.',
+             'Moved the backend from SQL Server to hosted PostgreSQL.'],
+    stats: [['Screens', 40, 50, '+'], ['Apps', 2, 3, ''], ['Team', 7, 10, ''], ['Live users', 100, 150, '']] },
+  { role: 'Computer Science & Engineering', org: 'KL University · Darshan University', dates: '2023 – 2029', shape: 'pages', from: 2023.5, to: 2029.5,
+    points: ['B.Tech CSE (lateral entry) at KL University, Vijayawada, 2026 – 2029, now in second year.',
+             'Diploma in Computer Engineering at Darshan University, Rajkot, 2023 – 2026.',
+             'Zoho developer certification; Microsoft AI Hackathon prize; MLOps Engineer (Advanced) exam in Nov 2026.'],
+    stats: [['Diploma CGPA', 8.14, 10, ''], ['Years', 6, 6, ''], ['Hackathon prize', 165, 200, '$'], ['Certifications', 1, 3, '']] },
+];
+(() => {
+  // sample the ink of a 2D drawing: returns [x 0..1, y 0..1, shade] triples
+  function ink(W, H, draw, n) {
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const x = c.getContext('2d', { willReadFrequently: true }); x.fillStyle = '#fff'; x.fillRect(0, 0, W, H); draw(x);
+    const d = x.getImageData(0, 0, W, H).data, idx = [];
+    for (let i = 0; i < W * H; i++) if (d[i * 4] < 215) idx.push(i);
+    const out = new Float32Array(n * 3);
+    for (let k = 0; k < n; k++) {
+      const id = idx[(Math.random() * idx.length) | 0];
+      out[k * 3] = (id % W + Math.random()) / W; out[k * 3 + 1] = ((id / W | 0) + Math.random()) / H; out[k * 3 + 2] = d[id * 4] / 255;
+    }
+    return out;
+  }
+  const rr = (x, X, Y, w, h, r) => { x.beginPath(); x.roundRect ? x.roundRect(X, Y, w, h, r) : x.rect(X, Y, w, h); };
+  function screen(x) {               // a home-services app screen, 240 x 480
+    x.fillStyle = '#111113'; rr(x, 4, 4, 232, 472, 30); x.fill();
+    x.fillStyle = '#fff'; rr(x, 12, 12, 216, 456, 24); x.fill();
+    x.fillStyle = '#111113'; rr(x, 90, 18, 60, 10, 5); x.fill();
+    x.fillRect(28, 50, 110, 14); x.fillStyle = '#6b7280'; x.fillRect(28, 72, 150, 6);
+    x.fillStyle = '#9ca3af'; rr(x, 28, 92, 184, 26, 13); x.fill();
+    for (let i = 0; i < 4; i++) { const cx = 28 + (i % 2) * 96, cy = 134 + (i / 2 | 0) * 92; x.fillStyle = '#c7cbd1'; rr(x, cx, cy, 88, 82, 10); x.fill(); x.fillStyle = '#111113'; x.beginPath(); x.arc(cx + 22, cy + 24, 11, 0, 7); x.fill(); x.fillStyle = '#4b5563'; x.fillRect(cx + 12, cy + 52, 56, 6); }
+    for (let i = 0; i < 3; i++) { x.fillStyle = '#d1d5db'; x.fillRect(28, 328 + i * 34, 184, 24); x.fillStyle = '#374151'; x.fillRect(36, 336 + i * 34, 70, 8); }
+    x.fillStyle = '#111113'; for (let i = 0; i < 4; i++) { x.beginPath(); x.arc(52 + i * 46, 444, 6, 0, 7); x.fill(); }
+  }
+  function page(x, full) {           // a page of a document, 300 x 400
+    x.strokeStyle = '#111113'; x.lineWidth = 4; x.strokeRect(4, 4, 292, 392);
+    if (!full) { x.fillStyle = '#9ca3af'; for (let i = 0; i < 6; i++) x.fillRect(30, 60 + i * 50, 200 - (i % 3) * 40, 6); return; }
+    x.fillStyle = '#111113'; x.fillRect(30, 36, 170, 22); x.fillStyle = '#4b5563'; x.fillRect(30, 68, 120, 8);
+    x.fillStyle = '#9ca3af'; for (let i = 0; i < 11; i++) x.fillRect(30, 100 + i * 20, 240 - ((i * 37) % 70), 6);
+    x.strokeStyle = '#111113'; x.lineWidth = 5; x.beginPath(); x.arc(232, 340, 30, 0, 7); x.stroke();
+    x.fillStyle = '#111113'; x.beginPath(); x.arc(232, 340, 12, 0, 7); x.fill();
+  }
+  window.sampleRole = function (i, n) {
+    const shape = window.ROLES[i].shape, out = new Float32Array(n * 4);
+    const put = (k, X, Y, Z, s) => { out[k * 4] = X; out[k * 4 + 1] = Y; out[k * 4 + 2] = Z; out[k * 4 + 3] = s; };
+    if (shape === 'helix') {
+      const R = 0.2, turns = 2.6, rungs = 26;
+      for (let k = 0; k < n; k++) {
+        const u = Math.random(), j = () => (Math.random() - 0.5) * 0.035;
+        if (u < 0.68) {
+          const t = Math.random(), s = Math.random() < 0.5 ? 0 : Math.PI, a = t * turns * 6.283 + s;
+          put(k, R * Math.cos(a) + j(), t - 0.5 + j(), R * Math.sin(a) + j(), s ? 0.32 : 0.1);
+        } else {
+          const r = (Math.random() * rungs) | 0, t = (r + 0.5) / rungs, a = t * turns * 6.283, f = Math.random() * 2 - 1;
+          put(k, R * f * Math.cos(a) + j() * 0.5, t - 0.5 + j() * 0.5, R * f * Math.sin(a) + j() * 0.5, 0.55);
+        }
+      }
+    } else if (shape === 'phone') {
+      const front = ink(240, 480, screen, n), back = ink(240, 480, screen, n);
+      for (let k = 0; k < n; k++) {
+        const layer = k < n * 0.6 ? 0 : k < n * 0.82 ? 1 : 2, src = layer ? back : front;
+        const X = (src[k * 3] - 0.5) * 0.5 + layer * 0.17, Y = 0.5 - src[k * 3 + 1], Z = -layer * 0.14;
+        const s = src[k * 3 + 2];
+        put(k, X - 0.12, Y, Z, layer ? s * 0.45 + 0.5 : s);
+      }
+    } else {
+      const top = ink(300, 400, (x) => page(x, true), n), low = ink(300, 400, (x) => page(x, false), n), sheets = 5;
+      for (let k = 0; k < n; k++) {
+        const sh = k < n * 0.52 ? 0 : 1 + ((k * 7) % (sheets - 1)), src = sh ? low : top;
+        const px = src[k * 3] * 0.75, py = 0.5 - src[k * 3 + 1], a = sh * 0.24;
+        put(k, -0.3 + px * Math.cos(a), py, -px * Math.sin(a), sh ? 0.45 + src[k * 3 + 2] * 0.45 : src[k * 3 + 2]);
+      }
+    }
+    return out;
+  };
+})();
 window.drawTorchLogo = function (ctx, S) {
   const k = S / 512;
   ctx.save(); ctx.scale(k, k); ctx.clearRect(0, 0, 512, 512);
@@ -1114,6 +1261,15 @@ const POINT_SIZE = 5.2;   // bigger, overlapping beads: dense but not solid
 const canvas = document.getElementById('stage');
 let morph = 0;
 let siteGeo = null, siteK = 0, swT0 = -10;
+// site spots as xyz + colour packed into one float (r * 65536 + g * 256 + b, exact in float32)
+function packSite(s, n) {
+  const out = new Float32Array(n * 4);
+  for (let i = 0; i < n; i++) {
+    out[i * 4] = s.pos[i * 3]; out[i * 4 + 1] = s.pos[i * 3 + 1]; out[i * 4 + 2] = s.pos[i * 3 + 2];
+    out[i * 4 + 3] = Math.round(s.col[i * 3] * 255) * 65536 + Math.round(s.col[i * 3 + 1] * 255) * 256 + Math.round(s.col[i * 3 + 2] * 255);
+  }
+  return out;
+}
 let ksT0 = -10, skyDrag = null, skyTouch = -10;
 const skyTilt = { x: 0, y: 0 }, skyQ = new THREE.Quaternion(), skyE = new THREE.Euler(), skyPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 window.pjScene = {
@@ -1125,6 +1281,18 @@ window.pjScene = {
     a.aPA.array.set(jump ? pos : a.aPB.array);
     a.aPB.array.set(pos);
     a.aPA.needsUpdate = a.aPB.needsUpdate = true;
+  },
+};
+let esT0 = -10, exMode = 'helix';
+const exQ = new THREE.Quaternion(), exE = new THREE.Euler();
+window.p5Scene = {
+  show(i) {
+    if (!siteGeo) return;
+    const a = siteGeo.attributes;
+    a.aEA.array.set(a.aEB.array);
+    a.aEB.array.set(window.sampleRole(i, siteK));
+    a.aEA.needsUpdate = a.aEB.needsUpdate = true;
+    esT0 = performance.now() / 1000; exMode = window.ROLES[i].shape;
   },
 };
 window.p4Scene = {
@@ -1268,23 +1436,27 @@ loader.load(MODEL_URL, (gltf) => {
 
   // Page two: every grain gets a direction on the living ball.
   {
-    const dir = new Float32Array(k * 3);
+    // xyz: a direction on the ball; w: how much the grain moves with the head (page one)
+    const dir = new Float32Array(k * 4), hw = geo.attributes.aHead.array;
     for (let i = 0; i < k; i++) {
       const z = Math.random() * 2 - 1, a = Math.random() * Math.PI * 2, r = Math.sqrt(1 - z * z);
-      dir[i * 3] = r * Math.cos(a); dir[i * 3 + 1] = z; dir[i * 3 + 2] = r * Math.sin(a);
+      dir[i * 4] = r * Math.cos(a); dir[i * 4 + 1] = z; dir[i * 4 + 2] = r * Math.sin(a); dir[i * 4 + 3] = hw[i];
     }
-    geo.setAttribute('aBlob', new THREE.BufferAttribute(dir, 3));
+    geo.deleteAttribute('aHead');
+    geo.setAttribute('aBlob', new THREE.BufferAttribute(dir, 4));
     // Page three: every grain gets a spot on the current site's preview (A = from, B = to)
-    const s0 = window.sampleSite(window.P3_SITES[0], k);
-    geo.setAttribute('aSA', new THREE.BufferAttribute(s0.pos.slice(), 3));
-    geo.setAttribute('aSB', new THREE.BufferAttribute(s0.pos, 3));
-    geo.setAttribute('aCA', new THREE.BufferAttribute(s0.col.slice(), 3));
-    geo.setAttribute('aCB', new THREE.BufferAttribute(s0.col, 3));
+    const s0 = packSite(window.sampleSite(window.P3_SITES[0], k), k);
+    geo.setAttribute('aSA', new THREE.BufferAttribute(s0.slice(), 4));
+    geo.setAttribute('aSB', new THREE.BufferAttribute(s0, 4));
     siteGeo = geo; siteK = k;
     // Page four: every grain gets a spot in the commit skyline (A = from, B = to)
     const g0 = window.sampleSky(window.GH.years[window.GH.list[window.GH.list.length - 1]].counts, k);
     geo.setAttribute('aKA', new THREE.BufferAttribute(g0.slice(), 4));
     geo.setAttribute('aKB', new THREE.BufferAttribute(g0, 4));
+    // Page five: every grain gets a spot on the current role's object (A = from, B = to)
+    const e0 = window.sampleRole(0, k);
+    geo.setAttribute('aEA', new THREE.BufferAttribute(e0.slice(), 4));
+    geo.setAttribute('aEB', new THREE.BufferAttribute(e0, 4));
     // Projects: screen-space spots (u, v, depth jitter) and colours, filled in when the view opens
     for (const nm of ['aPA', 'aPB']) geo.setAttribute(nm, new THREE.BufferAttribute(new Float32Array(k * 4), 4));   // u, v, depth, shade
   }
@@ -1352,6 +1524,9 @@ function makeMaterial() {
       uSw:      { value: 1 },
       uMorph3:  { value: 0 },
       uMorph4:  { value: 0 },
+      uMorph5:  { value: 0 },
+      uEs:      { value: 1 },
+      uExM:     { value: new THREE.Matrix4() },
       uPs:      { value: 1 },
       uPV:      { value: new THREE.Vector4(0, 0, 1, 1) },
       uKs:      { value: 1 },
@@ -1376,7 +1551,10 @@ function makeMaterial() {
       uniform float uBlobR;
       uniform mat3 uBlobRot;
       uniform vec4 uSpikes[24];
-      uniform float uMorph2, uSw, uMorph3, uKs, uMorph4;
+      uniform float uMorph2, uSw, uMorph3, uKs, uMorph4, uMorph5, uEs;
+      uniform mat4 uExM;
+      attribute vec4 aEA, aEB;
+      varying float vT5, vEsh;
       uniform float uPs;
       uniform vec4 uPV;
       attribute vec4 aPA, aPB;
@@ -1387,8 +1565,9 @@ function makeMaterial() {
       attribute vec4 aKA, aKB;
       varying float vT3, vLvl, vHov;
       uniform vec4 uStage;
-      attribute float aRnd, aDent, aHead;
-      attribute vec3 aBlob, aSA, aSB, aCA, aCB;
+      attribute float aRnd, aDent;
+      attribute vec4 aBlob, aSA, aSB;
+      vec3 unpackRGB(float f) { float r = floor(f / 65536.0); float g = floor((f - r * 65536.0) / 256.0); return vec3(r, g, f - r * 65536.0 - g * 256.0) / 255.0; }
       varying float vT2;
       varying vec3 vSCol;
       varying float vMorph;
@@ -1406,7 +1585,7 @@ function makeMaterial() {
         vec3 p = position;
         vec3 nrm = normal;
         // idle: the head turns, nods and tilts around the neck; the chest breathes
-        float w = aHead > 0.0 ? aHead : smoothstep(uNeck.x, uNeck.y, position.y);
+        float w = aBlob.w > 0.0 ? aBlob.w : smoothstep(uNeck.x, uNeck.y, position.y);
         vec3 pivot = vec3(0.0, uNeck.x, uNeck.z);
         mat3 R = rotXYZ(uHead * w);
         p = pivot + R * (p - pivot);
@@ -1419,6 +1598,7 @@ function makeMaterial() {
         vec4 world = modelMatrix * vec4(p, 1.0);
         float tm = 0.0;
         vec3 blobN = vec3(0.0, 0.0, 1.0);
+        vT5 = 0.0; vEsh = 0.0;
         vT2 = 0.0; vSCol = vec3(0.0); vT3 = 0.0; vLvl = 0.0; vHov = 0.0;
         if (uMorph > 0.0) {
           // drip: lower grains go first, everyone sinks toward the floor, then
@@ -1426,7 +1606,7 @@ function makeMaterial() {
           float delay = (position.y / uHeight) * 0.3 + aRnd * 0.15;
           tm = smoothstep(delay, delay + 0.55, uMorph);
           // the living ball: spikes rise and melt back, the surface oozes
-          vec3 d = aBlob;
+          vec3 d = aBlob.xyz;
           float sp = 0.0;
           for (int i = 0; i < 24; i++) { vec4 s = uSpikes[i]; sp += s.w * pow(max(dot(d, s.xyz), 0.0), 70.0); }
           sp += snoise(d * 2.3 + vec3(0.0, uTime * 0.3, uTime * 0.17)) * 0.05;
@@ -1447,7 +1627,7 @@ function makeMaterial() {
             float t2 = smoothstep(d2, d2 + 0.6, uMorph2);
             float ds = aSB.x * 0.4 + aRnd * 0.2;                 // switching sites sweeps left to right
             float s = smoothstep(ds, ds + 0.4, uSw), se = s * s * (3.0 - 2.0 * s);
-            vec3 st = mix(aSA, aSB, se);
+            vec3 st = mix(aSA.xyz, aSB.xyz, se);
             vec3 V = vec3(uStage.x + st.x * uStage.z, uStage.y - st.y * uStage.w, st.z * uStage.w);
             V.xy += vec2(snoise(vec3(aSB.xy * 7.0, uTime * 0.8)), snoise(vec3(aSB.yx * 7.0, uTime * 0.8 + 3.0))) * sin(3.14159 * s) * uStage.w * 0.06;
             vec2 dq = V.xy - uPtr.xy; float dlq = length(dq);
@@ -1456,7 +1636,7 @@ function makeMaterial() {
             float u2 = t2 * t2 * (3.0 - 2.0 * t2);
             world.xyz = mix(mix(world.xyz, C2, u2), mix(C2, V, u2), u2);
             blobN = normalize(mix(blobN, vec3(0.0, 0.0, 1.0), t2));
-            vT2 = t2; vSCol = mix(aCA, aCB, se);
+            vT2 = t2; vSCol = mix(unpackRGB(aSA.w), unpackRGB(aSB.w), se);
           }
           if (uMorph3 > 0.0) {
             // the browser falls apart and the grains rise into a commit skyline, week by week
@@ -1476,6 +1656,23 @@ function makeMaterial() {
             vec3 up = normalize(mat3(viewMatrix) * normalize(mat3(uSky) * vec3(0.0, 1.0, 0.0)));
             blobN = normalize(mix(blobN, normalize(up + vec3(0.0, 0.0, 0.8)), t3));
             vT3 = t3; vLvl = gk.w; vHov = hov;
+          }
+          if (uMorph5 > 0.0) {
+            // the skyline breaks up and the grains build the object for each role
+            float d5 = aRnd * 0.35 + (aEB.y + 0.5) * 0.2;
+            float t5 = smoothstep(d5, d5 + 0.45, uMorph5);
+            float dq5 = aRnd * 0.3 + (aEB.y + 0.5) * 0.2;
+            float es = smoothstep(dq5, dq5 + 0.5, uEs), ee = es * es * (3.0 - 2.0 * es);
+            vec4 e5 = mix(aEA, aEB, ee);
+            vec3 E5 = (uExM * vec4(e5.xyz, 1.0)).xyz;
+            float sc5 = length(uExM[0].xyz);
+            E5.xy += vec2(snoise(vec3(aEB.xy * 5.0, uTime * 0.6)), snoise(vec3(aEB.yz * 5.0, uTime * 0.6 + 3.0))) * sin(3.14159 * ee) * sc5 * 0.12;
+            vec2 dp5 = E5.xy - uPtr.xy; float dl5 = length(dp5);
+            E5.xy += dp5 / max(dl5, 1e-4) * smoothstep(uPtrR, 0.0, dl5) * uPtrR * 0.35 * (0.6 + aRnd);
+            float u5 = t5 * t5 * (3.0 - 2.0 * t5);
+            world.xyz = mix(world.xyz, E5, u5);
+            blobN = normalize(mix(blobN, vec3(0.0, 0.0, 1.0), t5));
+            vT5 = t5; vEsh = e5.w;
           }
         }
         vT4 = 0.0; vPCol = vec3(0.0);
@@ -1508,7 +1705,7 @@ function makeMaterial() {
       uniform float uResolve, uFeather;
       uniform vec4 uMasks[5];
       varying vec3 vNormalV;
-      varying float vDent, vY, vRnd, vMorph, vT2, vT3, vLvl, vHov, vT4;
+      varying float vDent, vY, vRnd, vMorph, vT2, vT3, vLvl, vHov, vT4, vT5, vEsh;
       varying vec3 vPCol;
       varying vec3 vSCol;
       void main() {
@@ -1535,6 +1732,7 @@ function makeMaterial() {
         sk = sk * (0.62 + 0.5 * bd) + vec3(spec) * 0.25;
         sk = mix(sk, vec3(0.176, 0.643, 0.306) * 1.15, vHov * 0.7);
         col = mix(col, sk, vT3);
+        col = mix(col, vec3(vEsh) * vec3(0.98, 0.98, 1.02) * (0.78 + 0.32 * bd) + vec3(spec) * 0.22, vT5);
         col = mix(col, vPCol * (0.82 + 0.3 * bd) + vec3(spec) * 0.18, vT4);
         float fadeIn = mix(smoothstep(0.0, 0.14, vY), 1.0, max(vMorph, vT4));
         if (fadeIn < 0.999 && vRnd > fadeIn) discard;
@@ -1627,10 +1825,9 @@ window.p3Scene = {
   show(i) {
     if (!siteGeo) return;
     const a = siteGeo.attributes;
-    a.aSA.array.set(a.aSB.array); a.aCA.array.set(a.aCB.array);
-    const nx = window.sampleSite(window.P3_SITES[i], siteK);
-    a.aSB.array.set(nx.pos); a.aCB.array.set(nx.col);
-    for (const k of ['aSA', 'aSB', 'aCA', 'aCB']) a[k].needsUpdate = true;
+    a.aSA.array.set(a.aSB.array);
+    a.aSB.array.set(packSite(window.sampleSite(window.P3_SITES[i], siteK), siteK));
+    a.aSA.needsUpdate = a.aSB.needsUpdate = true;
     swT0 = performance.now() / 1000;
   },
 };
@@ -1764,6 +1961,18 @@ function updatePageTwo(dt, t) {
     }
     u.uHov.value.set(hov ? hov.x : 9, hov ? hov.z : 9);
     window.p4Tip?.(hov);
+  }
+  {
+    const r = document.getElementById('p5-stage').getBoundingClientRect();
+    u.uMorph5.value = window.__morph5 || 0;
+    u.uEs.value = Math.min(1, (performance.now() / 1000 - esT0) / 1.3);
+    if (r.width > 0) {
+      pxToWorld(r.left + r.width / 2, r.top + r.height / 2, tmpV);
+      const sc = r.height * wpp * 0.92;
+      const yaw = exMode === 'helix' ? t * 0.45 : Math.sin(t * 0.35) * 0.35 + (exMode === 'pages' ? 0.35 : -0.2);
+      exQ.setFromEuler(exE.set(exMode === 'pages' ? -0.18 : 0.06, yaw, 0));
+      u.uExM.value.compose(tmpV, exQ, tmpA.set(sc, sc, sc));
+    }
   }
   u.uMorph4.value = window.__m4 || 0;
   u.uPs.value = window.__ps ?? 1;
@@ -2145,17 +2354,19 @@ renderer.setAnimationLoop(() => {
   const fades = [...document.querySelectorAll('.p1-fade')], p2 = $('p2');
   const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   let q = 0;
-  const p3 = $('p3'), p4 = $('p4'), hdr = document.querySelector('header');
+  const p3 = $('p3'), p4 = $('p4'), p5 = $('p5'), hdr = document.querySelector('header');
   let storyDim = false;
   function applyScroll() {
-    const target = desk.matches ? Math.min(3, Math.max(0, scrollY / (innerHeight * 1.6))) : 0;
+    const target = desk.matches ? Math.min(4, Math.max(0, scrollY / (innerHeight * 1.6))) : 0;
     q += (target - q) * 0.12; if (Math.abs(target - q) < 1e-4) q = target;
     window.__morph = desk.matches ? Math.min(1, Math.max(0, (q - 0.04) / 0.92)) : 0;
     window.__morph2 = desk.matches ? Math.min(1, Math.max(0, (q - 1.04) / 0.92)) : 0;
     window.__morph3 = desk.matches ? Math.min(1, Math.max(0, (q - 2.04) / 0.92)) : 0;
+    window.__morph5 = desk.matches ? Math.min(1, Math.max(0, (q - 3.04) / 0.92)) : 0;
+    const was5 = window.__p5in || 0;
     const was4 = window.__p4in || 0;
     const wasIn = window.__p2in || 0, was3 = window.__p3in || 0;
-    const out = sm(0, 0.3, q), inn = sm(0.6, 0.95, q) * (1 - sm(1.0, 1.3, q)), in3 = sm(1.6, 1.95, q) * (1 - sm(2.0, 2.3, q)), in4 = sm(2.6, 2.95, q);
+    const out = sm(0, 0.3, q), inn = sm(0.6, 0.95, q) * (1 - sm(1.0, 1.3, q)), in3 = sm(1.6, 1.95, q) * (1 - sm(2.0, 2.3, q)), in4 = sm(2.6, 2.95, q) * (1 - sm(3.0, 3.3, q)), in5 = sm(3.6, 3.95, q);
     for (const el of fades) {
       el.style.opacity = desk.matches ? 1 - out : '';
       el.style.transform = desk.matches && out > 0 ? `translateY(${-out * 8}vh)` : '';
@@ -2173,20 +2384,25 @@ renderer.setAnimationLoop(() => {
       p3.classList.toggle('live', in3 > 0.9);
       window.__p3in = in3;
       if (in3 > 0.9 && was3 <= 0.9) sites.replay();
-      p4.style.opacity = in4; p4.style.transform = `translateY(${(1 - in4) * 6}vh)`;
+      p4.style.opacity = in4; p4.style.transform = `translateY(${((1 - sm(2.6, 2.95, q)) * 6 - sm(3.0, 3.3, q) * 8)}vh)`;
       p4.style.visibility = in4 > 0.001 ? 'visible' : 'hidden';
       p4.classList.toggle('live', in4 > 0.9);
       window.__p4in = in4;
       if (in4 > 0.9 && was4 <= 0.9) gh.replay();
+      p5.style.opacity = in5; p5.style.transform = `translateY(${(1 - in5) * 6}vh)`;
+      p5.style.visibility = in5 > 0.001 ? 'visible' : 'hidden';
+      p5.classList.toggle('live', in5 > 0.9);
+      window.__p5in = in5;
+      if (in5 > 0.9 && was5 <= 0.9) exp.replay();
       if (in4 < 0.9) window.p4Tip?.(null);
       const keep = 1 - (window.__pjf || 0);
       if (keep < 1 || storyDim) {
-        for (const el of [...fades, p2, p3, p4]) el.style.opacity = (parseFloat(el.style.opacity || '1') * keep).toFixed(3);
+        for (const el of [...fades, p2, p3, p4, p5]) el.style.opacity = (parseFloat(el.style.opacity || '1') * keep).toFixed(3);
         hdr.style.opacity = keep.toFixed(3);
         storyDim = keep < 1;
       }
     } else {
-      for (const el of [p2, p3, p4]) { el.style.opacity = ''; el.style.transform = ''; el.style.visibility = ''; }
+      for (const el of [p2, p3, p4, p5]) { el.style.opacity = ''; el.style.transform = ''; el.style.visibility = ''; }
     }
   }
   $('logo').addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
@@ -2328,6 +2544,64 @@ renderer.setAnimationLoop(() => {
     addEventListener('resize', paint);
     fill(); paint(); count();
     return { replay: count, get year() { return year; } };
+  })();
+
+  // ---------- page five: experience panel and timeline ----------
+  const exp = (() => {
+    const R = window.ROLES, n = R.length, body = $('e-body'), st = $('e-stats'), rail = $('e-rail'), cv = $('p5-canvas');
+    let active = 0, swapT = 0, raf = 0;
+    const span = [2023, 2029.99], pct = (y) => ((y - span[0]) / (span[1] - span[0])) * 100;
+    rail.innerHTML = R.map((r, i) => `<button data-i="${i}" style="left:${pct(r.from)}%;width:${Math.max(1.2, pct(r.to) - pct(r.from))}%" aria-label="${esc(r.role)}, ${esc(r.dates)}"></button>`).join('') + `<span class="now" style="left:${pct(2026.85)}%"></span>`;
+    function fill() {
+      const r = R[active];
+      $('e-num').textContent = String(active + 1).padStart(2, '0') + ' / ' + String(n).padStart(2, '0');
+      $('e-dates').textContent = r.dates; $('e-role').textContent = r.role; $('e-org').textContent = r.org;
+      $('e-points').innerHTML = r.points.map((p) => `<li>${esc(p)}</li>`).join('');
+      st.innerHTML = r.stats.map(([label, val, max, unit], i) => `
+        <div class="pst"><small>${esc(label)}</small><b>${unit === '$' ? '<em>$</em>' : ''}<span data-to="${val}">0</span>${unit && unit !== '$' ? `<em>${esc(unit)}</em>` : ''}</b>
+          <span class="bt"><i style="--w:${Math.max(4, Math.min(100, (val / max) * 100)).toFixed(1)}%;--d:${(0.08 * i).toFixed(2)}s"></i></span></div>`).join('');
+      rail.querySelectorAll('button').forEach((b) => b.setAttribute('aria-current', String(+b.dataset.i === active)));
+    }
+    function count() {
+      st.classList.remove('in'); void st.offsetWidth; st.classList.add('in');
+      cancelAnimationFrame(raf);
+      const nums = [...st.querySelectorAll('[data-to]')], t0 = performance.now();
+      const tick = (now) => {
+        const k = Math.min(1, (now - t0) / 1000), e = 1 - Math.pow(1 - k, 3);
+        nums.forEach((el) => { const to = +el.dataset.to; el.textContent = Number.isInteger(to) ? Math.round(to * e) : (to * e).toFixed(2); });
+        if (k < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    }
+    // phones: a still grain picture of the object
+    function paint() {
+      const W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(devicePixelRatio || 1, 2);
+      cv.width = W * dpr; cv.height = H * dpr;
+      const c = cv.getContext('2d'); c.scale(dpr, dpr);
+      if (desk.matches || !W) return;
+      const p = window.sampleRole(active, 9000), s = H * 0.85;
+      for (let i = 0; i < 9000; i++) {
+        const g = Math.round(p[i * 4 + 3] * 200); c.fillStyle = `rgb(${g},${g},${g + 4})`;
+        c.fillRect(W / 2 + (p[i * 4] + p[i * 4 + 2] * 0.3) * s, H / 2 - p[i * 4 + 1] * s, 1.4, 1.4);
+      }
+    }
+    function go(i) {
+      i = (i + n) % n; if (i === active) return;
+      active = i; window.p5Scene?.show(i);
+      body.classList.add('swap'); st.classList.add('swap');
+      clearTimeout(swapT); swapT = setTimeout(() => { fill(); paint(); body.classList.remove('swap'); st.classList.remove('swap'); count(); }, 220);
+    }
+    $('e-prev').addEventListener('click', () => go(active - 1));
+    $('e-next').addEventListener('click', () => go(active + 1));
+    rail.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) go(+b.dataset.i); });
+    addEventListener('keydown', (e) => {
+      if (!$('p5').classList.contains('live') || document.documentElement.classList.contains('pj-lock')) return;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); go(active + 1); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); go(active - 1); }
+    });
+    addEventListener('resize', paint);
+    fill(); paint(); count();
+    return { replay: count };
   })();
 
   // ---------- projects view: the site's grains draw every figure ----------
