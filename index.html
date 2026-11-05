@@ -570,7 +570,7 @@
 <body>
 <div class="page">
   <header>
-    <button class="logo font-orbitron" id="logo" aria-label="Vatsal Malkan, home">VATSAL<sup>˚</sup></button>
+    <button class="logo font-orbitron" id="logo" aria-label="Portfolio, home">PORTFOLIO<sup>˚</sup></button>
     <div class="hud" id="hud" aria-hidden="true">
       <span><i class="dot"></i>Online</span>
       <span>22.30°N · 70.80°E</span>
@@ -588,8 +588,8 @@
       <p class="eyebrow">AI/ML Engineer · Rajkot, Gujarat</p>
       <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 11.5V0.5H11.5"/></svg>
       <h1 class="font-orbitron">
-        <span>Vatsal</span>
-        <span>Malkan<svg class="checker" id="checker" viewBox="0 0 36 18" aria-hidden="true"></svg></span>
+        <span>Sinhal</span>
+        <span>Joshi</span>
       </h1>
       <svg class="corner" viewBox="0 0 12 12" aria-hidden="true"><path d="M0 0.5V11.5H11.5"/></svg>
       <button class="cta" data-projects="0">View work
@@ -858,7 +858,7 @@
 
 <div class="projects" id="projects" role="dialog" aria-modal="true" aria-label="Projects" hidden>
   <div class="pj-bar">
-    <p class="pj-brand"><b class="font-orbitron">VATSAL<sup>˚</sup></b> / Projects</p>
+    <p class="pj-brand"><b class="font-orbitron">PORTFOLIO<sup>˚</sup></b> / Projects</p>
     <nav class="pj-dots" id="pj-dots" aria-label="Spreads">
       <button data-go="0">Index</button><button data-go="1">01</button><button data-go="2">02</button><button data-go="3">03</button><button data-go="4">04</button>
     </nav>
@@ -2348,7 +2348,7 @@ renderer.setAnimationLoop(() => {
     const shift = r % 2 === 0 ? 2.25 : 0;
     for (let x = shift; x + 3.8 <= 36.01; x += 4.5) sq += `<rect x="${x.toFixed(2)}" y="${(r * 4.5 + 0.35).toFixed(2)}" width="3.8" height="3.8"/>`;
   }
-  $('checker').innerHTML = sq;
+  if ($('checker')) $('checker').innerHTML = sq;
 
   const WORK = [
     { tag: 'Eval harness · 244 decisions', title: 'Agent Step-Guard Evaluation',
