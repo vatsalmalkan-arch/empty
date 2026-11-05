@@ -106,7 +106,7 @@ function makeBoulderGeometry(seed) {
     v.multiplyScalar(k); v.y *= 0.72; if (v.y < -0.35) v.y = -0.35 + (v.y + 0.35) * 0.2;   // flat-ish bottom
     p.setXYZ(i, v.x, v.y, v.z);
   }
-  const ng = g.toNonIndexed(); ng.computeVertexNormals();
+  const ng = g.index ? g.toNonIndexed() : g; ng.computeVertexNormals();
   // moss on the faces that look up, grey stone elsewhere
   const n = ng.attributes.normal, col = new Float32Array(n.count * 3);
   for (let i = 0; i < n.count; i++) {

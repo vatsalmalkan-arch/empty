@@ -17,7 +17,7 @@ export const TRACKS = [
   { name: 'Low Tide', bpm: 76, root: 47, scale: [0, 3, 5, 6, 10], wave: 'square', color: '#b37fe0' },
 ];
 
-export function createMusic(ctxFn) {
+export function createMusic(ctxFn, destFn) {
   let timer = 0, current = -1, master = null, file = null, step = 0, nextT = 0, seed = 1;
   const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
   const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
@@ -59,7 +59,7 @@ export function createMusic(ctxFn) {
     let usedFile = false;
     el.addEventListener('canplay', () => { if (current === i && !usedFile) { usedFile = true; clearInterval(timer); timer = 0; if (master) { master.disconnect(); master = null; } file = el; el.play().catch(() => {}); } }, { once: true });
     el.load();
-    master = a.createGain(); master.gain.value = 0.9; master.connect(a.destination);
+    master = a.createGain(); master.gain.value = 0.9; master.connect(destFn ? destFn() : a.destination);
     nextT = a.currentTime + 0.1; timer = setInterval(schedule, 40);
   }
   return { play, stop, get current() { return current; } };
@@ -105,11 +105,11 @@ export function createDiscs(scene, heightAt, avoid) {
       if (d.taken) continue;
       d.disc.rotation.y = t * 1.6; d.disc.position.y = 1.2 + Math.sin(t * 2 + d.i) * 0.12;
       d.beam.material.opacity = 0.09 + 0.05 * Math.sin(t * 3 + d.i);
-      if (Math.hypot(player.x - d.x, player.z - d.z) < 1.6) { d.taken = true; scene.remove(d.g); picked = d.i; }
+      if (Math.hypot(player.x - d.x, player.z - d.z) < 1.6) { d.taken = true; d.disc.visible = d.beam.visible = false; d.light.intensity = 0; picked = d.i; }
     }
     return picked;
   }
-  function reset() { for (const d of discs) if (d.taken) { d.taken = false; scene.add(d.g); } }
+  function reset() { for (const d of discs) if (d.taken) { d.taken = false; d.disc.visible = d.beam.visible = true; d.light.intensity = 3; } }
   return { discs, update, reset, get found() { return discs.filter((d) => d.taken).length; } };
 }
 

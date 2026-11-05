@@ -10,83 +10,145 @@
 <style>
   :root {
     color-scheme: dark;
-    --ink: #f2efe9; --muted: #9aa0a8; --dim: #5d636b; --bg: #0b0c0e; --panel: rgba(12, 13, 16, .78);
-    --blood: #c8352b; --toxic: #9be15d; --line: rgba(255, 255, 255, .14);
+    --ink: #f2efe9; --muted: #9aa0a8; --dim: #5d636b; --bg: #0b0c0e; --panel: rgba(12, 13, 16, .8);
+    --blood: #c8352b; --toxic: #9be15d; --gold: #e8c46a; --violet: #c58bff; --line: rgba(255, 255, 255, .14);
     --display: 'Orbitron', ui-sans-serif, system-ui, sans-serif;
     --mono: 'Michroma', ui-monospace, monospace;
     --body: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--ink); font-family: var(--body); }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--ink); font-family: var(--body); user-select: none; }
   [hidden] { display: none !important; }
   button { font: inherit; color: inherit; cursor: pointer; }
   #view { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
-
-  /* HUD */
-  .hud { position: fixed; inset: 0; pointer-events: none; }
-  #crosshair { position: fixed; width: 34px; height: 34px; margin: -17px 0 0 -17px; left: 50%; top: 50%; transition: transform .08s; }
-  #crosshair::before, #crosshair::after { content: ""; position: absolute; background: var(--ink); }
-  #crosshair::before { left: 16px; top: 0; width: 2px; height: 34px; clip-path: polygon(0 0,100% 0,100% 35%,0 35%,0 65%,100% 65%,100% 100%,0 100%); }
-  #crosshair::after { top: 16px; left: 0; height: 2px; width: 34px; clip-path: polygon(0 0,35% 0,35% 100%,0 100%,65% 0,100% 0,100% 100%,65% 100%); }
-  #crosshair.cocked::before, #crosshair.cocked::after { background: var(--toxic); }
-  #crosshair.hit { transform: scale(1.35) rotate(45deg); }
-  .bar-wrap { position: fixed; left: 24px; bottom: 22px; width: min(320px, 60vw); }
   .label { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
-  .bar { height: 10px; margin-top: 6px; background: rgba(255,255,255,.08); clip-path: polygon(0 0, 100% 0, 97% 100%, 0 100%); }
-  .bar i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, var(--blood), #ff6b4a); transition: width .2s; }
-  .ammo { position: fixed; right: 24px; bottom: 18px; text-align: right; }
-  .ammo b { font-family: var(--display); font-weight: 900; font-size: 44px; line-height: 1; }
-  .ammo small { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-left: 4px; }
-  .top { position: fixed; left: 24px; top: 18px; display: flex; gap: 28px; }
-  .top b { display: block; font-family: var(--display); font-weight: 900; font-size: 24px; margin-top: 2px; }
-  #banner { position: fixed; left: 0; right: 0; top: 30%; text-align: center; font-family: var(--display); font-weight: 900; font-size: clamp(36px, 7vw, 84px); letter-spacing: .08em; text-shadow: 0 4px 30px rgba(0,0,0,.6); opacity: 0; transition: opacity .4s; }
-  #banner.show { opacity: 1; }
-  #hurt { position: fixed; inset: 0; background: radial-gradient(ellipse at center, transparent 45%, rgba(200,30,20,.55)); opacity: 0; transition: opacity .35s; }
-  .np { position: fixed; left: 24px; top: 74px; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; color: var(--muted); }
-  .alpha-warn { position: fixed; left: 50%; top: 18px; transform: translateX(-50%); font-family: var(--mono); font-size: 11px; letter-spacing: .18em; color: #d79bff; background: rgba(40,10,60,.55); border: 1px solid rgba(176,76,255,.5); padding: 7px 12px; animation: pulse 1s ease-in-out infinite; }
-  @keyframes pulse { 50% { opacity: .55; } }
-  .scrolling { position: fixed; left: 50%; top: 62px; transform: translateX(-50%); font-family: var(--mono); font-size: 11px; letter-spacing: .18em; color: var(--toxic); }
-  @media (prefers-reduced-motion: reduce) { .alpha-warn { animation: none; } }
-  #reloading { position: fixed; left: 50%; top: calc(50% + 34px); transform: translateX(-50%); font-family: var(--mono); font-size: 11px; letter-spacing: .2em; color: var(--toxic); }
 
-  /* webcam preview + gesture readout */
-  .cam { position: fixed; right: 18px; top: 18px; width: 232px; pointer-events: auto; }
-  .cam canvas { width: 232px; height: 174px; display: block; border: 1px solid var(--line); background: #000; }
+  /* ---------------- HUD ---------------- */
+  .hud { position: fixed; inset: 0; pointer-events: none; }
+  #crosshair { position: fixed; left: 50%; top: 50%; width: 0; height: 0; }
+  #crosshair i { position: absolute; background: var(--ink); box-shadow: 0 0 2px rgba(0,0,0,.8); transition: transform .06s; }
+  #crosshair i:nth-child(1) { width: 2px; height: 8px; left: -1px; top: calc(-8px - var(--gap, 6px)); }
+  #crosshair i:nth-child(2) { width: 2px; height: 8px; left: -1px; top: var(--gap, 6px); }
+  #crosshair i:nth-child(3) { width: 8px; height: 2px; top: -1px; left: calc(-8px - var(--gap, 6px)); }
+  #crosshair i:nth-child(4) { width: 8px; height: 2px; top: -1px; left: var(--gap, 6px); }
+  #crosshair b { position: absolute; width: 2px; height: 2px; left: -1px; top: -1px; background: var(--ink); }
+  #crosshair.cocked i { background: var(--toxic); }
+  #crosshair.blocked i { background: var(--dim); }
+  #hitmark { position: absolute; left: 0; top: 0; opacity: 0; }
+  #hitmark span { position: absolute; width: 12px; height: 2px; background: var(--ink); }
+  #hitmark span:nth-child(1) { transform: translate(5px, 5px) rotate(45deg); } #hitmark span:nth-child(2) { transform: translate(-17px, 5px) rotate(-45deg); }
+  #hitmark span:nth-child(3) { transform: translate(5px, -7px) rotate(-45deg); } #hitmark span:nth-child(4) { transform: translate(-17px, -7px) rotate(45deg); }
+  #hitmark.show { opacity: 1; } #hitmark.kill span { background: var(--blood); width: 15px; }
+  #dmg { position: fixed; left: 50%; top: 50%; width: 0; height: 0; }
+  .dmg-arc { position: absolute; left: -70px; top: -70px; width: 140px; height: 140px; border-radius: 50%; border: 5px solid transparent; border-top-color: rgba(220, 40, 30, .9); filter: blur(.5px); transition: opacity .6s; }
+
+  .top-left { position: fixed; left: 22px; top: 18px; display: flex; gap: 26px; }
+  .top-left b { display: block; font-family: var(--display); font-weight: 900; font-size: 24px; margin-top: 2px; }
+  .score { position: fixed; right: 22px; top: 16px; text-align: right; }
+  .score b { display: block; font-family: var(--display); font-weight: 900; font-size: 30px; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+  #combo { font-family: var(--display); font-weight: 900; font-size: 15px; color: var(--gold); opacity: 0; transition: opacity .2s; }
+  #combo.on { opacity: 1; }
+  #pops { position: fixed; left: 50%; top: 50%; }
+  .pop { position: absolute; left: 18px; top: -30px; white-space: nowrap; font-family: var(--display); font-weight: 900; font-size: 14px; color: var(--ink); text-shadow: 0 2px 6px rgba(0,0,0,.7); animation: pop .9s ease-out forwards; }
+  .pop.head { color: var(--gold); } .pop.big { color: var(--violet); font-size: 18px; }
+  @keyframes pop { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-46px); opacity: 0; } }
+
+  .compass { position: fixed; left: 50%; top: 14px; width: min(460px, 56vw); height: 30px; transform: translateX(-50%); overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent); mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent); }
+  .compass::after { content: ""; position: absolute; left: 50%; top: 0; width: 2px; height: 7px; background: var(--ink); transform: translateX(-1px); }
+  .compass span { position: absolute; top: 10px; transform: translateX(-50%); font-family: var(--mono); font-size: 10px; color: var(--muted); }
+  .compass span.tick { width: 1px; height: 6px; background: var(--dim); top: 14px; }
+  .compass span.mark { width: 9px; height: 9px; border-radius: 50%; top: 11px; box-shadow: 0 0 6px currentColor; background: currentColor; }
+  .compass span.mark.alpha { width: 12px; height: 12px; top: 9px; border-radius: 2px; transform: translateX(-50%) rotate(45deg); }
+
+  .bottom-left { position: fixed; left: 22px; bottom: 20px; width: min(320px, 46vw); display: grid; gap: 8px; }
+  .bar { height: 10px; margin-top: 5px; background: rgba(255,255,255,.08); clip-path: polygon(0 0, 100% 0, 97% 100%, 0 100%); }
+  .bar i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, var(--blood), #ff6b4a); transition: width .2s; }
+  .bar.stam { height: 4px; } .bar.stam i { background: linear-gradient(90deg, #6f7680, #c9ced6); transition: none; }
+  .ammo { position: fixed; right: 22px; bottom: 16px; text-align: right; }
+  .ammo b { font-family: var(--display); font-weight: 900; font-size: 46px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .ammo small { font-family: var(--mono); font-size: 13px; color: var(--muted); margin-left: 4px; }
+  .ammo.low b { color: var(--blood); }
+  .perks { display: flex; gap: 4px; justify-content: flex-end; margin-bottom: 6px; flex-wrap: wrap; max-width: 260px; margin-left: auto; }
+  .perks span { font-family: var(--mono); font-size: 8px; letter-spacing: .12em; padding: 3px 5px; border: 1px solid var(--line); color: var(--muted); }
+
+  #banner { position: fixed; left: 0; right: 0; top: 27%; text-align: center; font-family: var(--display); font-weight: 900; font-size: clamp(34px, 6.5vw, 78px); letter-spacing: .08em; text-shadow: 0 4px 30px rgba(0,0,0,.6); opacity: 0; transition: opacity .4s; }
+  #banner small { display: block; font-family: var(--mono); font-weight: 400; font-size: 13px; letter-spacing: .3em; color: var(--muted); margin-top: 10px; }
+  #banner.show { opacity: 1; }
+  #hint { position: fixed; left: 50%; top: calc(50% + 40px); transform: translateX(-50%); font-family: var(--mono); font-size: 11px; letter-spacing: .2em; color: var(--toxic); text-shadow: 0 1px 4px #000; }
+  .np { position: fixed; left: 22px; top: 76px; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; color: var(--muted); }
+  .alpha-warn { position: fixed; left: 50%; top: 52px; transform: translateX(-50%); font-family: var(--mono); font-size: 11px; letter-spacing: .18em; color: var(--violet); background: rgba(40,10,60,.55); border: 1px solid rgba(176,76,255,.5); padding: 6px 11px; animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .55; } }
+
+  /* webcam preview */
+  .cam { position: fixed; right: 18px; top: 92px; width: 210px; }
+  .cam canvas { width: 210px; height: 158px; display: block; border: 1px solid var(--line); background: #000; }
   .chips { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
   .chip { background: var(--panel); border: 1px solid var(--line); padding: 6px 8px; font-family: var(--mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
   .chip b { display: block; font-family: var(--body); font-size: 12px; letter-spacing: .02em; text-transform: none; color: var(--ink); margin-top: 3px; }
   .chip.ok b { color: var(--toxic); }
 
-  /* menus */
-  .screen { position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 40%, rgba(30,34,30,.55), rgba(5,6,8,.92)); padding: 24px; overflow-y: auto; }
-  .card { width: min(760px, 100%); background: var(--panel); border: 1px solid var(--line); padding: clamp(20px, 4vw, 40px); position: relative; }
+  /* ---------------- screens ---------------- */
+  .screen { position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 40%, rgba(30,30,28,.45), rgba(5,6,8,.9)); padding: 24px; overflow-y: auto; }
+  .card { width: min(780px, 100%); background: var(--panel); border: 1px solid var(--line); padding: clamp(20px, 4vw, 40px); position: relative; backdrop-filter: blur(4px); }
   .card::before, .card::after { content: ""; position: absolute; width: 14px; height: 14px; border: solid var(--ink); }
   .card::before { left: -1px; top: -1px; border-width: 2px 0 0 2px; } .card::after { right: -1px; bottom: -1px; border-width: 0 2px 2px 0; }
-  h1 { margin: 0; font-family: var(--display); font-weight: 900; font-size: clamp(30px, 6vw, 60px); line-height: 1; letter-spacing: .04em; text-transform: uppercase; }
+  h1 { margin: 0; font-family: var(--display); font-weight: 900; font-size: clamp(30px, 6vw, 62px); line-height: 1; letter-spacing: .04em; text-transform: uppercase; }
   h1 em { font-style: normal; color: var(--blood); }
-  .sub { margin: 12px 0 0; color: var(--muted); max-width: 52ch; line-height: 1.6; }
-  .guide { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 24px 0; }
+  h2 { margin: 0 0 6px; font-family: var(--display); font-weight: 900; font-size: 26px; letter-spacing: .06em; text-transform: uppercase; }
+  .sub { margin: 12px 0 0; color: var(--muted); max-width: 56ch; line-height: 1.6; }
+  .guide { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
   .guide div { border-top: 1px solid var(--line); padding-top: 10px; }
   .guide h3 { margin: 0 0 6px; font-family: var(--mono); font-weight: 400; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--toxic); }
-  .guide p { margin: 0; font-size: 14px; line-height: 1.6; color: #cfd2d6; }
+  .guide p { margin: 0; font-size: 13.5px; line-height: 1.6; color: #cfd2d6; }
+  kbd { font-family: var(--mono); font-size: 10px; padding: 1px 5px; border: 1px solid var(--line); border-radius: 3px; color: var(--ink); }
   .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .spread { justify-content: space-between; }
   .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
-  .seg button { background: none; border: 0; padding: 8px 14px; border-radius: 999px; font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .seg button { background: none; border: 0; padding: 7px 13px; border-radius: 999px; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
   .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
   .btn { background: var(--ink); color: var(--bg); border: 0; padding: 13px 20px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; font-size: 13px; }
-  .btn.ghost { background: none; color: var(--ink); border: 1px solid var(--line); }
-  .btn:focus-visible, .seg button:focus-visible { outline: 2px solid var(--toxic); outline-offset: 2px; }
-  .note { margin: 14px 0 0; font-size: 12px; color: var(--dim); }
+  .btn:hover { background: #fff; }
+  .btn.ghost { background: none; color: var(--ink); border: 1px solid var(--line); } .btn.ghost:hover { border-color: var(--ink); }
+  .btn:focus-visible, .seg button:focus-visible, .upg:focus-visible { outline: 2px solid var(--toxic); outline-offset: 2px; }
+  .note { margin: 14px 0 0; font-size: 12px; color: var(--dim); line-height: 1.6; }
   .err { color: #ff8a7a; }
+  .best { display: flex; gap: 22px; margin-top: 18px; }
+  .best b { display: block; font-family: var(--display); font-weight: 900; font-size: 20px; margin-top: 2px; }
   .checks { list-style: none; margin: 18px 0; padding: 0; display: grid; gap: 8px; }
   .checks li { display: flex; gap: 10px; align-items: center; font-size: 14px; color: var(--muted); }
   .checks li::before { content: ""; width: 12px; height: 12px; border: 1px solid var(--dim); flex: none; }
   .checks li.ok { color: var(--ink); } .checks li.ok::before { background: var(--toxic); border-color: var(--toxic); }
   .calib { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: center; }
   .calib canvas { width: 100%; aspect-ratio: 4 / 3; border: 1px solid var(--line); background: #000; }
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 22px 0; }
-  .stats b { display: block; font-family: var(--display); font-size: 30px; font-weight: 900; }
-  @media (max-width: 640px) { .guide, .calib { grid-template-columns: 1fr; } .cam { width: 150px; } .cam canvas { width: 150px; height: 112px; } .chips { grid-template-columns: 1fr; } }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 12px; margin: 22px 0; }
+  .stats b { display: block; font-family: var(--display); font-size: 26px; font-weight: 900; }
+  .newbest { display: inline-block; margin-left: 10px; font-family: var(--mono); font-size: 11px; letter-spacing: .2em; color: var(--gold); border: 1px solid var(--gold); padding: 3px 8px; vertical-align: middle; }
+
+  /* loading */
+  #loading { background: var(--bg); }
+  .load-bar { width: min(360px, 70vw); height: 3px; background: rgba(255,255,255,.1); margin-top: 22px; }
+  .load-bar i { display: block; height: 100%; width: 0; background: var(--ink); transition: width .3s; }
+
+  /* upgrades */
+  #upgrades { background: rgba(5,6,8,.55); }
+  .upg-wrap { width: min(900px, 100%); text-align: center; }
+  .upgs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 20px; }
+  .upg { position: relative; text-align: left; background: var(--panel); border: 1px solid var(--line); padding: 22px 18px; min-height: 190px; display: flex; flex-direction: column; gap: 10px; transition: transform .15s, border-color .15s; }
+  .upg:hover, .upg.aim { transform: translateY(-4px); border-color: var(--gold); }
+  .upg .k { position: absolute; right: 12px; top: 10px; font-family: var(--mono); font-size: 10px; color: var(--dim); }
+  .upg .ic { font-family: var(--display); font-weight: 900; font-size: 30px; color: var(--gold); line-height: 1; }
+  .upg h3 { margin: 0; font-family: var(--display); font-size: 16px; letter-spacing: .06em; text-transform: uppercase; }
+  .upg p { margin: 0; font-size: 13px; line-height: 1.5; color: #cfd2d6; }
+  .upg .lv { margin-top: auto; font-family: var(--mono); font-size: 9px; letter-spacing: .14em; color: var(--muted); }
+
+  /* settings */
+  .set { display: grid; grid-template-columns: 150px 1fr 52px; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+  .set output { font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: right; }
+  input[type=range] { width: 100%; accent-color: var(--ink); }
+  @media (max-width: 680px) { .guide, .calib { grid-template-columns: 1fr; } .upg { min-height: 0; padding: 14px 12px; } .upg p { font-size: 12px; } .compass { display: none; } .cam { width: 140px; } .cam canvas { width: 140px; height: 105px; } .chips { grid-template-columns: 1fr; } .set { grid-template-columns: 1fr 1fr 44px; } }
+  @media (max-width: 460px) { .upgs { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { .alpha-warn, .pop { animation: none; } }
 </style>
 </head>
 <body>
@@ -94,45 +156,58 @@
 <video id="video" playsinline muted hidden></video>
 
 <div class="hud" id="hud" hidden>
-  <div id="hurt"></div>
-  <div class="top">
+  <div class="top-left">
     <div><span class="label">Wave</span><b id="wave">1</b></div>
-    <div><span class="label">Kills</span><b id="kills">0</b></div>
     <div><span class="label">Left</span><b id="left">0</b></div>
     <div><span class="label">Discs</span><b id="discs">0/6</b></div>
   </div>
+  <div class="compass" id="compass"></div>
+  <div class="score"><span class="label">Score</span><b id="score">0</b><div id="combo">&times;1</div></div>
   <div id="np" class="np"></div>
   <div id="alpha" class="alpha-warn" hidden></div>
-  <div id="scrolling" class="scrolling" hidden>DOOM-SCROLLING · +HP · CAN'T SHOOT</div>
-  <div id="crosshair"></div>
-  <div id="reloading" hidden>RELOADING</div>
+  <div id="dmg"></div>
+  <div id="crosshair"><i></i><i></i><i></i><i></i><b></b><div id="hitmark"><span></span><span></span><span></span><span></span></div></div>
+  <div id="pops"></div>
+  <div id="hint" hidden></div>
   <div id="banner"></div>
-  <div class="bar-wrap"><span class="label">Health</span><div class="bar"><i id="hp"></i></div></div>
-  <div class="ammo"><span class="label">Ammo</span><br><b id="ammo">12</b><small>/ 12</small></div>
+  <div class="bottom-left">
+    <div><span class="label">Health</span><div class="bar"><i id="hp"></i></div></div>
+    <div class="bar stam"><i id="stam"></i></div>
+  </div>
+  <div class="ammo" id="ammo-box"><div class="perks" id="perks"></div><span class="label">Ammo</span><br><b id="ammo">12</b><small id="reserve">/ 48</small></div>
   <div class="cam" id="cam" hidden>
     <canvas id="preview" width="320" height="240"></canvas>
-    <div class="chips"><div class="chip" id="chip-gun">Gun hand<b>—</b></div><div class="chip" id="chip-move">Move hand<b>—</b></div></div>
+    <div class="chips"><div class="chip" id="chip-gun">Gun hand<b>&mdash;</b></div><div class="chip" id="chip-move">Move hand<b>&mdash;</b></div></div>
   </div>
 </div>
 
-<section class="screen" id="menu">
+<section class="screen" id="loading">
+  <div style="text-align:center">
+    <h1>Last Hand <em>Standing</em></h1>
+    <div class="load-bar" style="margin-inline:auto"><i id="load-bar"></i></div>
+    <p class="note" id="load-note">Growing the forest&hellip;</p>
+  </div>
+</section>
+
+<section class="screen" id="menu" hidden>
   <div class="card">
     <h1>Last Hand <em>Standing</em></h1>
-    <p class="sub">A low-poly zombie survival shooter you play with your hands. One hand is the gun, the other walks you around. Survive as many waves as you can.</p>
+    <p class="sub">The forest went grey and the dead got up. Hold out as long as you can: every wave you survive, pick an upgrade. Find the six lost records, and if you hear a beat in the fog, an alpha is dancing up a horde. Put it down.</p>
     <div class="guide">
-      <div><h3>Gun hand</h3><p>Make a finger gun and point to aim. Lift your thumb, then drop it onto your index finger to fire. Make a fist to reload. Aim at the screen edges to turn.</p></div>
-      <div><h3>Move hand</h3><p>Open your palm: where you open it is the centre. Move it up to walk forward, down to back off, sideways to strafe. Fist to stop. Flick it up quickly to jump.</p></div>
-      <div><h3>Phone</h3><p>Make an OK sign with your move hand (or hold Q) to doom-scroll: you heal, but you can't shoot. Move the pinch to scroll.</p></div>
-      <div><h3>Find</h3><p>Six music discs glow in the fog: walk over one to play its track. From wave 2 an alpha may start dancing somewhere. Follow its beat and put it down before the horde grows.</p></div>
+      <div><h3>Keyboard &amp; mouse</h3><p><kbd>WASD</kbd> move &middot; <kbd>Shift</kbd> sprint &middot; <kbd>Space</kbd> jump &middot; <kbd>Click</kbd> shoot &middot; <kbd>Right click</kbd> aim &middot; <kbd>R</kbd> reload &middot; <kbd>F</kbd> shove &middot; hold <kbd>Q</kbd> phone &middot; <kbd>Esc</kbd> pause</p></div>
+      <div><h3>Hands (webcam)</h3><p>Gun hand: point to aim, drop your thumb to fire, fist to reload. Move hand: open palm is a joystick, fist stops, flick up to jump, OK sign takes out the phone.</p></div>
+      <div><h3>Phone</h3><p>Doom-scrolling heals you, but you can't shoot and you walk slowly. Pick your moment.</p></div>
+      <div><h3>Drops</h3><p>The dead sometimes drop ammo (yellow) or a medkit (green). Ammo is limited, so keep moving and keep collecting.</p></div>
     </div>
-    <div class="row" style="justify-content: space-between">
+    <div class="row spread">
       <div class="row"><span class="label">Gun hand</span>
         <div class="seg" role="group" aria-label="Gun hand"><button id="side-left" aria-pressed="false">Left</button><button id="side-right" aria-pressed="true">Right</button></div>
       </div>
-      <div class="row"><button class="btn ghost" id="play-keys">Play with keyboard</button><button class="btn" id="play-hands">Play with hands</button></div>
+      <div class="row"><button class="btn ghost" id="open-settings">Settings</button><button class="btn ghost" id="play-hands">Play with hands</button><button class="btn" id="play-keys">Play</button></div>
     </div>
-    <p class="note" id="menu-note">The camera feed stays on your device; hand tracking runs in your browser. Keyboard: WASD, mouse to aim, click to shoot, Space to jump, R to reload, hold Q for the phone.</p>
-    <p class="note">Credits: "fps pistol Animated" by DJMaesen and "Cat S41" by MrFacysus (CC BY 4.0) · "Polyart Zombies" by Denys Almaral (Sketchfab Standard) · trees by EZ-Tree, Dan Greenheck (MIT) · hand tracking by MediaPipe (Apache 2.0).</p>
+    <div class="best" id="best"></div>
+    <p class="note" id="menu-note"></p>
+    <p class="note">Credits: "fps pistol Animated" by DJMaesen and "Cat S41" by MrFacysus (CC BY 4.0) &middot; "Polyart Zombies" by Denys Almaral (Sketchfab Standard) &middot; trees by EZ-Tree, Dan Greenheck (MIT) &middot; hand tracking by MediaPipe (Apache 2.0) &middot; music and sound generated in the browser.</p>
   </div>
 </section>
 
@@ -155,10 +230,41 @@
   </div>
 </section>
 
+<section class="screen" id="upgrades" hidden>
+  <div class="upg-wrap">
+    <h2 id="upg-title">Wave cleared</h2>
+    <p class="label" id="upg-sub">Pick one &middot; click, or press 1 2 3 &middot; hands: aim and fire</p>
+    <div class="upgs" id="upgs"></div>
+  </div>
+</section>
+
+<section class="screen" id="pause" hidden>
+  <div class="card" style="width:min(520px,100%)">
+    <h2>Paused</h2>
+    <div class="row" style="margin-top:18px"><button class="btn" id="resume">Resume</button><button class="btn ghost" id="pause-settings">Settings</button><button class="btn ghost" id="quit">Quit to menu</button></div>
+  </div>
+</section>
+
+<section class="screen" id="settings" hidden>
+  <div class="card" style="width:min(560px,100%)">
+    <h2>Settings</h2>
+    <div class="set"><label for="s-sens" class="label">Mouse sensitivity</label><input id="s-sens" type="range" min="0.3" max="3" step="0.05"><output id="o-sens"></output></div>
+    <div class="set"><label for="s-fov" class="label">Field of view</label><input id="s-fov" type="range" min="60" max="100" step="1"><output id="o-fov"></output></div>
+    <div class="set"><label for="s-master" class="label">Volume</label><input id="s-master" type="range" min="0" max="1" step="0.05"><output id="o-master"></output></div>
+    <div class="set"><label for="s-music" class="label">Music</label><input id="s-music" type="range" min="0" max="1" step="0.05"><output id="o-music"></output></div>
+    <div class="set"><span class="label">Graphics</span><div class="seg" role="group" aria-label="Graphics quality"><button data-q="low">Low</button><button data-q="medium">Medium</button><button data-q="high">High</button></div><span></span></div>
+    <div class="set"><span class="label">Hand aim speed</span><input id="s-gain" type="range" min="1.2" max="4" step="0.1"><output id="o-gain"></output></div>
+    <div class="row" style="margin-top:18px"><button class="btn" id="settings-done">Done</button></div>
+  </div>
+</section>
+
 <section class="screen" id="over" hidden>
   <div class="card">
-    <h1>You <em>died</em></h1>
-    <div class="stats"><div><span class="label">Wave</span><b id="o-wave">1</b></div><div><span class="label">Kills</span><b id="o-kills">0</b></div><div><span class="label">Accuracy</span><b id="o-acc">0%</b></div></div>
+    <h1>You <em>died</em><span class="newbest" id="newbest" hidden>New best</span></h1>
+    <div class="stats">
+      <div><span class="label">Score</span><b id="o-score">0</b></div><div><span class="label">Wave</span><b id="o-wave">1</b></div><div><span class="label">Survived</span><b id="o-time">0:00</b></div>
+      <div><span class="label">Kills</span><b id="o-kills">0</b></div><div><span class="label">Headshots</span><b id="o-heads">0</b></div><div><span class="label">Accuracy</span><b id="o-acc">0%</b></div>
+    </div>
     <div class="row"><button class="btn" id="again">Play again</button><button class="btn ghost" id="to-menu">Menu</button></div>
   </div>
 </section>
